@@ -98,6 +98,8 @@ abstract class ReservationEmailMessage extends EmailMessage
             attributeRepository: $this->attributeRepository
         );
 
+        $this->Set('Localizacion', $this->reservationSeries->Resource()->GetLocation());
+        $this->Set('Note', $this->reservationSeries->Resource()->GetNotes());
         $this->Set('UserName', $this->reservationOwner->FullName());
         $this->Set('StartDate', $currentInstance->StartDate()->ToTimezone($this->timezone));
         $this->Set('EndDate', $currentInstance->EndDate()->ToTimezone($this->timezone));
