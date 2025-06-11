@@ -49,6 +49,18 @@ class en_us extends Language
     {
         $strings = [];
 
+        $strings['Directory'] = 'Directory';
+        $strings['Services'] = 'Services';
+        $strings['TransparencyIndices'] = 'Transparency Indices';
+        $strings['Participate'] = 'Participate';
+        $strings['QualityAssurance'] = 'Quality Assurance';
+        $strings['ExtensionInstitute'] = 'Extension Institute';
+        $strings['Internationalization'] = 'Internationalization';
+        $strings['LanguageInstitute'] = 'Language Institute';
+        $strings['Home'] = 'Home';
+        $strings['ClearanceCertificate'] = 'Clearance Certificate';
+        $strings['InstitutionalAccount'] = 'Institutional Account';
+
         $strings['FirstName'] = 'First Name';
         $strings['LastName'] = 'Last Name';
         $strings['Timezone'] = 'Timezone';

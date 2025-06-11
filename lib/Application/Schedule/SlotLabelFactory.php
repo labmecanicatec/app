@@ -65,11 +65,11 @@ class SlotLabelFactory
         }
 
         if ($shouldHideDetails) {
-            return '';
+            // return '';
         }
 
         if (!$shouldHideReservations && !$this->user->IsLoggedIn()) {
-            return '';
+            //return '';
         }
 
         if (
@@ -134,7 +134,8 @@ class SlotLabelFactory
                 // check if this is a unique custom attribute
                 if ((!$attribute->UniquePerEntity() && !$attribute->HasSecondaryEntities()) ||
                     (($attribute->UniquePerEntity() && count(array_intersect($entityIds, $attribute->EntityIds()))) ||
-                        ($attribute->HasSecondaryEntities() && count(array_intersect($entityIds, $attribute->SecondaryEntityIds()))))) {
+                        ($attribute->HasSecondaryEntities() && count(array_intersect($entityIds, $attribute->SecondaryEntityIds()))))
+                ) {
                     $attributesLabel->Append($attribute->Label() . ': ' . $reservation->GetAttributeValue($attribute->Id()) . ', ');
                 }
             }
@@ -151,9 +152,9 @@ class SlotLabelFactory
     }
 
     /**
-    * Gets the resources the user has permissions (full access and view only permissions)
-    * This is used to block a user from seeing reservation details if he has no permissions to it's resources
-    */
+     * Gets the resources the user has permissions (full access and view only permissions)
+     * This is used to block a user from seeing reservation details if he has no permissions to it's resources
+     */
     private function UserResourcePermissions($userId)
     {
         $resourceRepo = new ResourceRepository();
