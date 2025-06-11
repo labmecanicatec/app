@@ -18,10 +18,10 @@ class RichTextHtmlSanitizerTest extends TestBase
 
         $this->assertSame(
             '<h1>Heading 1</h1><h2>Heading 2</h2><h3>Heading 3</h3>'
-            . '<h4>Heading 4</h4><h5>Heading 5</h5><h6>Heading 6</h6>'
-            . '<blockquote>Quote</blockquote>'
-            . '<p>Text <strong>bold</strong> <b>b</b> <em>em</em> <i>i</i> <u>u</u> <del>del</del> <s>s</s></p>'
-            . '<ul><li>One</li></ul><ol><li>Two</li></ol><br />',
+                . '<h4>Heading 4</h4><h5>Heading 5</h5><h6>Heading 6</h6>'
+                . '<blockquote>Quote</blockquote>'
+                . '<p>Text <strong>bold</strong> <b>b</b> <em>em</em> <i>i</i> <u>u</u> <del>del</del> <s>s</s></p>'
+                . '<ul><li>One</li></ul><ol><li>Two</li></ol><br />',
             $actual
         );
     }
@@ -130,6 +130,43 @@ class RichTextHtmlSanitizerTest extends TestBase
         $this->assertStringNotContainsString('data:', $actual);
         $this->assertStringNotContainsString('onerror=', $actual);
         $this->assertStringNotContainsString('style=', $actual);
+    }
+
+    public function testAllowsEncodedYoutubeEmbedsUsedInAnnouncements(): void
+    {
+        $html = '&lt;h2&gt;Creaci&oacute;n, edici&oacute;n y eliminaci&oacute;n de reservas en SIRIS&lt;/h2&gt;&lt;/center&gt;'
+            . PHP_EOL
+            . '&lt;center&gt;'
+            . PHP_EOL
+            . '  &lt;div class=&quot;ratio ratio-16x9&quot;&gt;'
+            . PHP_EOL
+            . '  &lt;iframe src=&quot;https://www.youtube.com/embed/oGifFBpVSkg&quot; allowfullscreen&gt;&lt;/iframe&gt;'
+            . PHP_EOL
+            . '&lt;/div&gt;'
+            . PHP_EOL
+            . '&lt;/center&gt;';
+
+        $actual = RichTextHtmlSanitizer::Sanitize($html);
+
+        $this->assertStringContainsString('<h2>Creación, edición y eliminación de reservas en SIRIS</h2>', $actual);
+        $this->assertStringContainsString('<center>', $actual);
+        $this->assertStringContainsString('<div class="ratio ratio-16x9">', $actual);
+        $this->assertStringContainsString('<iframe src="https://www.youtube.com/embed/oGifFBpVSkg"', $actual);
+        $this->assertStringContainsString('allowfullscreen', $actual);
+    }
+
+    public function testRejectsNonYoutubeIframeEmbeds(): void
+    {
+        $html = '<div class="ratio ratio-16x9 extra-class">'
+            . '<iframe src="https://evil.example/embed/123" allowfullscreen title="bad"></iframe>'
+            . '</div>';
+
+        $actual = RichTextHtmlSanitizer::Sanitize($html);
+
+        $this->assertStringContainsString('<div class="ratio ratio-16x9">', $actual);
+        $this->assertStringContainsString('<iframe allowfullscreen title="bad"></iframe>', $actual);
+        $this->assertStringNotContainsString('evil.example', $actual);
+        $this->assertStringNotContainsString('extra-class', $actual);
     }
 
     public function testEmptyInputReturnsEmptyString(): void
