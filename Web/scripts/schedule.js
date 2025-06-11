@@ -917,7 +917,7 @@ function Schedule(opts, resourceGroups) {
     function show() {
       shown = true;
       $('#reservations-left').removeClass('d-none');
-      $('#reservations').addClass('col-md-10').removeClass('col-md-12');
+      //$('#reservations').addClass('col-md-10').removeClass('col-md-12');
       $('#restore-sidebar').removeClass('bi-chevron-double-right');
       $('#restore-sidebar').addClass('bi-chevron-double-left');
 
