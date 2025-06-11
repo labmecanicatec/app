@@ -99,6 +99,9 @@ abstract class ReservationEmailMessage extends EmailMessage
         );
 
         $this->Set('UserName', self::EscapeHtml($this->reservationOwner->FullName()));
+        $this->Set('Localizacion', $this->reservationSeries->Resource()->GetLocation());
+        $this->Set('Note', $this->reservationSeries->Resource()->GetNotes());
+        $this->Set('UserName', $this->reservationOwner->FullName());
         $this->Set('StartDate', $currentInstance->StartDate()->ToTimezone($this->timezone));
         $this->Set('EndDate', $currentInstance->EndDate()->ToTimezone($this->timezone));
         $this->Set('ScheduleId', $this->reservationSeries->ScheduleId());
@@ -237,10 +240,8 @@ abstract class ReservationEmailMessage extends EmailMessage
             return null;
         }
 
-        return new class ($user) {
-            public function __construct(private readonly UserDto $user)
-            {
-            }
+        return new class($user) {
+            public function __construct(private readonly UserDto $user) {}
 
             public function __call(string $method, array $arguments): mixed
             {

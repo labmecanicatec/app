@@ -574,6 +574,7 @@
 	{include file="javascript-includes.tpl" InlineEdit=true DataTable=true}
 	{datatable tableId=$tableId}
 	{jsfile src="ajax-helpers.js"}
+	{jsfile src="admin/inlinePopoverEditor.js"}
 	{jsfile src="admin/reservations.js"}
 	{jsfile src="search-clear.js"}
 	{jsfile src="autocomplete.js"}
@@ -600,27 +601,9 @@
 			});
 		}
 
-		function setUpEditables() {
-			$.fn.editable.defaults.mode = 'popup';
-			$.fn.editable.defaults.toggle = 'manual';
-			$.fn.editable.defaults.emptyclass = '';
-			$.fn.editable.defaults.params = function(params) {
-				params.CSRF_TOKEN = $('#csrf_token').val();
-				return params;
-			};
-
-			var updateUrl = '{$smarty.server.SCRIPT_NAME}?action=';
-
-			$('.inlineAttribute').editable({
-				url: updateUrl + '{ManageReservationsActions::UpdateAttribute}', emptytext: '-'
-			});
-		}
-
 		$(document).ready(function() {
 
 			setUpPopovers();
-			//hidePopoversWhenClickAway();
-			setUpEditables();
 			dropzone($("#termsOfServiceUpload"));
 
 			var updateScope = {};

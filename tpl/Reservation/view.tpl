@@ -29,8 +29,8 @@
                 <div id="reservationDetails" class="{$detailsCol}">
                     <div class="col-12">
                         <label class="fw-bold">{translate key='User'}</label>
-                        {if $ShowUserDetails && $ShowReservationDetails && $isResourcePermitted}
-                            <a href="#" class="bindableUser link-primary" data-userid="{$UserId}">{$ReservationUserName|escape:'html':'UTF-8':false}</a>
+                        {if isset($CanViewResponsibilities) && $CanViewResponsibilities}
+                            <a href="#" class="bindableUser link-primary" data-userid="{$UserId}">{$ReservationUserName}</a>
                             <input id="userId" type="hidden" value="{$UserId}" />
                         {else}
                             {translate key=Private}
@@ -74,7 +74,7 @@
                         {translate key=$RepeatOptions[$RepeatType]['key']}
                         {if $IsRecurring}
                             <div class="repeat-details">
-                                <label class="fw-bold">{translate key='RepeatEveryPrompt'}</label> {$RepeatInterval}
+                                <label class="fw-bold">{translate key='RepeatEveryPrompt'}</label>{$RepeatInterval}
                                 {$RepeatOptions[$RepeatType]['everyKey']}
                                 {if $RepeatMonthlyType neq ''}
                                     ({$RepeatMonthlyType})
