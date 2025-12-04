@@ -175,7 +175,8 @@
                                 href="https://rita.udistrital.edu.co:23604/adminlab/recursos"><i
                                     class="slash fas fa-slash fa-rotate-90"></i>Recursos</a></li>
                         <li class="nav-item" id="navDashboard"><a class="nav-link link-light"
-                                href="{$baseUrl}adminlab/pazysalvos"><i class="slash fas fa-slash fa-rotate-90"></i>Paz y
+                                href="https://rita.udistrital.edu.co:23604/adminlab/pazysalvos"><i
+                                    class="slash fas fa-slash fa-rotate-90"></i>Paz y
                                 Salvos</a>
                         </li>
                         {if isset($LoggedIn) && $LoggedIn}
