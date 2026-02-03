@@ -40,12 +40,14 @@
             </div>
 
             <div class="row gx-2">
+                {include file='../Custom/avisos.tpl' resource=$Resource}
                 <div class="reservationTitle col-12 border-bottom py-2">
                     <div class="form-group">
                         <label class="fw-bold mb-0" for="reservationTitle">{translate key="ReservationTitle"}
                             {if $TitleRequired}
                             <i class="bi bi-asterisk text-danger align-top text-small"></i>
                             {/if}
+                            (Describa brevemente las actividades a realizar durante la reserva).
                         </label>
                         {textbox name="RESERVATION_TITLE" class="form-control has-feedback" value="ReservationTitle" id="reservationTitle" maxlength="300" required=$TitleRequired}
                     </div>
@@ -151,7 +153,7 @@
                             <label for="EndDate"
                                 class="reservationDate fw-bold text-md-end pe-md-1">{translate key='EndDate'}</label>
                             <input type="date" id="EndDate"
-                                class="form-control form-control-sm d-inline-block dateinput{if $LockPeriods} no-show{/if}"
+                                class="form-control form-control-sm d-inline-block dateinput d-none{if $LockPeriods} no-show{/if}"
                                 value="{formatdate date=$EndDate key=system}" />
                             <input type="hidden" id="formattedEndDate" {formname key=END_DATE}
                                 value="{formatdate date=$EndDate key=system}" />
@@ -191,7 +193,8 @@
                         {/if}
                     </div>
 
-                    {if !$HideRecurrence}
+                    {*if !$HideRecurrence*}
+                    {if isset($CanViewResponsibilities) && $CanViewResponsibilities || (isset($CanViewAdmin) && $CanViewAdmin)}
                     <div class="pt-2">{$HideRecurrence}
                         {control type="RecurrenceControl" RepeatTerminationDate=$RepeatTerminationDate}
                     </div>
@@ -302,7 +305,7 @@
                 {/if}
 
                 <div class="reservationDescription border-bottom py-2">
-                    <div class="form-group">
+                    <div class="form-group d-none">
                         <label class="fw-bold mb-0" for="description">
                             {translate key="ReservationDescription"}{if $DescriptionRequired}<i
                                 class="bi bi-asterisk text-danger align-top text-small"></i>
@@ -364,7 +367,7 @@
                         <input class="form-check-input" type="checkbox" id="termsAndConditionsAcknowledgement"
                             {formname key=TOS_ACKNOWLEDGEMENT} {if $TermsAccepted}checked="checked" {/if} />
                         <label for="termsAndConditionsAcknowledgement">{translate key=IAccept}</label>
-                        <a href="{$Terms->DisplayUrl()}" class="link-primary"
+                        <a href="{$Terms->DisplayUrl()}" class="link-dark"
                             target="_blank">{translate key=TheTermsOfService}</a>
                     </div>
                     {/if}
@@ -670,12 +673,135 @@
             }
             if (tooltipType === 'autorelease') {
                 var text = "{translate key=AutoReleaseNotification args='%s'}";
-                    var tooltipText = text.replace('%s', resource.getAttribute('data-autorelease'));
-                }
-                resource.setAttribute('data-bs-title', tooltipText);
-                new bootstrap.Tooltip(resource);
-            });
-        }
-    </script>
+                var tooltipText = text.replace('%s', resource.getAttribute('data-autorelease'));
+            }
+            resource.setAttribute('data-bs-title', tooltipText);
+            new bootstrap.Tooltip(resource);
+        });
+    }
+</script>
+<script>
+(async function () {
+  // Caché y control de fetchs concurrentes
+  const cache = new Map();
+  const ongoingFetches = new Map();
 
-    {include file='globalfooter.tpl'}
+  async function fetchData(url) {
+    if (cache.has(url)) return cache.get(url);
+    if (ongoingFetches.has(url)) return ongoingFetches.get(url);
+
+    const p = fetch(url)
+      .then(async res => {
+        if (!res.ok) throw new Error('Error en la API: ' + url + ' (' + res.status + ')');
+        const json = await res.json();
+        const data = json.data ?? json;
+        cache.set(url, data);
+        ongoingFetches.delete(url);
+        return data;
+      })
+      .catch(err => {
+        ongoingFetches.delete(url);
+        throw err;
+      });
+
+    ongoingFetches.set(url, p);
+    return p;
+  }
+
+  // Rellena todos los selects que coincidan con selector
+  async function fillSelect({ url, fieldName, selector }) {
+    const nodes = Array.from(document.querySelectorAll(selector));
+    if (nodes.length === 0) return;
+
+    let data;
+    try {
+      data = await fetchData(url);
+    } catch (err) {
+      console.error('Error fetch:', url, err);
+      return;
+    }
+
+    nodes.forEach(select => {
+      try {
+        // valor guardado desde LibreBooking o valor actual si existe
+        const valorGuardado = select.getAttribute('data-value') ?? select.value ?? "";
+
+        // limpiar opciones (recreo desde 0)
+        while (select.firstChild) select.removeChild(select.firstChild);
+
+        const placeholder = document.createElement('option');
+        placeholder.value = "";
+        placeholder.textContent = "--";
+        select.appendChild(placeholder);
+
+        data.forEach(item => {
+          const option = document.createElement('option');
+          option.value = item[fieldName];
+          option.textContent = item[fieldName];
+          if (String(option.value) === String(valorGuardado)) option.selected = true;
+          select.appendChild(option);
+        });
+      } catch (err) {
+        console.error('Error llenando select', selector, err);
+      }
+    });
+  }
+
+  // Observador persistente que evita setAttribute problemático
+  function observeSelect(params) {
+    // WeakSet para recordar nodes ya llenados; no causa errores si el nodo se elimina
+    const filled = new WeakSet();
+
+    const checkAndFill = async () => {
+      const nodes = Array.from(document.querySelectorAll(params.selector));
+      if (nodes.length === 0) return;
+
+      // rellenar si el nodo no fue marcado como llenado, o si sus opciones fueron vaciadas
+      let need = false;
+      for (const node of nodes) {
+        if (!filled.has(node) || node.options.length <= 1) {
+          need = true;
+          break;
+        }
+      }
+      if (!need) return;
+
+      try {
+        await fillSelect(params);
+        // marcar los nodes actuales como llenados
+        document.querySelectorAll(params.selector).forEach(el => filled.add(el));
+      } catch (err) {
+        console.error('Error en checkAndFill', err);
+      }
+    };
+
+    const observer = new MutationObserver(() => {
+      // no await dentro del callback directamente — delegamos
+      checkAndFill().catch(e => console.error(e));
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+
+    // intento inmediato (para cuando el select ya existe al cargar)
+    checkAndFill().catch(e => console.error(e));
+  }
+
+  // Configura tus selects dinámicos
+  observeSelect({
+    url: "https://rita.udistrital.edu.co:23604/adminlab/asignaturas",
+    fieldName: "asignatura",
+    selector: 'select[name="psiattribute[12]"]'
+  });
+
+  observeSelect({
+    url: "https://rita.udistrital.edu.co:23604/adminlab/docentes",
+    fieldName: "name",
+    selector: 'select[name="psiattribute[13]"]'
+  });
+
+})();
+</script>
+{include file='globalfooter.tpl'}
