@@ -6,6 +6,8 @@ function CannedReports(reportOptions) {
   var elements = {
     indicator: $('#indicator'),
     resultsDiv: $('#resultsDiv'),
+    emailForm: $('#emailForm'),
+    sendEmailButton: $('#btnSendEmail'),
   };
 
   this.init = function () {
@@ -45,8 +47,8 @@ function CannedReports(reportOptions) {
       ajaxGet(opts.generateUrl + reportId, before, after);
     });
 
-    $('.emailNow').on('click', function (e) {
-      $('#emailDiv').dialog({ modal: true });
+    $('.emailNow').click(function (e) {
+      $('#emailDiv').modal('show');
     });
   };
 }

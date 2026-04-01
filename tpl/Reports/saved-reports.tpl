@@ -84,18 +84,37 @@
 						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
 					</div>
 					<div class="modal-body">
-						<div class="form-group">
-							<label class="fw-bold" for="emailTo">{translate key=Email}</label>
-							<input id="emailTo" {formname key=EMAIL} value="{$UserEmail}" class="form-control" />
+
+						<div class="mb-3">
+							<label class="form-label fw-semibold" for="emailTo">{translate key=Email}</label>
+							<input id="emailTo" {formname key=EMAIL} value="{$UserEmail}" type="email"
+								class="form-control" />
 						</div>
-						<div class="modal-footer">
-							<button type="button" class="btn btn-outline-secondary cancel"
-								data-bs-dismiss="modal">{translate key='Cancel'}</button>
-							<button id="btnSendEmail" type="button" class="btn btn-primary save"><i
-									class="bi bi-envelope me-1"></i>{translate key=EmailReport}
-							</button>
-							{indicator}
+
+						<div class="mb-2">
+							<label class="form-label fw-semibold d-block">{translate key=Format}</label>
+
+							<div class="form-check form-check-inline">
+								<input class="form-check-input" type="radio" id="formatExcel" {formname key=FORMAT}
+									value="excel" checked>
+								<label class="form-check-label" for="formatExcel">Excel (.xlsx)</label>
+							</div>
+
+							<div class="form-check form-check-inline">
+								<input class="form-check-input" type="radio" id="formatCsv" {formname key=FORMAT}
+									value="csv">
+								<label class="form-check-label" for="formatCsv">CSV</label>
+							</div>
 						</div>
+
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-outline-secondary cancel"
+							data-bs-dismiss="modal">{translate key='Cancel'}</button>
+						<button id="btnSendEmail" type="button" class="btn btn-primary save"><i
+								class="bi bi-envelope me-1"></i>{translate key=EmailReport}
+						</button>
+						{indicator}
 					</div>
 				</div>
 			</form>

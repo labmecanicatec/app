@@ -49,8 +49,9 @@ interface IReportingService
      * @param string $toAddress
      * @param UserSession $reportUser
      * @param string $selectedColumns
+     * @param string $format Report format (ReportEmailMessage::FORMAT_CSV or ReportEmailMessage::FORMAT_EXCEL)
      */
-    public function SendReport($report, $definition, $toAddress, $reportUser, $selectedColumns);
+    public function SendReport($report, $definition, $toAddress, $reportUser, $selectedColumns, $format = ReportEmailMessage::FORMAT_CSV);
 
     /**
      * @param int $reportId
@@ -148,9 +149,9 @@ class ReportingService implements IReportingService
         return new GeneratedSavedReport($savedReport, $report);
     }
 
-    public function SendReport($report, $definition, $toAddress, $reportUser, $selectedColumns)
+    public function SendReport($report, $definition, $toAddress, $reportUser, $selectedColumns, $format = ReportEmailMessage::FORMAT_CSV)
     {
-        $message = new ReportEmailMessage($report, $definition, $toAddress, $reportUser, $selectedColumns);
+        $message = new ReportEmailMessage($report, $definition, $toAddress, $reportUser, $selectedColumns, $format);
         ServiceLocator::GetEmailService()->Send($message);
     }
 

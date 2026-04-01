@@ -32,6 +32,11 @@ interface ISavedReportsPage extends IDisplayableReportPage, IActionPage
      * @return string
      */
     public function GetSelectedColumns();
+
+    /**
+     * @return string
+     */
+    public function GetReportFormat();
 }
 
 class SavedReportsPage extends ActionPage implements ISavedReportsPage
@@ -156,5 +161,11 @@ class SavedReportsPage extends ActionPage implements ISavedReportsPage
     public function GetSelectedColumns()
     {
         return $this->GetForm(FormKeys::SELECTED_COLUMNS);
+    }
+
+    public function GetReportFormat()
+    {
+        $format = $this->GetForm(FormKeys::FORMAT);
+        return !empty($format) ? $format : ReportEmailMessage::FORMAT_CSV;
     }
 }

@@ -2,9 +2,7 @@
 
 class FormKeys
 {
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 
     public const ACCESSORY_LIST = 'accessoryList';
     public const ACCESSORY_NAME = 'accessoryName';
@@ -93,6 +91,7 @@ class FormKeys
 
     public const FIRST_NAME = 'fname';
     public const FAVICON_FILE = 'FAVICON_FILE';
+    public const FORMAT = 'format';
 
     public const GROUP = 'group';
     public const GROUP_ID = 'group_id';

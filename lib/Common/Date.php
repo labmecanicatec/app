@@ -838,6 +838,11 @@ class NullDate extends Date
         return 0;
     }
 
+    public function GetDate()
+    {
+        return $this;
+    }
+
     public function ToIso()
     {
         return '';

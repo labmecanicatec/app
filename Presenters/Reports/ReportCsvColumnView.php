@@ -19,6 +19,7 @@ class ReportCsvColumnView
 
     public function __construct($selectedColumns)
     {
+        $selectedColumns = $selectedColumns ?? '';
         $this->selectedColumns = explode('!s!', $selectedColumns);
         $this->showAll = empty($selectedColumns);
     }
