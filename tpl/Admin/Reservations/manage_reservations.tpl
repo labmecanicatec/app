@@ -1,4 +1,4 @@
-{include file='globalheader.tpl' InlineEdit=true DataTable=true}
+{include file='globalheader.tpl' DataTable=true}
 
 <div id="page-manage-reservations" class="admin-page">
 	<div class="clearfix border-bottom mb-3">
@@ -571,7 +571,7 @@
 		</div>
 	</div>
 
-	{include file="javascript-includes.tpl" InlineEdit=true DataTable=true}
+	{include file="javascript-includes.tpl" DataTable=true}
 	{datatable tableId=$tableId}
 	{jsfile src="ajax-helpers.js"}
 	{jsfile src="admin/reservations.js"}
@@ -579,6 +579,7 @@
 	{jsfile src="autocomplete.js"}
 	{jsfile src="reservationPopup.js"}
 	{jsfile src="approval.js"}
+	{jsfile src="admin/inlinePopoverEditor.js"}
 	{vendor_js src="dropzone/1.0.0/js/dropzone.js"}
 
 	<script type="text/javascript">
@@ -600,27 +601,9 @@
 			});
 		}
 
-		function setUpEditables() {
-			$.fn.editable.defaults.mode = 'popup';
-			$.fn.editable.defaults.toggle = 'manual';
-			$.fn.editable.defaults.emptyclass = '';
-			$.fn.editable.defaults.params = function(params) {
-				params.CSRF_TOKEN = $('#csrf_token').val();
-				return params;
-			};
-
-			var updateUrl = '{$smarty.server.SCRIPT_NAME}?action=';
-
-			$('.inlineAttribute').editable({
-				url: updateUrl + '{ManageReservationsActions::UpdateAttribute}', emptytext: '-'
-			});
-		}
-
 		$(document).ready(function() {
 
 			setUpPopovers();
-			//hidePopoversWhenClickAway();
-			setUpEditables();
 			dropzone($("#termsOfServiceUpload"));
 
 			var updateScope = {};

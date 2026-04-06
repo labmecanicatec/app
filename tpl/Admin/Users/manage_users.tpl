@@ -1,4 +1,4 @@
-{include file='globalheader.tpl' InlineEdit=true DataTable=true}
+{include file='globalheader.tpl' DataTable=true}
 
 <div id="page-manage-users" class="admin-page">
 
@@ -120,15 +120,72 @@
                                     {indicator id="userStatusIndicator"}
                                 </td>
                                 {if $CreditsEnabled}
+                                    {assign var=creditsId value="inlineCredits`$id`"}
+                                    {assign var=creditsInputId value="popoverInput`$creditsId`"}
                                     <td class="text-end">
-                                        <span class="propertyValue inlineUpdate changeCredits fw-bold text-decoration-underline"
-                                            data-type="number" data-pk="{$id}" data-value="{$user->CurrentCreditCount}"
-                                            data-name="{FormKeys::CREDITS}">{$user->CurrentCreditCount}</span>
+                                        <div class="d-inline-block position-relative">
+                                            <a class="update link-primary" title="{translate key='Edit'}" href="#"
+                                                id="editBtn{$creditsId}">
+                                                <span class="bi bi-pencil-square"></span>
+                                                <span class="visually-hidden">{translate key=Edit}</span>
+                                            </a>
+                                            <span id="{$creditsId}" class="propertyValue fw-bold"
+                                                data-value="{$user->CurrentCreditCount}">{$user->CurrentCreditCount}</span>
+
+                                            {include file='Admin/InlinePopoverPanel.tpl'
+                                                                panelId="inlinePicker{$creditsId}"
+                                            panelType='number'
+                                            panelClass='inlineAttributePopoverPanel'
+                                            inputId=$creditsInputId
+                                            fieldType='number'
+                                            fieldInputType='number'
+                                            inputStep='1'
+                                            inputValue=$user->CurrentCreditCount}
+                                        </div>
                                         <a href="credit_log.php?{QueryStringKeys::USER_ID}={$id}"
                                             title="{translate key=CreditHistory}" class="link-primary">
                                             <span class="no-color">{translate key=CreditHistory}</span>
                                             <i class="bi bi-list-task"></i>
                                         </a>
+
+                                        <script>
+                                            (function() {
+                                                const initEditor = () => {
+                                                    if (typeof InlinePopoverEditor === 'undefined') {
+                                                        setTimeout(initEditor, 100);
+                                                        return;
+                                                    }
+                                                    const editBtn = document.getElementById('editBtn{$creditsId}');
+                                                    if (!editBtn) return;
+                                                    new InlinePopoverEditor({
+                                                        namespace: '{$creditsId}',
+                                                        useFlatpickr: false,
+                                                        formatDisplay: function(value) {
+                                                            const parsedValue = parseInt(value, 10);
+                                                            return Number.isNaN(parsedValue) ? '0' : String(
+                                                                parsedValue);
+                                                        },
+                                                        normalizeValue: function(value) {
+                                                            const parsedValue = parseInt(value, 10);
+                                                            return Number.isNaN(parsedValue) ? '0' : String(
+                                                                parsedValue);
+                                                        },
+                                                        buttonElement: editBtn,
+                                                        buttonSelector: null,
+                                                        displaySelector: '#{$creditsId}',
+                                                        inputSelector: '#{$creditsInputId}',
+                                                        containerSelector: '#inlinePicker{$creditsId}',
+                                                        acceptBtnSelector: '#{$creditsInputId}_accept',
+                                                        cancelBtnSelector: '#{$creditsInputId}_cancel',
+                                                        saveUrl: '{$smarty.server.SCRIPT_NAME}?action={ManageUsersActions::ChangeCredits}',
+                                                        getPayload: function() {
+                                                            return { pk: '{$id}', name: 'value' };
+                                                        }
+                                                    });
+                                                };
+                                                initEditor();
+                                            })();
+                                        </script>
                                     </td>
                                 {/if}
                                 {if $PerUserColors}
@@ -649,34 +706,16 @@
     </div>
 
     {csrf_token}
-    {include file="javascript-includes.tpl" InlineEdit=true DataTable=true}
+    {include file="javascript-includes.tpl" DataTable=true}
     {datatable tableId=$tableId}
     {datatablefilter tableId=$tableIdFilter}
     {jsfile src="ajax-helpers.js"}
     {jsfile src="autocomplete.js"}
     {jsfile src="admin/user.js"}
+    {jsfile src="admin/inlinePopoverEditor.js"}
     {vendor_js src="jquery-form/3.09/jquery.form-3.09.min.js"}
 
     <script type="text/javascript">
-        function setUpEditables() {
-            $.fn.editable.defaults.mode = 'popup';
-            $.fn.editable.defaults.toggle = 'manual';
-            $.fn.editable.defaults.emptyclass = '';
-            $.fn.editable.defaults.params = function(params) {
-                params.CSRF_TOKEN = $('#csrf_token').val();
-                return params;
-            };
-
-            var updateUrl = '{$smarty.server.SCRIPT_NAME}?action=';
-            $('.inlineAttribute').editable({
-                url: updateUrl + '{ManageUsersActions::ChangeAttribute}', emptytext: '-'
-            });
-
-            $('.changeCredits').editable({
-                url: updateUrl + '{ManageUsersActions::ChangeCredits}', emptytext: '-'
-            });
-        }
-
         $(document).ready(function() {
             var actions = {
                 activate: '{ManageUsersActions::Activate}', deactivate: '{ManageUsersActions::Deactivate}'
@@ -715,9 +754,6 @@
                 };
                 userManagement.addUser(user);
             {/foreach}
-
-
-            setUpEditables();
         });
     </script>
 </div>

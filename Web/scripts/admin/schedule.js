@@ -1,3 +1,5 @@
+/* global InlinePopoverEditor */
+
 function ScheduleManagement(opts) {
   var options = opts;
 
@@ -79,30 +81,12 @@ function ScheduleManagement(opts) {
   };
 
   ScheduleManagement.prototype.init = function () {
+    initializeInlineEditors();
+
     elements.scheduleList.on('click', '.update', function (e) {
       e.preventDefault();
       var id = $(this).closest('.scheduleDetails').attr('data-schedule-id');
       setActiveScheduleId(id);
-    });
-
-    elements.scheduleList.on('click', '.renameButton', function (e) {
-      e.stopPropagation();
-      $(this).closest('.scheduleDetails').find('.scheduleName').editable('toggle');
-    });
-
-    elements.scheduleList.on('click', '.dayName', function (e) {
-      e.stopPropagation();
-      $(this).editable('toggle');
-    });
-
-    elements.scheduleList.on('click', '.daysVisible', function (e) {
-      e.stopPropagation();
-      $(this).editable('toggle');
-    });
-
-    elements.scheduleList.on('click', '.changeScheduleAdmin', function (e) {
-      e.stopPropagation();
-      $(this).closest('.scheduleDetails').find('.scheduleAdmin').editable('toggle');
     });
 
     elements.scheduleList.on('click', '.changeLayoutButton', function (e) {
@@ -162,11 +146,6 @@ function ScheduleManagement(opts) {
       var toggle = $(e.target);
       var container = toggle.parent('.concurrentContainer');
       toggleConcurrentReservations(getActiveScheduleId(), toggle, container);
-    });
-
-    elements.scheduleList.on('click', '.defaultScheduleStyle', function (e) {
-      e.stopPropagation();
-      $(this).editable('toggle');
     });
 
     elements.scheduleList.on('click', '.switchLayout', function (e) {
@@ -307,6 +286,296 @@ function ScheduleManagement(opts) {
     return function () {
       return options.submitUrl + '?sid=' + elements.activeId.val() + '&action=' + action;
     };
+  };
+
+  var initializeInlineEditors = function () {
+    if (typeof InlinePopoverEditor === 'undefined') {
+      return;
+    }
+
+    document.querySelectorAll('.scheduleDetails[data-schedule-id]').forEach((scheduleDetails) => {
+      if (!scheduleDetails.__inlineEditorInit) {
+        scheduleDetails.__inlineEditorInit = {};
+      }
+      initializeScheduleDaysVisibleEditor(scheduleDetails);
+      initializeScheduleNameEditor(scheduleDetails);
+      initializeScheduleAdminGroupEditor(scheduleDetails);
+      initializeScheduleDefaultStyleEditor(scheduleDetails);
+      initializeScheduleDayNameEditor(scheduleDetails);
+    });
+  };
+
+  var initializeScheduleDaysVisibleEditor = function (scheduleDetails) {
+    var scheduleId = scheduleDetails.getAttribute('data-schedule-id');
+    if (!scheduleId) {
+      return;
+    }
+
+    var namespace = 'scheduleDaysVisible' + scheduleId;
+    if (scheduleDetails.__inlineEditorInit && scheduleDetails.__inlineEditorInit[namespace]) {
+      return;
+    }
+
+    var displayId = 'inlineDaysVisible' + scheduleId;
+    var inputId = 'popoverInput' + displayId;
+    var displayEl = scheduleDetails.querySelector('#' + displayId);
+    var inputEl = scheduleDetails.querySelector('#' + inputId);
+
+    if (!displayEl || !inputEl) {
+      return;
+    }
+
+    new InlinePopoverEditor({
+      namespace: namespace,
+      useFlatpickr: false,
+      buttonElement: displayEl,
+      buttonSelector: null,
+      displaySelector: '#' + displayId,
+      inputSelector: '#' + inputId,
+      containerSelector: '#inlinePicker' + displayId,
+      acceptBtnSelector: '#' + inputId + '_accept',
+      cancelBtnSelector: '#' + inputId + '_cancel',
+      saveUrl: options.submitUrl + '?action=' + options.changeDaysVisibleAction,
+      getPayload: function () {
+        return {
+          pk: scheduleId,
+          name: options.scheduleDaysVisibleKey,
+        };
+      },
+      normalizeValue: function (value) {
+        var parsedValue = parseInt(value, 10);
+        if (Number.isNaN(parsedValue) || parsedValue < 0) {
+          return '0';
+        }
+        return String(parsedValue);
+      },
+      formatDisplay: function (value) {
+        var parsedValue = parseInt(value, 10);
+        return Number.isNaN(parsedValue) ? '0' : String(parsedValue);
+      },
+    });
+
+    inputEl.value = displayEl.dataset.value || displayEl.textContent.trim();
+    if (!scheduleDetails.__inlineEditorInit) {
+      scheduleDetails.__inlineEditorInit = {};
+    }
+    scheduleDetails.__inlineEditorInit[namespace] = true;
+  };
+
+  var initializeScheduleNameEditor = function (scheduleDetails) {
+    var scheduleId = scheduleDetails.getAttribute('data-schedule-id');
+    if (!scheduleId) {
+      return;
+    }
+
+    var namespace = 'scheduleName' + scheduleId;
+    if (scheduleDetails.__inlineEditorInit[namespace]) {
+      return;
+    }
+
+    var displayId = 'inlineScheduleName' + scheduleId;
+    var inputId = 'popoverInput' + displayId;
+    var editBtn = scheduleDetails.querySelector('#editBtn' + displayId);
+    var displayEl = scheduleDetails.querySelector('#' + displayId);
+
+    if (!editBtn || !displayEl) {
+      return;
+    }
+
+    new InlinePopoverEditor({
+      namespace: namespace,
+      useFlatpickr: false,
+      buttonElement: editBtn,
+      buttonSelector: null,
+      displaySelector: '#' + displayId,
+      inputSelector: '#' + inputId,
+      containerSelector: '#inlinePicker' + displayId,
+      acceptBtnSelector: '#' + inputId + '_accept',
+      cancelBtnSelector: '#' + inputId + '_cancel',
+      saveUrl: options.submitUrl + '?action=' + options.renameAction,
+      getPayload: function () {
+        return {
+          pk: scheduleId,
+          name: options.scheduleNameKey,
+        };
+      },
+      normalizeValue: function (value) {
+        return String(value == null ? '' : value).trim();
+      },
+      onAfterSave: function (value) {
+        var scheduleContainer = editBtn.closest('.accordion-item');
+        var headerButton = scheduleContainer ? scheduleContainer.querySelector('.accordion-button') : null;
+        if (headerButton) {
+          headerButton.textContent = value;
+        }
+      },
+    });
+
+    scheduleDetails.__inlineEditorInit[namespace] = true;
+  };
+
+  var initializeScheduleDefaultStyleEditor = function (scheduleDetails) {
+    var scheduleId = scheduleDetails.getAttribute('data-schedule-id');
+    if (!scheduleId) {
+      return;
+    }
+
+    var namespace = 'scheduleDefaultStyle' + scheduleId;
+    if (scheduleDetails.__inlineEditorInit[namespace]) {
+      return;
+    }
+
+    var displayId = 'inlineDefaultStyle' + scheduleId;
+    var inputId = 'popoverInput' + displayId;
+    var displayEl = scheduleDetails.querySelector('#' + displayId);
+    var inputEl = scheduleDetails.querySelector('#' + inputId);
+
+    if (!displayEl || !inputEl) {
+      return;
+    }
+
+    var styleDisplayMap = {};
+    Array.from(inputEl.options).forEach((option) => {
+      styleDisplayMap[String(option.value)] = option.text;
+    });
+
+    new InlinePopoverEditor({
+      namespace: namespace,
+      useFlatpickr: false,
+      buttonElement: displayEl,
+      buttonSelector: null,
+      displaySelector: '#' + displayId,
+      inputSelector: '#' + inputId,
+      containerSelector: '#inlinePicker' + displayId,
+      acceptBtnSelector: '#' + inputId + '_accept',
+      cancelBtnSelector: '#' + inputId + '_cancel',
+      saveUrl: options.submitUrl + '?action=' + options.changeDefaultStyleAction,
+      getPayload: function () {
+        return {
+          pk: scheduleId,
+          name: options.scheduleDefaultStyleKey,
+        };
+      },
+      formatDisplay: function (value) {
+        var key = value == null ? '' : String(value);
+        return Object.prototype.hasOwnProperty.call(styleDisplayMap, key) ? styleDisplayMap[key] : key;
+      },
+    });
+
+    inputEl.value = displayEl.dataset.value || '';
+    scheduleDetails.__inlineEditorInit[namespace] = true;
+  };
+
+  var initializeScheduleAdminGroupEditor = function (scheduleDetails) {
+    var scheduleId = scheduleDetails.getAttribute('data-schedule-id');
+    if (!scheduleId) {
+      return;
+    }
+
+    var namespace = 'scheduleAdminGroup' + scheduleId;
+    if (scheduleDetails.__inlineEditorInit[namespace]) {
+      return;
+    }
+
+    var displayId = 'inlineScheduleAdmin' + scheduleId;
+    var inputId = 'popoverInput' + displayId;
+    var editBtnId = 'editBtn' + displayId;
+    var displayEl = scheduleDetails.querySelector('#' + displayId);
+    var inputEl = scheduleDetails.querySelector('#' + inputId);
+    var editBtn = scheduleDetails.querySelector('#' + editBtnId);
+
+    if (!displayEl || !inputEl || !editBtn) {
+      return;
+    }
+
+    var adminDisplayMap = {};
+    Array.from(inputEl.options).forEach((option) => {
+      adminDisplayMap[String(option.value)] = option.text;
+    });
+
+    new InlinePopoverEditor({
+      namespace: namespace,
+      useFlatpickr: false,
+      buttonElement: editBtn,
+      buttonSelector: null,
+      displaySelector: '#' + displayId,
+      inputSelector: '#' + inputId,
+      containerSelector: '#inlinePicker' + displayId,
+      acceptBtnSelector: '#' + inputId + '_accept',
+      cancelBtnSelector: '#' + inputId + '_cancel',
+      saveUrl: options.submitUrl + '?action=' + options.changeAdminGroupAction,
+      getPayload: function () {
+        return {
+          pk: scheduleId,
+          name: options.scheduleAdminGroupKey,
+        };
+      },
+      formatDisplay: function (value) {
+        var key = value == null ? '' : String(value);
+        return Object.prototype.hasOwnProperty.call(adminDisplayMap, key) ? adminDisplayMap[key] : key;
+      },
+    });
+
+    inputEl.value = displayEl.dataset.value || '0';
+    scheduleDetails.__inlineEditorInit[namespace] = true;
+  };
+
+  var initializeScheduleDayNameEditor = function (scheduleDetails) {
+    var scheduleId = scheduleDetails.getAttribute('data-schedule-id');
+    if (!scheduleId) {
+      return;
+    }
+
+    var namespace = 'scheduleDayName' + scheduleId;
+    if (scheduleDetails.__inlineEditorInit[namespace]) {
+      return;
+    }
+
+    var displayId = 'inlineDayName' + scheduleId;
+    var inputId = 'popoverInput' + displayId;
+    var displayEl = scheduleDetails.querySelector('#' + displayId);
+    var inputEl = scheduleDetails.querySelector('#' + inputId);
+
+    if (!displayEl || !inputEl) {
+      return;
+    }
+
+    var dayNameDisplayMap = {};
+    Array.from(inputEl.options).forEach((option) => {
+      dayNameDisplayMap[String(option.value)] = option.text;
+    });
+
+    new InlinePopoverEditor({
+      namespace: namespace,
+      useFlatpickr: false,
+      buttonElement: displayEl,
+      buttonSelector: null,
+      displaySelector: '#' + displayId,
+      inputSelector: '#' + inputId,
+      containerSelector: '#inlinePicker' + displayId,
+      acceptBtnSelector: '#' + inputId + '_accept',
+      cancelBtnSelector: '#' + inputId + '_cancel',
+      saveUrl: options.submitUrl + '?action=' + options.changeStartDayAction,
+      getPayload: function () {
+        return {
+          pk: scheduleId,
+          name: options.scheduleWeekdayStartKey,
+        };
+      },
+      formatDisplay: function (value) {
+        var key = value == null ? '' : String(value);
+        return Object.prototype.hasOwnProperty.call(dayNameDisplayMap, key) ? dayNameDisplayMap[key] : key;
+      },
+      onAfterSave: function (value) {
+        var dayOfWeekInput = scheduleDetails.querySelector('.dayOfWeek');
+        if (dayOfWeekInput) {
+          dayOfWeekInput.value = value;
+        }
+      },
+    });
+
+    inputEl.value = displayEl.dataset.value || '';
+    scheduleDetails.__inlineEditorInit[namespace] = true;
   };
 
   var createQuickLayout = function () {

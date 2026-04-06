@@ -442,7 +442,7 @@ opacity-75">
     <span aria-hidden="true">{translate key='Working'}</span>
 </div>
 
-{include file="javascript-includes.tpl" Select2=true Clear=true DatePicker=true}
+{include file="javascript-includes.tpl" Select2=true DatePicker=true}
 
 {block name="scripts-before"}
 

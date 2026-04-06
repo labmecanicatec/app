@@ -1,4 +1,4 @@
-{include file='globalheader.tpl' InlineEdit=true DataTable=false}
+{include file='globalheader.tpl' DataTable=false}
 
 <div id="page-manage-resource-types" class="admin-page">
 
@@ -77,6 +77,8 @@
 							</td>
 							{if $AttributeList|default:array()|count > 0}
 								<td>
+									{assign var=changeAttributeAction value=ManageResourceTypesActions::ChangeAttribute}
+									{assign var=attributeUrl value="`$smarty.server.SCRIPT_NAME`?action=`$changeAttributeAction`"}
 									{foreach from=$AttributeList item=attribute}
 										{include file='Admin/InlineAttributeEdit.tpl' url="{$smarty.server.SCRIPT_NAME}?action={ManageResourceTypesActions::ChangeAttribute}"
 										id=$id attribute=$attribute value=$type->GetAttributeValue($attribute->Id())}
@@ -150,67 +152,14 @@
 
 	{csrf_token}
 
-	{include file="javascript-includes.tpl" InlineEdit=true DataTable=true}
+	{include file="javascript-includes.tpl" DataTable=true}
 	{jsfile src="ajax-helpers.js"}
 	{jsfile src="admin/resource-types.js"}
+	{jsfile src="admin/inlinePopoverEditor.js"}
 	{vendor_js src="jquery-form/3.09/jquery.form-3.09.min.js"}
 	{datatable tableId=$tableId}
 	<script type="text/javascript">
-		function hidePopoversWhenClickAway() {
-			$('body').on('click', function(e) {
-				$('[rel="popover"]').each(function() {
-					if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e
-							.target).length === 0) {
-						$(this).popover('hide');
-					}
-				});
-			});
-		}
-
-		function setUpPopovers() {
-			$('[rel="popover"]').popover({
-				container: 'body',
-				html: true,
-				placement: 'top',
-				content: function() {
-					var popoverId = $(this).data('popover-content');
-					return $(popoverId).html();
-				}
-			}).click(function(e) {
-				e.preventDefault();
-			}).on('show.bs.popover', function() {
-
-			}).on('shown.bs.popover', function() {
-				var trigger = $(this);
-				var popover = trigger.data('bs.popover').tip();
-				popover.find('.editable-cancel').click(function() {
-					trigger.popover('hide');
-				});
-			});
-		}
-
-		function setUpEditables() {
-			$.fn.editable.defaults.mode = 'popup';
-			$.fn.editable.defaults.toggle = 'manual';
-			$.fn.editable.defaults.emptyclass = '';
-			$.fn.editable.defaults.params = function(params) {
-				params.CSRF_TOKEN = $('#csrf_token').val();
-				return params;
-			};
-
-			var updateUrl = '{$smarty.server.SCRIPT_NAME}?action=';
-
-			$('.inlineAttribute').editable({
-				url: updateUrl + '{ManageResourceTypesActions::ChangeAttribute}',
-				emptytext: '-'
-			});
-		}
-
 		$(document).ready(function() {
-			setUpPopovers();
-			hidePopoversWhenClickAway();
-			setUpEditables();
-
 			var opts = {
 				submitUrl: '{$smarty.server.SCRIPT_NAME}',
 				saveRedirect: '{$smarty.server.SCRIPT_NAME}'

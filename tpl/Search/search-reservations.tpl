@@ -112,7 +112,7 @@
 
     {csrf_token}
 
-    {include file="javascript-includes.tpl" Select2=true Clear=true DataTable=true}
+    {include file="javascript-includes.tpl" Select2=true DataTable=true}
     {vendor_js src="jquery-cookie/1.3.1/js/jquery.cookie.js"}
     {jsfile src="ajax-helpers.js"}
     {jsfile src="autocomplete.js"}

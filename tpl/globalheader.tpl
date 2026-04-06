@@ -64,9 +64,6 @@
                 type="text/css">
         {/if}
     {/if}
-    {if isset($InlineEdit) && $InlineEdit}
-        {vendor_css src="x-editable/1.5.1/css/bootstrap-editable.css"}
-    {/if}
     {if isset($Select2) && $Select2}
         {if isset($UseLocalJquery) && $UseLocalJquery}
             {vendor_css src="select2/4.1.0-rc.0/css/select2.min.css"}

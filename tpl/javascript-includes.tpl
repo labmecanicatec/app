@@ -59,8 +59,7 @@
     {/if}
 {/if}
 {if isset($InlineEdit) && $InlineEdit}
-    {*The version of X-editable that supports Bootstrap 5 does not have a CDN link*}
-    {vendor_js src="x-editable/1.5.1/js/bootstrap-editable.js"}
+    {jsfile src="admin/inlinePopoverEditor.js"}
 {/if}
 {if isset($Select2) && $Select2}
     {if isset($UseLocalJquery) && $UseLocalJquery}

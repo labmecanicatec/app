@@ -4,26 +4,39 @@
 	{assign var=datatype value='text'}
 	{assign var=inlineClass value='inlineAttribute'}
 	{assign var=pickerValue value=$value}
+	{assign var=popoverInputId value="popoverInput{$attributeId}"}
+	{assign var=popoverFieldType value='text'}
+	{assign var=allowEmptyOption value=false}
+	{assign var=usePopover value=false}
 
 	{if $type == CustomAttributeTypes::CHECKBOX}
 		{assign var=datatype value='checklist'}
+		{assign var=popoverFieldType value='checkbox'}
+		{assign var=usePopover value=true}
 	{elseif $type == CustomAttributeTypes::MULTI_LINE_TEXTBOX}
 		{assign var=datatype value='textarea'}
+		{assign var=popoverFieldType value='textarea'}
+		{assign var=usePopover value=true}
 	{elseif $type == CustomAttributeTypes::SELECT_LIST}
 		{assign var=datatype value='select'}
+		{assign var=popoverFieldType value='select'}
+		{assign var=allowEmptyOption value=!$attribute->Required()}
+		{assign var=usePopover value=true}
 	{elseif $type == CustomAttributeTypes::DATETIME}
 		{assign var=AltFormat value='short_datetime'}
-		{assign var=pickerControlId value="inlinePickerInput{$attributeId}"}
 		{assign var=inlineClass value='inlineAttributeDateTime'}
+		{assign var=usePopover value=true}
 		{if $value != ''}
 			{assign var=pickerValue value={formatdate date=$value format='Y-m-d H:i'}}
 		{/if}
+	{else}
+		{assign var=usePopover value=true}
 	{/if}
 
-	<div class="updateCustomAttribute mb-0 d-inline-block">
+	<div class="updateCustomAttribute mb-0 d-inline-block position-relative">
 		<label class="inline fw-bold">{$attribute->Label()}</label>
 
-		<a class="update {if $type == CustomAttributeTypes::DATETIME}changeAttributeDateTime{else}changeAttribute{/if} link-primary"
+		<a class="update {if $type == CustomAttributeTypes::DATETIME}changeAttributeDateTime{elseif $usePopover}changeAttributeText{else}changeAttribute{/if} link-primary"
 			title="{translate key='Edit'}" href="#">
 			<span class="bi bi-pencil-square"></span>
 			<span class="visually-hidden">{translate key=Edit}</span>
@@ -38,192 +51,133 @@
 		data-source='[{ldelim}value:"1",text:"{translate key=Yes}"{rdelim}]' {/if}>
 		{if $type == CustomAttributeTypes::DATETIME}
 			{if $value != ''}{formatdate date=$value key=$AltFormat}{else}-{/if}
+		{elseif $type == CustomAttributeTypes::CHECKBOX}
+			{if $value == '1' || $value == 1}{translate key=Yes}{else}{translate key=No}{/if}
+		{elseif $type == CustomAttributeTypes::SELECT_LIST}
+			{if $value != ''}{$value|escape:'html'}{else}-{/if}
+		{elseif $usePopover}
+			{if $value != ''}{$value|escape:'html'}{else}-{/if}
 		{/if}
 	</span>
 
-	{if $type == CustomAttributeTypes::DATETIME}
-		<div class="d-none position-absolute border rounded bg-body shadow p-2 z-3 update" id="inlinePicker{$attributeId}">
+	{if $usePopover}
+		{include file='Admin/InlinePopoverPanel.tpl'
+			panelId="inlinePicker{$attributeId}"
+			panelType=$datatype
+			panelClass='inlineAttributePopoverPanel'
+			inputId=$popoverInputId
+			fieldType=$popoverFieldType
+			selectOptions=$attribute->PossibleValueList()
+			allowEmptyOption=$allowEmptyOption}
 
-			<input type="text" id="{$pickerControlId}" class="form-control form-control-sm" autocomplete="off">
-		</div>
-
-		{control type="DatePickerSetupControl" ControlId=$pickerControlId HasTimepicker=true Inline=true DefaultDate=$pickerValue AltFormat=$AltFormat}
+		{if $type == CustomAttributeTypes::DATETIME}
+			{control type="DatePickerSetupControl" ControlId=$popoverInputId HasTimepicker=true Inline=true DefaultDate=$pickerValue AltFormat=$AltFormat}
+		{/if}
 
 		<script>
 			(function() {
-				const display = document.getElementById('{$attributeId}');
-				const container = document.getElementById('inlinePicker{$attributeId}');
-				const input = document.getElementById('{$pickerControlId}');
-				const button = display.closest('.updateCustomAttribute').querySelector('.changeAttributeDateTime');
-				const namespace = 'picker{$attributeId}';
-				let pendingValue = display.dataset.value || '';
-				let isSaving = false;
+				const namespace = 'attr{$attributeId}';
+				const type = '{$type}';
+				const isDatetime = type == '{CustomAttributeTypes::DATETIME}';
+				const isCheckbox = type == '{CustomAttributeTypes::CHECKBOX}';
+				const isSelect = type == '{CustomAttributeTypes::SELECT_LIST}';
+				const selectDisplayMap = {
+					'': '-'
+					{if $type == CustomAttributeTypes::SELECT_LIST}
+						{foreach from=$attribute->PossibleValueList() item=v}
+							, '{$v|escape:'javascript'}': '{$v|escape:'javascript'}'
+						{/foreach}
+					{/if}
+				};
+				const displayEl = document.getElementById('{$attributeId}');
+				const editBtn = displayEl?.previousElementSibling;
 
-				// DatePickerSetupControl initializes flatpickr synchronously (whenFlatpickrReady
-				// runs inline callbacks immediately when window.flatpickr is already loaded).
-				// whenPickerReady is only a fallback for deferred script loading.
-				function whenPickerReady(cb, retries = 60) {
-					if (input._flatpickr) {
-						cb(input._flatpickr);
+				if (!editBtn) {
+					console.warn('InlinePopoverEditor: Could not find edit button for {$attributeId}');
+					return;
+				}
+
+				// Ensure InlinePopoverEditor class is loaded before using it
+				const initEditor = () => {
+					if (typeof InlinePopoverEditor === 'undefined') {
+						// Retry after a short delay
+						setTimeout(initEditor, 100);
 						return;
 					}
 
-					let attempts = 0;
-					const id = setInterval(() => {
-						if (input._flatpickr) {
-							clearInterval(id);
-							cb(input._flatpickr);
-							return;
-						}
-
-						attempts += 1;
-						if (attempts >= retries) {
-							clearInterval(id);
-							console.warn('InlineAttributeEdit: flatpickr not initialized for {$pickerControlId}');
-						}
-					}, 50);
-				}
-
-				function show() { container.classList.remove('d-none'); }
-
-				function hide() { container.classList.add('d-none'); }
-
-				function extractErrorMessage(errors) {
-					if (!errors) {
-						return 'Error saving value';
-					}
-
-					if (typeof errors === 'string') {
-						return errors;
-					}
-
-					if (Array.isArray(errors)) {
-						return errors.join('\n');
-					}
-
-					if (typeof errors === 'object') {
-						const messages = [];
-						for (const key in errors) {
-							if (!Object.prototype.hasOwnProperty.call(errors, key)) {
-								continue;
-							}
-
-							const value = errors[key];
-							if (Array.isArray(value)) {
-								messages.push(value.join(', '));
-							} else {
-								messages.push(String(value));
-							}
-						}
-
-						return messages.length ? messages.join('\n') : 'Error saving value';
-					}
-
-					return 'Error saving value';
-				}
-
-				function save(value) {
-					const body = new URLSearchParams({
-						pk: '{$id}',
-						name: '{FormKeys::ATTRIBUTE_PREFIX}{$attribute->Id()}',
-						value: value,
-						CSRF_TOKEN: (document.getElementById('csrf_token') || {}).value || ''
-					});
-
-					fetch("{$url}", { method: 'POST', body })
-					.then(function(response) {
-							if (!response.ok) {
-								throw new Error('HTTP ' + response.status);
-							}
-
-							return response.text();
-						})
-						.then(function(rawBody) {
-							const trimmedBody = rawBody ? rawBody.trim() : '';
-							if (trimmedBody !== '') {
-								let payload;
-								try {
-									payload = JSON.parse(trimmedBody);
-								} catch (e) {
-									payload = null;
-								}
-
-								if (payload && typeof payload === 'object' && payload.errors) {
-									throw new Error(extractErrorMessage(payload.errors));
+					const editor = new InlinePopoverEditor({
+						namespace: namespace,
+						useFlatpickr: isDatetime,
+						formatDisplay: isCheckbox ?
+							function(value) {
+								return value === '1' ? '{translate key=Yes}' : '{translate key=No}';
+							} :
+							(isSelect ?
+								function(value) {
+									const key = value == null ? '' : String(value);
+									return Object.prototype.hasOwnProperty.call(selectDisplayMap, key) ?
+										selectDisplayMap[key] :
+										(key === '' ? '-' : key);
+								} :
+								null),
+						buttonElement: editBtn,
+						buttonSelector: null, // Will be set manually below
+						displaySelector: '#{$attributeId}',
+						inputSelector: '#{$popoverInputId}',
+						containerSelector: '#inlinePicker{$attributeId}',
+						acceptBtnSelector: '#{$popoverInputId}_accept',
+						cancelBtnSelector: '#{$popoverInputId}_cancel',
+						saveUrl: '{$url}',
+						getPayload: function() {
+							return {
+								pk: '{$id}',
+								name: '{FormKeys::ATTRIBUTE_PREFIX}{$attribute->Id()}'
+							};
+						},
+						closeEditableControls: function() {},
+						onBeforeSave: function(value) {
+							if (isDatetime) {
+								const dateInput = document.querySelector('#{$popoverInputId}');
+								if (dateInput && dateInput._flatpickr) {
+									dateInput._flatpickr.close();
 								}
 							}
-
-							const text = value === '' ? '-' : (input._flatpickr?.altInput?.value || value);
-							display.textContent = text;
-							display.dataset.value = value;
-							pendingValue = value;
-							isSaving = false;
-							hide();
-						})
-						.catch(function(error) {
-							isSaving = false;
-							alert((error && error.message) ? error.message : 'Error saving value');
-						});
-				}
-
-				function saveIfChanged() {
-					if (isSaving) {
-						return;
-					}
-
-					const currentValue = display.dataset.value || '';
-					if (pendingValue === currentValue) {
-						hide();
-						return;
-					}
-
-					isSaving = true;
-					save(pendingValue);
-				}
-
-				whenPickerReady(function(picker) {
-					picker.config.onChange.push(function(_, dateStr) {
-						pendingValue = dateStr;
+						}
 					});
-				});
 
-				button.addEventListener('click', function(e) {
-					e.preventDefault();
-					e.stopPropagation();
-					pendingValue = display.dataset.value || '';
-					show();
-					if (input._flatpickr) {
-						input._flatpickr.setDate(display.dataset.value || null, false);
-					}
-				});
-
-				// Close on outside click / ESC — keyed registry avoids duplicate listeners
-				// when multiple pickers are rendered on the same page
-				if (!document._pickerHandlers) document._pickerHandlers = {};
-
-				if (document._pickerHandlers[namespace + '_mousedown']) {
-					document.removeEventListener('mousedown', document._pickerHandlers[namespace + '_mousedown']);
-				}
-				document._pickerHandlers[namespace + '_mousedown'] = function(e) {
-					if (container.classList.contains('d-none')) return;
-					if (container.contains(e.target) || button.contains(e.target)) return;
-					saveIfChanged();
+					{if $type == CustomAttributeTypes::DATETIME}
+						// Populate datetime input with formatted value
+						setTimeout(() => {
+							const input = document.querySelector('#{$popoverInputId}');
+							if (input && !input._flatpickr) {
+								input.value = '{$pickerValue}';
+							}
+						}, 100);
+					{elseif $type == CustomAttributeTypes::CHECKBOX}
+						const checkboxInput = document.querySelector('#{$popoverInputId}');
+						if (checkboxInput) {
+							checkboxInput.checked = '{$pickerValue|escape:'javascript'}' === '1';
+						}
+					{elseif $type == CustomAttributeTypes::SELECT_LIST}
+						const selectInput = document.querySelector('#{$popoverInputId}');
+						if (selectInput) {
+							selectInput.value = '{$pickerValue|escape:'javascript'}';
+						}
+					{else}
+						// Populate text/textarea with current value
+						const textInput = document.querySelector('#{$popoverInputId}');
+						if (textInput) {
+							textInput.value = '{$value|escape:'javascript'}';
+						}
+					{/if}
 				};
-				document.addEventListener('mousedown', document._pickerHandlers[namespace + '_mousedown']);
 
-				if (document._pickerHandlers[namespace + '_keydown']) {
-					document.removeEventListener('keydown', document._pickerHandlers[namespace + '_keydown']);
+				// Try to initialize immediately, or wait for class to be defined
+				if (document.readyState === 'loading') {
+					document.addEventListener('DOMContentLoaded', initEditor);
+				} else {
+					initEditor();
 				}
-				document._pickerHandlers[namespace + '_keydown'] = function(e) {
-					if (e.key !== 'Escape') return;
-					if (container.classList.contains('d-none')) return;
-					pendingValue = display.dataset.value || '';
-					if (input._flatpickr) {
-						input._flatpickr.setDate(display.dataset.value || null, false);
-					}
-					hide();
-				};
-				document.addEventListener('keydown', document._pickerHandlers[namespace + '_keydown']);
 			})();
 		</script>
 	{/if}

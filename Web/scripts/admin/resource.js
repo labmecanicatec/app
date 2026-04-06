@@ -1,3 +1,5 @@
+/* global InlinePopoverEditor */
+
 function ResourceManagement(opts) {
   var options = opts;
 
@@ -113,10 +115,512 @@ function ResourceManagement(opts) {
   var reasons = [];
 
   ResourceManagement.prototype.init = function () {
+    this.initializeInlineEditors();
     this.bindEventListeners();
     this.configureAsyncForms();
   };
 
+  ResourceManagement.prototype.initializeInlineEditors = function () {
+    if (typeof InlinePopoverEditor === 'undefined') {
+      return;
+    }
+
+    elements.resourcesList.find('.resourceDetails').each(function () {
+      var resourceDetails = this;
+      if (!resourceDetails.__inlineEditorInit) {
+        resourceDetails.__inlineEditorInit = {};
+      }
+      initializeNameEditor(resourceDetails);
+      initializeScheduleEditor(resourceDetails);
+      initializeResourceTypeEditor(resourceDetails);
+      initializeSortOrderEditor(resourceDetails);
+      initializeLocationEditor(resourceDetails);
+      initializeContactEditor(resourceDetails);
+      initializeResourceAdminEditor(resourceDetails);
+      initializeDescriptionEditor(resourceDetails);
+      initializeNotesEditor(resourceDetails);
+    });
+  };
+
+  var initializeNameEditor = function (resourceDetails) {
+    var resourceId = resourceDetails.getAttribute('data-resourceId');
+    if (!resourceId) {
+      return;
+    }
+
+    var namespace = 'resourceName' + resourceId;
+    if (resourceDetails.__inlineEditorInit[namespace]) {
+      return;
+    }
+
+    var displayId = 'inlineName' + resourceId;
+    var inputId = 'popoverInput' + displayId;
+    var editBtnId = 'editBtn' + displayId;
+    var displayEl = resourceDetails.querySelector('#' + displayId);
+    var inputEl = resourceDetails.querySelector('#' + inputId);
+    var editBtn = resourceDetails.querySelector('#' + editBtnId);
+
+    if (!displayEl || !inputEl || !editBtn) {
+      return;
+    }
+
+    var updateName = function (value) {
+      var name = value == null ? '' : String(value);
+      displayEl.textContent = name;
+      displayEl.dataset.value = name;
+
+      var headerButton = resourceDetails.closest('.resourceItem')?.querySelector('.accordion-header .accordion-button');
+      if (headerButton) {
+        headerButton.textContent = name;
+      }
+
+      if (resources[resourceId]) {
+        resources[resourceId].name = name;
+      }
+    };
+
+    editBtn.addEventListener('click', function () {
+      inputEl.value = displayEl.dataset.value || '';
+    });
+
+    new InlinePopoverEditor({
+      namespace: namespace,
+      useFlatpickr: false,
+      buttonElement: editBtn,
+      buttonSelector: null,
+      displaySelector: '#' + displayId,
+      inputSelector: '#' + inputId,
+      containerSelector: '#inlinePicker' + displayId,
+      acceptBtnSelector: '#' + inputId + '_accept',
+      cancelBtnSelector: '#' + inputId + '_cancel',
+      saveUrl: options.submitUrl + '?action=' + options.changeNameAction,
+      getPayload: function () {
+        return {
+          pk: resourceId,
+          name: options.resourceNameKey,
+        };
+      },
+      normalizeValue: function (value) {
+        return value == null ? '' : String(value).trim();
+      },
+      onAfterSave: function (value) {
+        updateName(value);
+      },
+    });
+
+    inputEl.value = displayEl.dataset.value || '';
+    resourceDetails.__inlineEditorInit[namespace] = true;
+  };
+
+  var initializeScheduleEditor = function (resourceDetails) {
+    var resourceId = resourceDetails.getAttribute('data-resourceId');
+    if (!resourceId) {
+      return;
+    }
+
+    var namespace = 'resourceSchedule' + resourceId;
+    if (resourceDetails.__inlineEditorInit[namespace]) {
+      return;
+    }
+
+    var displayId = 'inlineSchedule' + resourceId;
+    var inputId = 'popoverInput' + displayId;
+    var editBtnId = 'editBtn' + displayId;
+    var displayEl = resourceDetails.querySelector('#' + displayId);
+    var inputEl = resourceDetails.querySelector('#' + inputId);
+    var editBtn = resourceDetails.querySelector('#' + editBtnId);
+
+    if (!displayEl || !inputEl || !editBtn) {
+      return;
+    }
+
+    editBtn.addEventListener('click', function () {
+      inputEl.value = String(displayEl.dataset.value || '');
+    });
+
+    new InlinePopoverEditor({
+      namespace: namespace,
+      useFlatpickr: false,
+      buttonElement: editBtn,
+      buttonSelector: null,
+      displaySelector: '#' + displayId,
+      inputSelector: '#' + inputId,
+      containerSelector: '#inlinePicker' + displayId,
+      acceptBtnSelector: '#' + inputId + '_accept',
+      cancelBtnSelector: '#' + inputId + '_cancel',
+      saveUrl: options.submitUrl + '?action=' + options.changeScheduleAction,
+      getPayload: function () {
+        return {
+          pk: resourceId,
+          name: options.resourceScheduleKey,
+        };
+      },
+      normalizeValue: function (value) {
+        return String(value == null ? '' : value);
+      },
+      formatDisplay: function (value) {
+        var key = String(value == null ? '' : value);
+        if (options.scheduleNames && Object.prototype.hasOwnProperty.call(options.scheduleNames, key)) {
+          return options.scheduleNames[key];
+        }
+        return key;
+      },
+      onAfterSave: function (value) {
+        if (resources[resourceId]) {
+          resources[resourceId].scheduleId = String(value == null ? '' : value);
+        }
+      },
+    });
+
+    inputEl.value = String(displayEl.dataset.value || '');
+    resourceDetails.__inlineEditorInit[namespace] = true;
+  };
+
+  var initializeResourceTypeEditor = function (resourceDetails) {
+    var resourceId = resourceDetails.getAttribute('data-resourceId');
+    if (!resourceId) {
+      return;
+    }
+
+    var namespace = 'resourceType' + resourceId;
+    if (resourceDetails.__inlineEditorInit[namespace]) {
+      return;
+    }
+
+    var displayId = 'inlineResourceType' + resourceId;
+    var inputId = 'popoverInput' + displayId;
+    var editBtnId = 'editBtn' + displayId;
+    var displayEl = resourceDetails.querySelector('#' + displayId);
+    var inputEl = resourceDetails.querySelector('#' + inputId);
+    var editBtn = resourceDetails.querySelector('#' + editBtnId);
+
+    if (!displayEl || !inputEl || !editBtn) {
+      return;
+    }
+
+    editBtn.addEventListener('click', function () {
+      inputEl.value = String(displayEl.dataset.value || '0');
+    });
+
+    new InlinePopoverEditor({
+      namespace: namespace,
+      useFlatpickr: false,
+      buttonElement: editBtn,
+      buttonSelector: null,
+      displaySelector: '#' + displayId,
+      inputSelector: '#' + inputId,
+      containerSelector: '#inlinePicker' + displayId,
+      acceptBtnSelector: '#' + inputId + '_accept',
+      cancelBtnSelector: '#' + inputId + '_cancel',
+      saveUrl: options.submitUrl + '?action=' + options.changeResourceTypeAction,
+      getPayload: function () {
+        return {
+          pk: resourceId,
+          name: options.resourceTypeKey,
+        };
+      },
+      normalizeValue: function (value) {
+        var normalized = String(value == null ? '' : value);
+        return normalized === '' ? '0' : normalized;
+      },
+      formatDisplay: function (value) {
+        var key = String(value == null ? '' : value);
+        var normalized = key === '' ? '0' : key;
+        if (options.resourceTypeNames && Object.prototype.hasOwnProperty.call(options.resourceTypeNames, normalized)) {
+          return options.resourceTypeNames[normalized];
+        }
+        return options.noResourceTypeLabel;
+      },
+      onAfterSave: function (value) {
+        if (resources[resourceId]) {
+          resources[resourceId].resourceTypeId = String(value == null ? '0' : value);
+        }
+      },
+    });
+
+    inputEl.value = String(displayEl.dataset.value || '0');
+    resourceDetails.__inlineEditorInit[namespace] = true;
+  };
+
+  var initializeSortOrderEditor = function (resourceDetails) {
+    var resourceId = resourceDetails.getAttribute('data-resourceId');
+    if (!resourceId) {
+      return;
+    }
+
+    var namespace = 'resourceSortOrder' + resourceId;
+    if (resourceDetails.__inlineEditorInit[namespace]) {
+      return;
+    }
+
+    var displayId = 'inlineSortOrder' + resourceId;
+    var inputId = 'popoverInput' + displayId;
+    var editBtnId = 'editBtn' + displayId;
+    var displayEl = resourceDetails.querySelector('#' + displayId);
+    var inputEl = resourceDetails.querySelector('#' + inputId);
+    var editBtn = resourceDetails.querySelector('#' + editBtnId);
+
+    if (!displayEl || !inputEl || !editBtn) {
+      return;
+    }
+
+    var normalizeSortOrder = function (value) {
+      var parsed = Number.parseInt(String(value == null ? '' : value), 10);
+      if (Number.isNaN(parsed)) {
+        return '0';
+      }
+      if (parsed < 0) {
+        return '0';
+      }
+      if (parsed > 999) {
+        return '999';
+      }
+      return String(parsed);
+    };
+
+    editBtn.addEventListener('click', function () {
+      inputEl.value = normalizeSortOrder(displayEl.dataset.value || '0');
+    });
+
+    new InlinePopoverEditor({
+      namespace: namespace,
+      useFlatpickr: false,
+      buttonElement: editBtn,
+      buttonSelector: null,
+      displaySelector: '#' + displayId,
+      inputSelector: '#' + inputId,
+      containerSelector: '#inlinePicker' + displayId,
+      acceptBtnSelector: '#' + inputId + '_accept',
+      cancelBtnSelector: '#' + inputId + '_cancel',
+      saveUrl: options.submitUrl + '?action=' + options.changeSortOrderAction,
+      getPayload: function () {
+        return {
+          pk: resourceId,
+          name: options.sortOrderKey,
+        };
+      },
+      normalizeValue: function (value) {
+        return normalizeSortOrder(value);
+      },
+      formatDisplay: function (value) {
+        return normalizeSortOrder(value);
+      },
+      onAfterSave: function (value) {
+        var normalized = normalizeSortOrder(value);
+        if (resources[resourceId]) {
+          resources[resourceId].sortOrder = normalized;
+        }
+      },
+    });
+
+    inputEl.value = normalizeSortOrder(displayEl.dataset.value || '0');
+    resourceDetails.__inlineEditorInit[namespace] = true;
+  };
+
+  var initializeLocationEditor = function (resourceDetails) {
+    var resourceId = resourceDetails.getAttribute('data-resourceId');
+    if (!resourceId) {
+      return;
+    }
+
+    var namespace = 'resourceLocation' + resourceId;
+    if (resourceDetails.__inlineEditorInit[namespace]) {
+      return;
+    }
+
+    var displayId = 'inlineLocation' + resourceId;
+    var inputId = 'popoverInput' + displayId;
+    var editBtnId = 'editBtn' + displayId;
+    var displayEl = resourceDetails.querySelector('#' + displayId);
+    var inputEl = resourceDetails.querySelector('#' + inputId);
+    var editBtn = resourceDetails.querySelector('#' + editBtnId);
+
+    if (!displayEl || !inputEl || !editBtn) {
+      return;
+    }
+
+    editBtn.addEventListener('click', function () {
+      inputEl.value = displayEl.dataset.value || '';
+    });
+
+    new InlinePopoverEditor({
+      namespace: namespace,
+      useFlatpickr: false,
+      buttonElement: editBtn,
+      buttonSelector: null,
+      displaySelector: '#' + displayId,
+      inputSelector: '#' + inputId,
+      containerSelector: '#inlinePicker' + displayId,
+      acceptBtnSelector: '#' + inputId + '_accept',
+      cancelBtnSelector: '#' + inputId + '_cancel',
+      saveUrl: options.submitUrl + '?action=' + options.changeLocationAction,
+      getPayload: function () {
+        return {
+          pk: resourceId,
+          name: options.resourceLocationKey,
+        };
+      },
+      normalizeValue: function (value) {
+        return value == null ? '' : String(value).trim();
+      },
+      formatDisplay: function (value) {
+        var normalized = value == null ? '' : String(value).trim();
+        return normalized === '' ? options.noLocationLabel : normalized;
+      },
+      onAfterSave: function (value) {
+        var normalized = value == null ? '' : String(value).trim();
+        if (resources[resourceId]) {
+          resources[resourceId].location = normalized;
+        }
+      },
+    });
+
+    inputEl.value = displayEl.dataset.value || '';
+    resourceDetails.__inlineEditorInit[namespace] = true;
+  };
+
+  var initializeContactEditor = function (resourceDetails) {
+    var resourceId = resourceDetails.getAttribute('data-resourceId');
+    if (!resourceId) {
+      return;
+    }
+
+    var namespace = 'resourceContact' + resourceId;
+    if (resourceDetails.__inlineEditorInit[namespace]) {
+      return;
+    }
+
+    var displayId = 'inlineContact' + resourceId;
+    var inputId = 'popoverInput' + displayId;
+    var editBtnId = 'editBtn' + displayId;
+    var displayEl = resourceDetails.querySelector('#' + displayId);
+    var inputEl = resourceDetails.querySelector('#' + inputId);
+    var editBtn = resourceDetails.querySelector('#' + editBtnId);
+
+    if (!displayEl || !inputEl || !editBtn) {
+      return;
+    }
+
+    if (options.resourceContactIsUser && window.jQuery && window.jQuery.fn && window.jQuery.fn.userAutoComplete) {
+      var $input = window.jQuery(inputEl);
+      if (!$input.data('inlineContactAutocompleteInit')) {
+        $input.userAutoComplete(options.userAutocompleteUrl);
+        $input.data('inlineContactAutocompleteInit', true);
+      }
+    }
+
+    editBtn.addEventListener('click', function () {
+      inputEl.value = displayEl.dataset.value || '';
+    });
+
+    new InlinePopoverEditor({
+      namespace: namespace,
+      useFlatpickr: false,
+      buttonElement: editBtn,
+      buttonSelector: null,
+      displaySelector: '#' + displayId,
+      inputSelector: '#' + inputId,
+      containerSelector: '#inlinePicker' + displayId,
+      acceptBtnSelector: '#' + inputId + '_accept',
+      cancelBtnSelector: '#' + inputId + '_cancel',
+      saveUrl: options.submitUrl + '?action=' + options.changeContactAction,
+      getPayload: function () {
+        return {
+          pk: resourceId,
+          name: options.resourceContactKey,
+        };
+      },
+      normalizeValue: function (value) {
+        return value == null ? '' : String(value).trim();
+      },
+      formatDisplay: function (value) {
+        var normalized = value == null ? '' : String(value).trim();
+        return normalized === '' ? options.noContactLabel : normalized;
+      },
+      onAfterSave: function (value) {
+        var normalized = value == null ? '' : String(value).trim();
+        if (resources[resourceId]) {
+          resources[resourceId].contact = normalized;
+        }
+      },
+    });
+
+    inputEl.value = displayEl.dataset.value || '';
+    resourceDetails.__inlineEditorInit[namespace] = true;
+  };
+
+  var initializeResourceAdminEditor = function (resourceDetails) {
+    var resourceId = resourceDetails.getAttribute('data-resourceId');
+    if (!resourceId) {
+      return;
+    }
+
+    var namespace = 'resourceAdmin' + resourceId;
+    if (resourceDetails.__inlineEditorInit[namespace]) {
+      return;
+    }
+
+    var displayId = 'inlineResourceAdmin' + resourceId;
+    var inputId = 'popoverInput' + displayId;
+    var editBtnId = 'editBtn' + displayId;
+    var displayEl = resourceDetails.querySelector('#' + displayId);
+    var inputEl = resourceDetails.querySelector('#' + inputId);
+    var editBtn = resourceDetails.querySelector('#' + editBtnId);
+
+    if (!displayEl || !inputEl || !editBtn) {
+      return;
+    }
+
+    var normalizeAdminValue = function (value) {
+      var normalized = String(value == null ? '' : value).trim();
+      return normalized === '' ? '0' : normalized;
+    };
+
+    editBtn.addEventListener('click', function () {
+      inputEl.value = normalizeAdminValue(displayEl.dataset.value || '0');
+    });
+
+    new InlinePopoverEditor({
+      namespace: namespace,
+      useFlatpickr: false,
+      buttonElement: editBtn,
+      buttonSelector: null,
+      displaySelector: '#' + displayId,
+      inputSelector: '#' + inputId,
+      containerSelector: '#inlinePicker' + displayId,
+      acceptBtnSelector: '#' + inputId + '_accept',
+      cancelBtnSelector: '#' + inputId + '_cancel',
+      saveUrl: options.submitUrl + '?action=' + options.changeResourceAdminAction,
+      getPayload: function () {
+        return {
+          pk: resourceId,
+          name: options.resourceAdminKey,
+        };
+      },
+      normalizeValue: function (value) {
+        return normalizeAdminValue(value);
+      },
+      formatDisplay: function (value) {
+        var normalized = normalizeAdminValue(value);
+        if (
+          options.resourceAdminNames &&
+          Object.prototype.hasOwnProperty.call(options.resourceAdminNames, normalized)
+        ) {
+          return options.resourceAdminNames[normalized];
+        }
+        return options.noResourceAdminLabel;
+      },
+      onAfterSave: function (value) {
+        var normalized = normalizeAdminValue(value);
+        if (resources[resourceId]) {
+          resources[resourceId].adminGroupId = normalized;
+        }
+      },
+    });
+
+    inputEl.value = normalizeAdminValue(displayEl.dataset.value || '0');
+    resourceDetails.__inlineEditorInit[namespace] = true;
+  };
   ResourceManagement.prototype.bindEventListeners = function () {
     elements.resourcesList.on('click', '.update', function (e) {
       e.preventDefault();
@@ -167,8 +671,6 @@ function ResourceManagement(opts) {
       elements.reservationColor.val('');
       elements.colorForm.submit();
     });
-
-    this.BindXEditableListeners();
 
     //modals
     elements.resourcesList.on('click', '.adminButton', function (e) {
@@ -440,56 +942,236 @@ function ResourceManagement(opts) {
     });
   };
 
-  ResourceManagement.prototype.BindXEditableListeners = function () {
-    elements.resourcesList.on('click', '.renameButton', function (e) {
-      e.stopPropagation();
-      $(this).closest('.resourceDetails').find('.resourceNameField').editable('toggle');
+  var initializeDescriptionEditor = function (resourceDetails) {
+    var resourceId = resourceDetails.getAttribute('data-resourceId');
+    if (!resourceId) {
+      return;
+    }
+
+    var namespace = 'resourceDescription' + resourceId;
+    if (resourceDetails.__inlineEditorInit[namespace]) {
+      return;
+    }
+
+    var displayId = 'inlineDescription' + resourceId;
+    var inputId = 'popoverInput' + displayId;
+    var editBtnId = 'editBtn' + displayId;
+    var displayEl = resourceDetails.querySelector('#' + displayId);
+    var inputEl = resourceDetails.querySelector('#' + inputId);
+    var editBtn = resourceDetails.querySelector('#' + editBtnId);
+
+    if (!displayEl || !inputEl || !editBtn) {
+      return;
+    }
+
+    var $input = null;
+
+    var sanitizeHtml = function (value) {
+      var html = value == null ? '' : String(value);
+      if (window.DOMPurify && typeof window.DOMPurify.sanitize === 'function') {
+        return window.DOMPurify.sanitize(html);
+      }
+      return html;
+    };
+
+    if (window.jQuery && window.jQuery.fn && window.jQuery.fn.trumbowyg) {
+      $input = window.jQuery(inputEl);
+      if (!$input.data('trumbowyg')) {
+        $input.trumbowyg({
+          tagsToRemove: ['script', 'link'],
+          removeformatPasted: true,
+          urlProtocol: true,
+          btns: [['bold', 'italic', 'underline'], ['link'], ['unorderedList', 'orderedList']],
+        });
+      }
+
+      $input.on('tbwchange', function () {
+        inputEl.value = sanitizeHtml($input.trumbowyg('html'));
+      });
+    }
+
+    editBtn.addEventListener('click', function () {
+      var value = displayEl.dataset.value || '';
+      if ($input && $input.data('trumbowyg')) {
+        $input.trumbowyg('html', value);
+        inputEl.value = sanitizeHtml(value);
+      } else {
+        inputEl.value = value;
+      }
     });
 
-    elements.resourcesList.on('click', '.changeScheduleButton', function (e) {
-      e.stopPropagation();
-      $(this).closest('.resourceDetails').find('.scheduleName').editable('toggle');
+    new InlinePopoverEditor({
+      namespace: namespace,
+      useFlatpickr: false,
+      buttonElement: editBtn,
+      buttonSelector: null,
+      displaySelector: '#' + displayId,
+      inputSelector: '#' + inputId,
+      containerSelector: '#inlinePicker' + displayId,
+      acceptBtnSelector: '#' + inputId + '_accept',
+      cancelBtnSelector: '#' + inputId + '_cancel',
+      saveUrl: options.submitUrl + '?action=' + options.changeDescriptionAction,
+      getPayload: function () {
+        return {
+          pk: resourceId,
+          name: options.resourceDescriptionKey,
+        };
+      },
+      normalizeValue: function (value) {
+        if ($input && $input.data('trumbowyg')) {
+          return sanitizeHtml($input.trumbowyg('html'));
+        }
+        return sanitizeHtml(value);
+      },
+      formatDisplay: function (value) {
+        var cleaned = sanitizeHtml(value);
+        return cleaned === '' ? options.noDescriptionLabel : cleaned;
+      },
+      onAfterSave: function (value) {
+        var cleaned = sanitizeHtml(value);
+        if (cleaned === '') {
+          displayEl.textContent = options.noDescriptionLabel;
+          displayEl.dataset.value = '';
+          if ($input && $input.data('trumbowyg')) {
+            $input.trumbowyg('html', '');
+          }
+          return;
+        }
+
+        displayEl.innerHTML = cleaned;
+        displayEl.dataset.value = cleaned;
+
+        if ($input && $input.data('trumbowyg')) {
+          $input.trumbowyg('html', cleaned);
+        }
+      },
     });
 
-    elements.resourcesList.on('click', '.changeResourceType', function (e) {
-      e.stopPropagation();
-      $(this).closest('.resourceDetails').find('.resourceTypeName').editable('toggle');
+    var currentValue = displayEl.dataset.value || '';
+    if ($input && $input.data('trumbowyg')) {
+      $input.trumbowyg('html', currentValue);
+      inputEl.value = sanitizeHtml(currentValue);
+    } else {
+      inputEl.value = currentValue;
+    }
+
+    resourceDetails.__inlineEditorInit[namespace] = true;
+  };
+
+  var initializeNotesEditor = function (resourceDetails) {
+    var resourceId = resourceDetails.getAttribute('data-resourceId');
+    if (!resourceId) {
+      return;
+    }
+
+    var namespace = 'resourceNotes' + resourceId;
+    if (resourceDetails.__inlineEditorInit[namespace]) {
+      return;
+    }
+
+    var displayId = 'inlineNotes' + resourceId;
+    var inputId = 'popoverInput' + displayId;
+    var editBtnId = 'editBtn' + displayId;
+    var displayEl = resourceDetails.querySelector('#' + displayId);
+    var inputEl = resourceDetails.querySelector('#' + inputId);
+    var editBtn = resourceDetails.querySelector('#' + editBtnId);
+
+    if (!displayEl || !inputEl || !editBtn) {
+      return;
+    }
+
+    var $input = null;
+
+    var sanitizeHtml = function (value) {
+      var html = value == null ? '' : String(value);
+      if (window.DOMPurify && typeof window.DOMPurify.sanitize === 'function') {
+        return window.DOMPurify.sanitize(html);
+      }
+      return html;
+    };
+
+    if (window.jQuery && window.jQuery.fn && window.jQuery.fn.trumbowyg) {
+      $input = window.jQuery(inputEl);
+      if (!$input.data('trumbowyg')) {
+        $input.trumbowyg({
+          tagsToRemove: ['script', 'link'],
+          removeformatPasted: true,
+          urlProtocol: true,
+          btns: [['bold', 'italic', 'underline'], ['link'], ['unorderedList', 'orderedList']],
+        });
+      }
+
+      $input.on('tbwchange', function () {
+        inputEl.value = sanitizeHtml($input.trumbowyg('html'));
+      });
+    }
+
+    editBtn.addEventListener('click', function () {
+      var value = displayEl.dataset.value || '';
+      if ($input && $input.data('trumbowyg')) {
+        $input.trumbowyg('html', value);
+        inputEl.value = sanitizeHtml(value);
+      } else {
+        inputEl.value = value;
+      }
     });
 
-    elements.resourcesList.on('click', '.changeSortOrder', function (e) {
-      e.stopPropagation();
-      $(this).closest('.resourceDetails').find('.sortOrderValue').editable('toggle');
+    new InlinePopoverEditor({
+      namespace: namespace,
+      useFlatpickr: false,
+      buttonElement: editBtn,
+      buttonSelector: null,
+      displaySelector: '#' + displayId,
+      inputSelector: '#' + inputId,
+      containerSelector: '#inlinePicker' + displayId,
+      acceptBtnSelector: '#' + inputId + '_accept',
+      cancelBtnSelector: '#' + inputId + '_cancel',
+      saveUrl: options.submitUrl + '?action=' + options.changeNotesAction,
+      getPayload: function () {
+        return {
+          pk: resourceId,
+          name: options.resourceNotesKey,
+        };
+      },
+      normalizeValue: function (value) {
+        if ($input && $input.data('trumbowyg')) {
+          return sanitizeHtml($input.trumbowyg('html'));
+        }
+        return sanitizeHtml(value);
+      },
+      formatDisplay: function (value) {
+        var cleaned = sanitizeHtml(value);
+        return cleaned === '' ? options.noNotesLabel : cleaned;
+      },
+      onAfterSave: function (value) {
+        var cleaned = sanitizeHtml(value);
+        if (cleaned === '') {
+          displayEl.textContent = options.noNotesLabel;
+          displayEl.dataset.value = '';
+          if ($input && $input.data('trumbowyg')) {
+            $input.trumbowyg('html', '');
+          }
+          return;
+        }
+
+        displayEl.innerHTML = cleaned;
+        displayEl.dataset.value = cleaned;
+
+        if ($input && $input.data('trumbowyg')) {
+          $input.trumbowyg('html', cleaned);
+        }
+      },
     });
 
-    elements.resourcesList.on('click', '.changeLocation', function (e) {
-      e.stopPropagation();
-      $(this).closest('.resourceDetails').find('.locationValue').editable('toggle');
-    });
+    var currentValue = displayEl.dataset.value || '';
+    if ($input && $input.data('trumbowyg')) {
+      $input.trumbowyg('html', currentValue);
+      inputEl.value = sanitizeHtml(currentValue);
+    } else {
+      inputEl.value = currentValue;
+    }
 
-    elements.resourcesList.on('click', '.changeContact', function (e) {
-      e.stopPropagation();
-      $(this).closest('.resourceDetails').find('.contactValue').editable('toggle');
-    });
-
-    elements.resourcesList.on('click', '.changeDescription', function (e) {
-      e.stopPropagation();
-      $(this).closest('.resourceDetails').find('.descriptionValue').editable('toggle');
-    });
-
-    elements.resourcesList.on('click', '.changeNotes', function (e) {
-      e.stopPropagation();
-      $(this).closest('.resourceDetails').find('.notesValue').editable('toggle');
-    });
-
-    elements.resourcesList.on('click', '.changeResourceAdmin', function (e) {
-      e.stopPropagation();
-      $(this).closest('.resourceDetails').find('.resourceAdminValue').editable('toggle');
-    });
-
-    elements.resourcesList.on('click', '.changeAttribute', function (e) {
-      e.stopPropagation();
-      $(e.target).closest('.updateCustomAttribute').find('.inlineAttribute').editable('toggle');
-    });
+    resourceDetails.__inlineEditorInit[namespace] = true;
   };
 
   ResourceManagement.prototype.configureAsyncForms = function () {

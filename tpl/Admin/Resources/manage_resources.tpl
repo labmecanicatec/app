@@ -1,4 +1,4 @@
-{include file='globalheader.tpl' InlineEdit=true DataTable=true Trumbowyg=true}
+{include file='globalheader.tpl' DataTable=true Trumbowyg=true}
 
 <div id="page-manage-resources" class="admin-page">
 	<div class="clearfix border-bottom mb-3">
@@ -195,6 +195,33 @@
 				<tbody>
 					{foreach from=$Resources item=resource}
 						{assign var=id value=$resource->GetResourceId()}
+						{assign var=nameId value="inlineName`$id`"}
+						{assign var=nameInputId value="popoverInput`$nameId`"}
+						{assign var=nameEditBtnId value="editBtn`$nameId`"}
+						{assign var=scheduleId value="inlineSchedule`$id`"}
+						{assign var=scheduleInputId value="popoverInput`$scheduleId`"}
+						{assign var=scheduleEditBtnId value="editBtn`$scheduleId`"}
+						{assign var=resourceTypeId value="inlineResourceType`$id`"}
+						{assign var=resourceTypeInputId value="popoverInput`$resourceTypeId`"}
+						{assign var=resourceTypeEditBtnId value="editBtn`$resourceTypeId`"}
+						{assign var=sortOrderId value="inlineSortOrder`$id`"}
+						{assign var=sortOrderInputId value="popoverInput`$sortOrderId`"}
+						{assign var=sortOrderEditBtnId value="editBtn`$sortOrderId`"}
+						{assign var=locationId value="inlineLocation`$id`"}
+						{assign var=locationInputId value="popoverInput`$locationId`"}
+						{assign var=locationEditBtnId value="editBtn`$locationId`"}
+						{assign var=contactId value="inlineContact`$id`"}
+						{assign var=contactInputId value="popoverInput`$contactId`"}
+						{assign var=contactEditBtnId value="editBtn`$contactId`"}
+						{assign var=resourceAdminId value="inlineResourceAdmin`$id`"}
+						{assign var=resourceAdminInputId value="popoverInput`$resourceAdminId`"}
+						{assign var=resourceAdminEditBtnId value="editBtn`$resourceAdminId`"}
+						{assign var=descriptionId value="inlineDescription`$id`"}
+						{assign var=descriptionInputId value="popoverInput`$descriptionId`"}
+						{assign var=descriptionEditBtnId value="editBtn`$descriptionId`"}
+						{assign var=notesId value="inlineNotes`$id`"}
+						{assign var=notesInputId value="popoverInput`$notesId`"}
+						{assign var=notesEditBtnId value="editBtn`$notesId`"}
 						<tr>
 							<td>
 								<div class="resourceItem accordion-item shadow mb-2">
@@ -279,12 +306,13 @@
 														<div class="col d-block">
 															<div>
 																<div class="resourceNameField title fs-5 fw-bold me-1"
-																	data-type="text" data-pk="{$id}"
-																	data-name="{FormKeys::RESOURCE_NAME}">
-																	{$resource->GetName()}</div>
+																	id="{$nameId}"
+																	data-value="{$resource->GetName()|escape:'html'}">
+																	{$resource->GetName()|escape:'html'}</div>
 																<div>
 																	<a class="update renameButton link-primary me-1"
-																		href="#" title="{translate key='Rename'}">
+																		href="#" title="{translate key='Rename'}"
+																		id="{$nameEditBtnId}">
 																		<span
 																			class="visually-hidden">{translate key=Rename}</span>
 																		<i class="bi bi-pencil-square me-1"></i></a>
@@ -302,6 +330,11 @@
 																		<i class="bi bi-trash3-fill icon delete"></i>
 																	</a>
 																</div>
+																{include file='Admin/InlinePopoverPanel.tpl' panelId="inlinePicker{$nameId}"
+																panelType='text'
+																panelClass='inlineAttributePopoverPanel'
+																inputId=$nameInputId
+																fieldType='text'}
 															</div>
 															<div>
 																<label class="inline fw-bold">ResourceId:</label>
@@ -311,16 +344,16 @@
 																<label
 																	class="inline fw-bold">{translate key='Status'}</label>
 																{if $resource->IsAvailable()}
-																	<a class="update changeStatus link-primary" href="#"
-																		data-popover-content="#statusDialog">{translate key='Available'}</a>
+																	<a class="update changeStatus link-primary"
+																		href="#">{translate key='Available'}</a>
 																	<i class="bi bi-check-circle-fill text-success"></i>
 																{elseif $resource->IsUnavailable()}
-																	<a class="update changeStatus link-primary" href="#"
-																		data-popover-content="#statusDialog">{translate key='Unavailable'}</a>
+																	<a class="update changeStatus link-primary"
+																		href="#">{translate key='Unavailable'}</a>
 																	<i class="bi bi-exclamation-circle-fill text-warning"></i>
 																{else}
-																	<a class="update changeStatus link-primary" href="#"
-																		data-popover-content="#statusDialog">{translate key='Hidden'}</a>
+																	<a class="update changeStatus link-primary"
+																		href="#">{translate key='Hidden'}</a>
 																	<i class="bi bi-x-circle-fill text-danger"></i>
 																{/if}
 																{if array_key_exists($resource->GetStatusReasonId(),$StatusReasons)}
@@ -331,21 +364,26 @@
 															<div>
 																<label
 																	class="inline fw-bold">{translate key='Schedule'}</label>
-																<span class="propertyValue scheduleName" data-type="select"
-																	data-pk="{$id}"
-																	data-value="{$resource->GetScheduleId()}"
-																	data-name="{FormKeys::SCHEDULE_ID}">{$Schedules[$resource->GetScheduleId()]}</span>
+																<span class="propertyValue scheduleName" id="{$scheduleId}"
+																	data-value="{$resource->GetScheduleId()}">{$Schedules[$resource->GetScheduleId()]}</span>
 																<a class="update changeScheduleButton link-primary"
-																	title="{translate key='Edit'}" href="#"><span
+																	title="{translate key='Edit'}" href="#"
+																	id="{$scheduleEditBtnId}"><span
 																		class="bi bi-pencil-square"></span></a>
+																{include file='Admin/InlinePopoverPanel.tpl' panelId="inlinePicker{$scheduleId}"
+																panelType='select'
+																panelClass='inlineAttributePopoverPanel'
+																inputId=$scheduleInputId
+																fieldType='select'
+																selectOptionsMap=$Schedules
+																}
 															</div>
 															<div>
 																<label
 																	class="inline fw-bold">{translate key='ResourceType'}</label>
 																<span class="propertyValue resourceTypeName"
-																	data-type="select" data-pk="{$id}"
-																	data-value="{$resource->GetResourceTypeId()}"
-																	data-name="{FormKeys::RESOURCE_TYPE_ID}">
+																	id="{$resourceTypeId}"
+																	data-value="{$resource->GetResourceTypeId()}">
 																	{if $resource->HasResourceType()}
 																		{$ResourceTypes[$resource->GetResourceTypeId()]->Name()}
 																	{else}
@@ -353,33 +391,55 @@
 																	{/if}
 																</span>
 																<a class="update changeResourceType link-primary"
-																	title="{translate key='Edit'}" href="#">
+																	title="{translate key='Edit'}" href="#"
+																	id="{$resourceTypeEditBtnId}">
 																	<span
 																		class="visually-hidden">{translate key=ResourceType}</span>
 																	<span class="bi bi-pencil-square"></span>
 																</a>
+																{capture assign=resourceTypeOptionsHtml}
+																	<option value="0"></option>
+																	{foreach from=$ResourceTypes item=resourceTypeOption key=resourceTypeOptionId}
+																		<option value="{$resourceTypeOptionId|escape:'html'}">
+																			{$resourceTypeOption->Name()|escape:'html'}</option>
+																	{/foreach}
+																{/capture}
+																{include file='Admin/InlinePopoverPanel.tpl' panelId="inlinePicker{$resourceTypeId}"
+																panelType='select'
+																panelClass='inlineAttributePopoverPanel'
+																inputId=$resourceTypeInputId
+																fieldType='select'
+																selectOptionsHtml=$resourceTypeOptionsHtml
+																}
 															</div>
 															<div>
 																<label
 																	class="inline fw-bold">{translate key=SortOrder}</label>
 																<span class="propertyValue sortOrderValue"
-																	data-type="number" data-pk="{$id}"
-																	data-name="{FormKeys::RESOURCE_SORT_ORDER}">
+																	id="{$sortOrderId}"
+																	data-value="{$resource->GetSortOrder()|default:'0'|escape:'html'}">
 																	{$resource->GetSortOrder()|default:"0"}
 																</span>
 																<a class="update changeSortOrder link-primary"
-																	title="{translate key='Edit'}" href="#">
+																	title="{translate key='Edit'}" href="#"
+																	id="{$sortOrderEditBtnId}">
 																	<span
 																		class="visually-hidden">{translate key=SortOrder}</span>
 																	<span class="bi bi-pencil-square"></span>
 																</a>
+																{include file='Admin/InlinePopoverPanel.tpl' panelId="inlinePicker{$sortOrderId}"
+																panelType='number'
+																panelClass='inlineAttributePopoverPanel'
+																inputId=$sortOrderInputId
+																fieldType='number'
+																inputMin='0'
+																inputMax='999'}
 															</div>
 															<div class="mt-2">
 																<label
 																	class="inline fw-bold">{translate key='Location'}</label>
-																<span class="propertyValue locationValue" data-type="text"
-																	data-pk="{$id}" data-value="{$resource->GetLocation()}"
-																	data-name="{FormKeys::RESOURCE_LOCATION}">
+																<span class="propertyValue locationValue" id="{$locationId}"
+																	data-value="{$resource->GetLocation()|escape:'html'}">
 																	{if $resource->HasLocation()}
 																		{$resource->GetLocation()}
 																	{else}
@@ -387,21 +447,23 @@
 																	{/if}
 																</span>
 																<a class="update changeLocation link-primary"
-																	title="{translate key='Edit'}" href="#">
+																	title="{translate key='Edit'}" href="#"
+																	id="{$locationEditBtnId}">
 																	<span
 																		class="visually-hidden">{translate key=Location}</span>
 																	<span class="bi bi-pencil-square"></span>
 																</a>
+																{include file='Admin/InlinePopoverPanel.tpl' panelId="inlinePicker{$locationId}"
+																panelType='text'
+																panelClass='inlineAttributePopoverPanel'
+																inputId=$locationInputId
+																fieldType='text'}
 															</div>
 															<div>
 																<label
 																	class="inline fw-bold">{translate key='Contact'}</label>
-																{if $ResourceContactIsUser}
-																	<span class="propertyValue contactValue" data-type="select"
-																	{else} <span class="propertyValue contactValue"
-																	data-type="text" {/if} data-pk="{$id}"
-																	data-value="{$resource->GetContact()}"
-																	data-name="{FormKeys::RESOURCE_CONTACT}">
+																<span class="propertyValue contactValue" id="{$contactId}"
+																	data-value="{$resource->GetContact()|escape:'html'}">
 																	{if $resource->HasContact()}
 																		{$resource->GetContact()}
 																	{else}
@@ -409,16 +471,23 @@
 																	{/if}
 																</span>
 																<a class="update changeContact link-primary"
-																	title="{translate key='Edit'}" href="#">
+																	title="{translate key='Edit'}" href="#"
+																	id="{$contactEditBtnId}">
 																	<span
 																		class="visually-hidden">{translate key=Contact}</span>
 																	<span class="bi bi-pencil-square"></span></a>
+																{include file='Admin/InlinePopoverPanel.tpl' panelId="inlinePicker{$contactId}"
+																panelType='text'
+																panelClass='inlineAttributePopoverPanel'
+																inputId=$contactInputId
+																fieldType='text'}
 															</div>
 															<div>
 																<label
 																	class="inline fw-bold">{translate key='Description'}</label>
 																<a class="update changeDescription link-primary"
-																	title="{translate key='Edit'}" href="#">
+																	title="{translate key='Edit'}" href="#"
+																	id="{$descriptionEditBtnId}">
 																	<span
 																		class="visually-hidden">{translate key=Description}</span>
 																	<span class="bi bi-pencil-square"></span></a>
@@ -428,9 +497,8 @@
 																	{assign var=description value=''}
 																{/if}
 																{strip}
-																	<div class="descriptionValue" data-type="trumbowyg"
-																		data-pk="{$id}" data-value="{$description}"
-																		data-name="{FormKeys::RESOURCE_DESCRIPTION}">
+																	<div class="descriptionValue" id="{$descriptionId}"
+																		data-value="{$description|escape:'html'}">
 																		{if $resource->HasDescription()}
 																			{$description|sanitize_rich_text}
 																		{else}
@@ -438,12 +506,20 @@
 																		{/if}
 																	</div>
 																{/strip}
+																{include file='Admin/InlinePopoverPanel.tpl' panelId="inlinePicker{$descriptionId}"
+																panelType='textarea'
+																panelClass='inlineAttributePopoverPanel'
+																panelStyle='min-width:26rem;'
+																inputId=$descriptionInputId
+																fieldType='textarea'
+																textareaRows='8'}
 															</div>
 															<div>
 																<label
 																	class="inline fw-bold">{translate key='Notes'}</label>
 																<a class="update changeNotes link-primary"
-																	title="{translate key='Edit'}" href="#">
+																	title="{translate key='Edit'}" href="#"
+																	id="{$notesEditBtnId}">
 																	<span
 																		class="visually-hidden">{translate key=Notes}</span>
 																	<span class="bi bi-pencil-square"></span>
@@ -454,9 +530,8 @@
 																	{assign var=notes value=''}
 																{/if}
 																{strip}
-																	<div class="notesValue" data-type="trumbowyg"
-																		data-pk="{$id}" data-value="{$notes}"
-																		data-name="{FormKeys::RESOURCE_NOTES}">
+																	<div class="notesValue" id="{$notesId}"
+																		data-value="{$notes|escape:'html'}">
 																		{if $resource->HasNotes()}
 																			{$notes|sanitize_rich_text}
 																		{else}
@@ -464,6 +539,13 @@
 																		{/if}
 																	</div>
 																{/strip}
+																{include file='Admin/InlinePopoverPanel.tpl' panelId="inlinePicker{$notesId}"
+																panelType='textarea'
+																panelClass='inlineAttributePopoverPanel'
+																panelStyle='min-width:26rem;'
+																inputId=$notesInputId
+																fieldType='textarea'
+																textareaRows='8'}
 															</div>
 														</div>
 														<div class="col">
@@ -481,27 +563,55 @@
 																</div>
 															</div>
 															<div class="mt-2">
-																<span
+																<span <span
 																	class="fs-6 fw-bold">{translate key='ResourceAdministrator'}</span>
+																<span
+																	class="propertyValue resourceAdminValue inlineUpdate fw-bold text-decoration-underline pe-auto"
+																	id="{$resourceAdminId}"
+																	data-value="{$resource->GetAdminGroupId()|escape:'html'}">
+																	{if $resource->GetAdminGroupId()|default:'' == '' || $resource->GetAdminGroupId()|default:'0' == '0'}
+																		{translate key=None}
+																	{elseif array_key_exists($resource->GetAdminGroupId(), $GroupLookup)}
+																		{$GroupLookup[$resource->GetAdminGroupId()]->Name|escape:'html'}
+																	{else}
+																		{translate key=None}
+																	{/if}
+																</span>
 																{if $AdminGroups|default:array()|count > 0}
 																	<a class="update changeResourceAdmin link-primary"
-																		title="{translate key='Edit'}" href="#">
+																		title="{translate key='Edit'}" href="#"
+																		id="{$resourceAdminEditBtnId}">
 																		<span
 																			class="visually-hidden">{translate key=ResourceAdministrator}</span>
-																		<span class="bi bi-pencil-square"></span></a>
+																		<span class="bi bi-pencil-square"></span>
+																	</a>
+																	{capture assign=resourceAdminOptionsHtml}
+																		<option value="0">{translate key=None|escape:'html'}
+																		</option>
+																		{foreach from=$AdminGroups item=adminGroupOption}
+																			<option value="{$adminGroupOption->Id|escape:'html'}">
+																				{$adminGroupOption->Name|escape:'html'}</option>
+																		{/foreach}
+																	{/capture}
+																	{include file='Admin/InlinePopoverPanel.tpl' panelId="inlinePicker{$resourceAdminId}"
+																	panelType='select'
+																	panelClass='inlineAttributePopoverPanel'
+																	inputId=$resourceAdminInputId
+																	fieldType='select'
+																	selectOptionsHtml=$resourceAdminOptionsHtml}
 																{/if}
 																<div>
 																	<span class="propertyValue resourceAdminValue"
 																		data-type="select" data-pk="{$id}"
 																		data-value="{$resource->GetAdminGroupId()}"
-																		 data-name="{FormKeys::RESOURCE_ADMIN_GROUP_ID}">
-																			{assign var=adminGroupId value=$resource->GetAdminGroupId()}
-																			{if $adminGroupId !== null && isset($GroupLookup[$adminGroupId])}
-																				{$GroupLookup[$adminGroupId]->Name|escape:'html'}
-																			{else}
-																				{translate key='None'}
-																			{/if}
-																		</span>
+																		data-name="{FormKeys::RESOURCE_ADMIN_GROUP_ID}">
+																		{assign var=adminGroupId value=$resource->GetAdminGroupId()}
+																		{if $adminGroupId !== null && isset($GroupLookup[$adminGroupId])}
+																			{$GroupLookup[$adminGroupId]->Name|escape:'html'}
+																		{else}
+																			{translate key='None'}
+																		{/if}
+																	</span>
 																</div>
 															</div>
 															<div class="mt-2">
@@ -2074,103 +2184,17 @@
 
 {csrf_token}
 
-{include file="javascript-includes.tpl" InlineEdit=true Clear=true DataTable=true Trumbowyg=true }
+{include file="javascript-includes.tpl" DataTable=true Trumbowyg=true }
 {datatable tableId=$tableId}
 {jsfile src="ajax-helpers.js"}
 {jsfile src="autocomplete.js"}
 {vendor_js src="jqtree/1.8.11/js/tree.jquery.js"}
 {jsfile src="admin/resource.js"}
+{jsfile src="admin/inlinePopoverEditor.js"}
 {vendor_js src="dropzone/1.0.0/js/dropzone.js"}
 {jsfile src="search-clear.js"}
 
 <script type="text/javascript">
-	function addTrumbowygType() {
-		var Trumbowyg = function(options) {
-			this.init('trumbowyg', options, Trumbowyg.defaults);
-		};
-		$.fn.editableutils.inherit(Trumbowyg, $.fn.editabletypes.abstractinput);
-		$.extend(Trumbowyg.prototype, {
-			render: function() {
-				// Set any provided classes or attributes
-				this.setClass();
-				this.setAttr('placeholder');
-
-				this.$input.trumbowyg({
-					tagsToRemove: ['script', 'link'],
-					removeformatPasted: true,
-					urlProtocol: true,
-					btns: [
-						['bold', 'italic', 'underline'],
-						['link'],
-						['unorderedList', 'orderedList']
-					]
-				});
-			},
-
-			value2html: function(value, element) {
-				const sanitizedHtml = DOMPurify.sanitize(value || '');
-				$(element).html(sanitizedHtml);
-			},
-
-			html2value: function(html) {
-				return html || '';
-			},
-
-			activate: function() {
-				if (this.$input.data('trumbowyg')) {
-					this.$input.trumbowyg('open');
-				}
-			},
-			value2input: function(value) {
-				this.$input.trumbowyg('html', value);
-			},
-			input2value: function() {
-				const sanitizedHtml = DOMPurify.sanitize(this.$input.trumbowyg('html'));
-				return sanitizedHtml;
-			}
-		});
-
-		Trumbowyg.defaults = $.extend({}, $.fn.editabletypes.abstractinput.defaults, {
-			tpl: '<textarea></textarea>',
-			inputclass: 'input-large',
-			placeholder: null,
-			rows: 7
-		});
-		$.fn.editabletypes.trumbowyg = Trumbowyg;
-	}
-
-	function setUpPopovers() {
-		$('[rel="popover"]').popover({
-			container: 'body',
-			html: true,
-			placement: 'top',
-			trigger: 'manual',
-			content: function() {
-				var popoverId = $(this).data('popover-content');
-				return $(popoverId).html();
-			}
-		});
-
-		$('[rel="popover"]').on('click', function(e) {
-			e.preventDefault();
-			e.stopPropagation();
-
-			// Hide other popovers if needed
-			$('[rel="popover"]').not(this).popover('hide');
-
-			// Toggle the clicked one
-			$(this).popover('toggle');
-		});
-
-		$('.descriptionValue').on('shown', function(e, editable) {
-			$(document).off('click.editable');
-		});
-
-		$('.notesValue').on('shown', function(e, editable) {
-			$(document).off('click.editable');
-		});
-	}
-
 	function setupCustomAttributesIcon() {
 		$('[id^="customAttributesIcon"]').each(function() {
 			const icon = $(this);
@@ -2186,101 +2210,7 @@
 		});
 	}
 
-	function setUpEditables() {
-		$.fn.editable.defaults.mode = 'popup';
-		$.fn.editable.defaults.toggle = 'manual';
-		$.fn.editable.defaults.emptyclass = '';
-		$.fn.editable.default
-		$.fn.editable.defaults.params = function(params) {
-			params.CSRF_TOKEN = $('#csrf_token').val();
-			return params;
-		};
-
-		var updateUrl = '{$smarty.server.SCRIPT_NAME}?action=';
-		var xUserAutocompleteUrl = "../ajax/autocomplete.php?type={AutoCompleteType::XUser}";
-
-		$('.resourceNameField').editable({
-				url: updateUrl + '{ManageResourcesActions::ActionRename}', validate: function (value) {
-				if ($.trim(value) == '') {
-					return '{translate key=RequiredValue}';
-				}
-			}
-		});
-
-	$('.scheduleName').editable({
-		url: updateUrl + '{ManageResourcesActions::ActionChangeSchedule}', source: [
-		{foreach from=$Schedules item=scheduleName key=scheduleId}
-			{
-				value:{$scheduleId}, text: "{$scheduleName|escape:'javascript'}"
-			},
-		{/foreach}
-	]
-	});
-
-	$('.resourceTypeName').editable({
-		url: updateUrl + '{ManageResourcesActions::ActionChangeResourceType}',
-		emptytext: "{translate key=NoResourceTypeLabel|escape:'javascript'}",
-		source: [{
-				value: '0', text: '' //'-- {translate key=None} --'
-			},
-			{foreach from=$ResourceTypes item=resourceType key=id}
-				{
-					value:{$id}, text: "{$resourceType->Name()|escape:'javascript'}"
-				},
-			{/foreach}
-		]
-	});
-
-	$('.sortOrderValue').editable({
-		url: updateUrl + '{ManageResourcesActions::ActionChangeSort}', emptytext: '0', min: 0, max: 999
-	});
-
-	$('.locationValue').editable({
-		url: updateUrl + '{ManageResourcesActions::ActionChangeLocation}', emptytext: "{translate key='NoLocationLabel'|escape:'javascript'}"
-	});
-
-	$('.contactValue').editable({
-		url: updateUrl + '{ManageResourcesActions::ActionChangeContact}',
-		{if $ResourceContactIsUser}
-			emptytext: "{translate key='NoContactLabel'|escape:'javascript'}",
-			source: xUserAutocompleteUrl,
-		{else}
-			emptytext: "{translate key='NoContactLabel'|escape:'javascript'}"
-		{/if}
-	});
-
-	$('.descriptionValue').editable({
-		url: updateUrl + '{ManageResourcesActions::ActionChangeDescription}',
-		emptytext: "{translate key='NoDescriptionLabel'|escape:'javascript'}"
-	});
-
-	$('.notesValue').editable({
-		url: updateUrl + '{ManageResourcesActions::ActionChangeNotes}', emptytext: "{translate key='NoDescriptionLabel'|escape:'javascript'}"
-	});
-
-	$('.resourceAdminValue').editable({
-		url: updateUrl + '{ManageResourcesActions::ActionChangeAdmin}', emptytext: "{translate key=None|escape:'javascript'}", source: [{
-		value: '0',
-		text: ''
-	},
-	{foreach from=$AdminGroups item=group key=scheduleId}
-		{
-			value:{$group->Id()}, text: "{$group->Name()|escape:'javascript'}"
-		},
-	{/foreach}
-	]
-	});
-
-	$('.inlineAttribute').editable({
-		url: updateUrl + '{ManageResourcesActions::ActionChangeAttribute}', emptytext: '-'
-	});
-
-	}
-
 	$(document).ready(function() {
-		addTrumbowygType();
-		setUpPopovers();
-		setUpEditables();
 		setupCustomAttributesIcon();
 
 		dropzone($("#addResourceImage"));
@@ -2296,6 +2226,48 @@
 		var opts = {
 			submitUrl: '{$smarty.server.SCRIPT_NAME}',
 			saveRedirect: '{$smarty.server.SCRIPT_NAME}',
+			changeNameAction: '{ManageResourcesActions::ActionRename}',
+			resourceNameKey: '{FormKeys::RESOURCE_NAME}',
+			changeScheduleAction: '{ManageResourcesActions::ActionChangeSchedule}',
+			resourceScheduleKey: '{FormKeys::SCHEDULE_ID}',
+			scheduleNames: {
+				{foreach from=$Schedules item=scheduleName key=scheduleId}
+					'{$scheduleId}': "{$scheduleName|escape:'javascript'}",
+				{/foreach}
+			},
+			changeResourceTypeAction: '{ManageResourcesActions::ActionChangeResourceType}',
+			resourceTypeKey: '{FormKeys::RESOURCE_TYPE_ID}',
+			noResourceTypeLabel: "{translate key='NoResourceTypeLabel'|escape:'javascript'}",
+			resourceTypeNames: {
+				'0': "{translate key='NoResourceTypeLabel'|escape:'javascript'}",
+				{foreach from=$ResourceTypes item=resourceTypeItem key=resourceTypeId}
+					'{$resourceTypeId}': "{$resourceTypeItem->Name()|escape:'javascript'}",
+				{/foreach}
+			},
+			changeSortOrderAction: '{ManageResourcesActions::ActionChangeSort}',
+			sortOrderKey: '{FormKeys::RESOURCE_SORT_ORDER}',
+			changeLocationAction: '{ManageResourcesActions::ActionChangeLocation}',
+			resourceLocationKey: '{FormKeys::RESOURCE_LOCATION}',
+			noLocationLabel: "{translate key='NoLocationLabel'|escape:'javascript'}",
+			changeContactAction: '{ManageResourcesActions::ActionChangeContact}',
+			resourceContactKey: '{FormKeys::RESOURCE_CONTACT}',
+			noContactLabel: "{translate key='NoContactLabel'|escape:'javascript'}",
+			resourceContactIsUser: {if $ResourceContactIsUser}true{else}false{/if},
+			changeResourceAdminAction: '{ManageResourcesActions::ActionChangeAdmin}',
+			resourceAdminKey: '{FormKeys::RESOURCE_ADMIN_GROUP_ID}',
+			noResourceAdminLabel: "{translate key=None|escape:'javascript'}",
+			resourceAdminNames: {
+				'0': "{translate key=None|escape:'javascript'}",
+				{foreach from=$AdminGroups item=adminGroupItem}
+					'{$adminGroupItem->Id}': "{$adminGroupItem->Name|escape:'javascript'}",
+				{/foreach}
+			},
+			changeDescriptionAction: '{ManageResourcesActions::ActionChangeDescription}',
+			resourceDescriptionKey: '{FormKeys::RESOURCE_DESCRIPTION}',
+			noDescriptionLabel: "{translate key='NoDescriptionLabel'|escape:'javascript'}",
+			changeNotesAction: '{ManageResourcesActions::ActionChangeNotes}',
+			resourceNotesKey: '{FormKeys::RESOURCE_NOTES}',
+			noNotesLabel: "{translate key='NoNotesLabel'|escape:'javascript'}",
 			actions: actions,
 			userAutocompleteUrl: "../ajax/autocomplete.php?type={AutoCompleteType::User}",
 			groupAutocompleteUrl: "../ajax/autocomplete.php?type={AutoCompleteType::Group}",

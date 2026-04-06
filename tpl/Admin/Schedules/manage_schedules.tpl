@@ -1,4 +1,4 @@
-{include file='globalheader.tpl' InlineEdit=true Fullcalendar=true DataTable=true}
+{include file='globalheader.tpl' Fullcalendar=true DataTable=true}
 
 <div id="page-manage-schedules" class="admin-page">
 
@@ -24,14 +24,32 @@
 							<tr>
 								<td>
 									{assign var=id value=$schedule->GetId()}
+									{assign var=daysVisibleValue value=$schedule->GetDaysVisible()}
+									{assign var=daysVisibleId value="inlineDaysVisible`$id`"}
+									{assign var=daysVisibleInputId value="popoverInput`$daysVisibleId`"}
+									{assign var=defaultStyleValue value=$schedule->GetDefaultStyle()->value}
+									{assign var=defaultStyleId value="inlineDefaultStyle`$id`"}
+									{assign var=defaultStyleInputId value="popoverInput`$defaultStyleId`"}
+									{assign var=scheduleAdminValue value=$schedule->GetAdminGroupId()}
+									{assign var=scheduleAdminId value="inlineScheduleAdmin`$id`"}
+									{assign var=scheduleAdminInputId value="popoverInput`$scheduleAdminId`"}
+									{assign var=scheduleAdminEditBtnId value="editBtn`$scheduleAdminId`"}
+									{capture name=adminGroupOptions}
+										<option value="0">{translate key=None}</option>
+										{foreach from=$AdminGroups item=group}
+											<option value="{$group->Id()}">{$group->Name()|escape:'html'}</option>
+										{/foreach}
+									{/capture}
 									{capture name=daysVisible}<span
 											class='propertyValue daysVisible inlineUpdate fw-bold text-decoration-underline pe-auto'
-											data-type='number' data-pk='{$id}' data-name='{FormKeys::SCHEDULE_DAYS_VISIBLE}'
-										data-min='0'>{$schedule->GetDaysVisible()}</span>{/capture}
+											id='{$daysVisibleId}'
+										data-value='{$daysVisibleValue}'>{$daysVisibleValue}</span>{/capture}
 									{assign var=dayOfWeek value=$schedule->GetWeekdayStart()}
+									{assign var=dayNameId value="inlineDayName`$id`"}
+									{assign var=dayNameInputId value="popoverInput`$dayNameId`"}
 									{capture name=dayName}<span
 											class='propertyValue dayName inlineUpdate fw-bold text-decoration-underline pe-auto'
-											data-type='select' data-pk='{$id}' data-name='{FormKeys::SCHEDULE_WEEKDAY_START}'
+											id='{$dayNameId}'
 											data-value='{$dayOfWeek}'>{if $dayOfWeek == Schedule::Today}{$Today}{else}{$DayNames[$dayOfWeek]}{/if}</span>
 									{/capture}
 									<div class="accordion-item">
@@ -47,16 +65,47 @@
 												<div class="scheduleDetails row" data-schedule-id="{$id}">
 													<div class="col-12 col-sm-6">
 														<input type="hidden" class="id" value="{$id}" />
-														<input type="hidden" class="daysVisible" value="{$daysVisible}" />
+														<input type="hidden" class="daysVisible"
+															value="{$daysVisibleValue}" />
 														<input type="hidden" class="dayOfWeek" value="{$dayOfWeek}" />
+														{include file='Admin/InlinePopoverPanel.tpl'
+																	panelId="inlinePicker{$daysVisibleId}"
+														panelType='number'
+														panelClass='inlineAttributePopoverPanel'
+														inputId=$daysVisibleInputId
+														fieldType='number'
+														fieldInputType='number'
+														inputStep='1'
+														inputMin='0'
+														inputValue=$daysVisibleValue}
+														{include file='Admin/InlinePopoverPanel.tpl'
+																	panelId="inlinePicker{$dayNameId}"
+														panelType='select'
+														panelClass='inlineAttributePopoverPanel'
+														inputId=$dayNameInputId
+														fieldType='select'
+														selectOptionsMap=$DayNames
+														prependOptionValue=Schedule::Today
+														prependOptionText=$Today}
+														{assign var=scheduleNameId value="inlineScheduleName`$id`"}
+														{assign var=scheduleNameInputId value="popoverInput`$scheduleNameId`"}
 
 														<div>
-															<span class="title scheduleName fw-bold" data-type="text"
-																data-pk="{$id}"
-																data-name="{FormKeys::SCHEDULE_NAME}">{$schedule->GetName()}</span>
-															<a class="update renameButton link-primary" href="#"><span
+															<span class="title scheduleNameDisplay fw-bold"
+																id="{$scheduleNameId}"
+																data-value="{$schedule->GetName()|escape:'html'}">{$schedule->GetName()}</span>
+															<a class="update renameButton link-primary" href="#"
+																id="editBtn{$scheduleNameId}"><span
 																	class="visually-hidden">{translate key=Rename}</span><span
 																	class="bi bi-pencil-square"></span></a>
+
+															{include file='Admin/InlinePopoverPanel.tpl'
+																			panelId="inlinePicker{$scheduleNameId}"
+															panelType='text'
+															panelClass='inlineAttributePopoverPanel'
+															inputId=$scheduleNameInputId
+															fieldType='text'
+															inputValue=$schedule->GetName()}
 														</div>
 
 														<div>
@@ -76,8 +125,16 @@
 																	{translate key='None'}
 																{/if}
 															</span>
+															{include file='Admin/InlinePopoverPanel.tpl'
+																		panelId="inlinePicker{$scheduleAdminId}"
+															panelType='select'
+															panelClass='inlineAttributePopoverPanel'
+															inputId=$scheduleAdminInputId
+															fieldType='select'
+															selectOptionsHtml=$smarty.capture.adminGroupOptions}
 															{if $AdminGroups|default:array()|count > 0}
-																<a class="link-primary update changeScheduleAdmin"><span
+																<a class="link-primary update changeScheduleAdmin"
+																	id="{$scheduleAdminEditBtnId}"><span
 																		class="visually-hidden">{translate key='ScheduleAdministrator'}</span><span
 																		class="bi bi-pencil-square"></span>
 																</a>
@@ -131,9 +188,15 @@
 															{translate key=DefaultStyle}
 															<span
 																class="propertyValue defaultScheduleStyle inlineUpdate fw-bold text-decoration-underline"
-																data-type="select" data-pk="{$id}"
-																data-name="{FormKeys::SCHEDULE_DEFAULT_STYLE}"
-																data-value="{$schedule->GetDefaultStyle()->value}">{$StyleNames[$schedule->GetDefaultStyle()->value]}</span>
+																id="{$defaultStyleId}"
+																data-value="{$defaultStyleValue}">{$StyleNames[$defaultStyleValue]}</span>
+															{include file='Admin/InlinePopoverPanel.tpl'
+																		panelId="inlinePicker{$defaultStyleId}"
+															panelType='select'
+															panelClass='inlineAttributePopoverPanel'
+															inputId=$defaultStyleInputId
+															fieldType='select'
+															selectOptionsMap=$StyleNames}
 														</div>
 
 														{if $CreditsEnabled}
@@ -846,88 +909,29 @@
 	{control type="DatePickerSetupControl" ControlId="availabilityEndDate" DefaultDate=$EndDate}
 
 	{csrf_token}
-	{include file="javascript-includes.tpl" InlineEdit=true Fullcalendar=true DataTable=true}
+	{include file="javascript-includes.tpl" Fullcalendar=true DataTable=true}
 	{datatablefilter tableId=$tableIdFilter}
 	{jsfile src="ajax-helpers.js"}
 	{jsfile src="date-helper.js"}
 	{jsfile src="admin/schedule.js"}
+	{jsfile src="admin/inlinePopoverEditor.js"}
 	{vendor_js src="jquery-form/3.09/jquery.form-3.09.min.js"}
 
 	<script type="text/javascript">
-		function setUpEditables() {
-			$.fn.editable.defaults.mode = 'popup';
-			$.fn.editable.defaults.toggle = 'manual';
-			$.fn.editable.defaults.emptyclass = '';
-			$.fn.editable.defaults.params = function(params) {
-				params.CSRF_TOKEN = $('#csrf_token').val();
-				return params;
-			};
-
-			var updateUrl = '{$smarty.server.SCRIPT_NAME}?action=';
-
-			$('.scheduleName').editable({
-				url: updateUrl + '{ManageSchedules::ActionRename}',
-				validate: function(value) {
-					if ($.trim(value) === '') {
-						return "{{translate key=RequiredValue}|escape:'javascript'}";
-					}
-				}
-			});
-
-			$('.daysVisible').editable({
-				url: updateUrl + '{ManageSchedules::ActionChangeDaysVisible}'
-			});
-
-			$('.dayName').editable({
-				url: updateUrl + '{ManageSchedules::ActionChangeStartDay}',
-				source: [{
-						value: '{Schedule::Today}',
-						text: "{$Today|escape:'javascript'}"
-					}
-					{foreach from=$DayNames item="dayName" key="dayIndex"}
-						, {
-							value: {$dayIndex},
-							text: "{$dayName|escape:'javascript'}"
-						}
-					{/foreach}
-				]
-			});
-
-			$('.defaultScheduleStyle').editable({
-				url: updateUrl + '{ManageSchedules::ActionChangeDefaultStyle}',
-				source: [
-					{foreach from=$StyleNames item="styleName" key="styleIndex"}
-						{
-							value: '{$styleIndex}',
-							text: "{$styleName|escape:'javascript'}"
-						},
-					{/foreach}
-				]
-			});
-
-			$('.scheduleAdmin').editable({
-				url: updateUrl + '{ManageSchedules::ChangeAdminGroup}',
-				emptytext: "{{translate key=None}|escape:'javascript'}",
-				source: [{
-						value: '0',
-						text: "{{translate key=None}|escape:'javascript'}",
-					}
-					{foreach from=$AdminGroups item=group}
-						, {
-							value: {$group->Id()},
-							text: "{$group->Name()|escape:'javascript'}"
-						}
-					{/foreach}
-				]
-			});
-		}
-
 		$(document).ready(function() {
-			setUpEditables();
-
 			var opts = {
 				submitUrl: '{$smarty.server.SCRIPT_NAME}',
 				saveRedirect: '{$smarty.server.SCRIPT_NAME}',
+				renameAction: '{ManageSchedules::ActionRename}',
+				changeDaysVisibleAction: '{ManageSchedules::ActionChangeDaysVisible}',
+				changeDefaultStyleAction: '{ManageSchedules::ActionChangeDefaultStyle}',
+				changeAdminGroupAction: '{ManageSchedules::ChangeAdminGroup}',
+				changeStartDayAction: '{ManageSchedules::ActionChangeStartDay}',
+				scheduleNameKey: '{FormKeys::SCHEDULE_NAME}',
+				scheduleDaysVisibleKey: '{FormKeys::SCHEDULE_DAYS_VISIBLE}',
+				scheduleDefaultStyleKey: '{FormKeys::SCHEDULE_DEFAULT_STYLE}',
+				scheduleAdminGroupKey: '{FormKeys::SCHEDULE_ADMIN_GROUP_ID}',
+				scheduleWeekdayStartKey: '{FormKeys::SCHEDULE_WEEKDAY_START}',
 				changeLayoutAction: '{ManageSchedules::ActionChangeLayout}',
 				addAction: '{ManageSchedules::ActionAdd}',
 				peakTimesAction: '{ManageSchedules::ActionChangePeakTimes}',

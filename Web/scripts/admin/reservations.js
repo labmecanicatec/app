@@ -76,11 +76,6 @@ function ReservationManagement(opts, approval) {
       setCurrentReservationInformation(td);
     });
 
-    elements.reservationTable.on('click', '.changeAttribute', function (e) {
-      e.stopPropagation();
-      $(e.target).closest('.updateCustomAttribute').find('.inlineAttribute').editable('toggle');
-    });
-
     elements.reservationTable.on('click', 'tr.editable', function (e) {
       if (
         $(e.target).hasClass('action') ||
