@@ -6,8 +6,13 @@
 		{if $CompanyName neq ''}
 			<div class="mb-2"><a class="link-primary" href="{$CompanyUrl}">{$CompanyName}</a></div>
 		{/if}
-		<div><a class="link-primary" href="https://github.com/LibreBooking/librebooking">LibreBooking - GPLv3 -
-				{$DisplayVersion}</a></div>
+		<div><a class="link-primary footer-logo" href="https://github.com/LibreBooking/librebooking">
+			{if $LogoSvgContent}
+				<span class="logo" role="img" aria-label="{$Title}">{$LogoSvgContent nofilter}</span>
+			{else}
+				<img src="{$Path}{$LogoUrl}?{$Version}" alt="{$Title}" class="logo">
+			{/if}
+			- GPLv3 - {$DisplayVersion}</a></div>
 	</footer>
 
 	<div class="toast-container position-fixed bottom-0 end-0 p-3">
