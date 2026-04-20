@@ -11,10 +11,12 @@ require_once(ROOT_DIR . 'lib/Config/namespace.php');
 require_once(ROOT_DIR . 'lib/Application/Admin/ImageUploadDirectory.php');
 
 use Detection\MobileDetect;
+use enshrined\svgSanitize\Sanitizer;
 
 abstract class Page implements IPage
 {
     private static ?string $displayVersion = null;
+    private ?Sanitizer $svgSanitizer = null;
 
     /**
      * @var SmartyPage
@@ -104,14 +106,15 @@ abstract class Page implements IPage
             ['dir' => ROOT_DIR . 'Web/img', 'url' => 'img'],
         ];
 
-        $this->smarty->assign(
-            'LogoUrl',
-            self::findCustomFile(
-                baseName: 'custom-logo',
-                extensions: ['png', 'gif', 'jpg'],
-                locations: $customFileLocations,
-            ) ?? 'img/librebooking.png'
+        $customLogo = self::findCustomFileWithPath(
+            baseName: 'custom-logo',
+            extensions: ['png', 'gif', 'jpg', 'svg'],
+            locations: $customFileLocations,
         );
+        $logoUrl = $customLogo['url'] ?? 'img/librebooking.svg';
+
+        $this->smarty->assign('LogoUrl', $logoUrl);
+        $this->smarty->assign('LogoSvgContent', $this->getLogoSvgContent($logoUrl, $customLogo['path'] ?? ROOT_DIR . 'Web/img/librebooking.svg'));
 
         $this->smarty->assign('CssUrl', 'null-style.css');
         if (file_exists($this->path . 'css/custom-style.css')) {
@@ -127,14 +130,15 @@ abstract class Page implements IPage
             ['dir' => $imageUploadDirectory->GetDirectory(), 'url' => $uploadUrl],
             ['dir' => ROOT_DIR . 'Web', 'url' => ''],
         ];
-        $this->smarty->assign(
-            'FaviconUrl',
-            self::findCustomFile(
-                baseName: 'custom-favicon',
-                extensions: ['png', 'gif', 'jpg', 'ico'],
-                locations: $faviconLocations,
-            ) ?? 'favicon.ico'
+        $customFavicon = self::findCustomFileWithPath(
+            baseName: 'custom-favicon',
+            extensions: ['png', 'gif', 'jpg', 'ico', 'svg'],
+            locations: $faviconLocations,
         );
+        $faviconUrl = $customFavicon['url'] ?? 'favicon.svg';
+
+        $this->smarty->assign('FaviconUrl', $faviconUrl);
+        $this->smarty->assign('FaviconSvgContent', $this->getLogoSvgContent($faviconUrl, $customFavicon['path'] ?? ROOT_DIR . 'Web/favicon.svg'));
 
         $logoUrl = Configuration::Instance()->GetKey(ConfigKeys::HOME_URL);
         if (empty($logoUrl)) {
@@ -161,25 +165,25 @@ abstract class Page implements IPage
     }
 
     /**
-     * Search for a custom file across multiple locations, returning the URL-relative path if found.
-     *
-     * Locations are checked in order (first match wins). Within each location,
-     * later extensions overwrite earlier ones.
+     * Search for a custom file across multiple locations, returning both URL-relative path and absolute path.
      *
      * @param string $baseName File name without extension (e.g. 'custom-logo')
      * @param string[] $extensions File extensions to check (e.g. ['png', 'gif', 'jpg'])
      * @param array<array{dir: string, url: string}> $locations Directories to search,
      *        each with 'dir' (filesystem path) and 'url' (URL-relative prefix)
-     * @return string|null URL-relative path to the file, or null if not found
+     * @return array{url: string, path: string}|null
      */
-    public static function findCustomFile(string $baseName, array $extensions, array $locations): ?string
+    public static function findCustomFileWithPath(string $baseName, array $extensions, array $locations): ?array
     {
         foreach ($locations as $location) {
             $result = null;
             foreach ($extensions as $ext) {
                 if (file_exists($location['dir'] . '/' . $baseName . '.' . $ext)) {
                     $prefix = $location['url'] !== '' ? rtrim($location['url'], '/') . '/' : '';
-                    $result = $prefix . $baseName . '.' . $ext;
+                    $result = [
+                        'url' => $prefix . $baseName . '.' . $ext,
+                        'path' => rtrim($location['dir'], '/') . '/' . $baseName . '.' . $ext,
+                    ];
                 }
             }
             if ($result !== null) {
@@ -538,5 +542,39 @@ abstract class Page implements IPage
         $resolver = new VersionDisplayResolver();
         self::$displayVersion = $resolver->GetDisplayVersion(Configuration::VERSION);
         return self::$displayVersion;
+    }
+
+    private function getSvgSanitizer(): Sanitizer
+    {
+        if ($this->svgSanitizer === null) {
+            $this->svgSanitizer = new Sanitizer();
+        }
+
+        return $this->svgSanitizer;
+    }
+
+    private function sanitizeSvg(string $svg): ?string
+    {
+        // Remove the XML declaration before inlining.
+        $svg = preg_replace('/<\?xml[^?]*\?>\s*/i', '', $svg);
+
+        $sanitized = $this->getSvgSanitizer()->sanitize($svg);
+
+        return $sanitized !== false ? $sanitized : null;
+    }
+
+    private function getLogoSvgContent(string $logoUrl, string $logoPath): ?string
+    {
+        if (!str_ends_with($logoUrl, '.svg')) {
+            return null;
+        }
+
+        $svgContent = file_get_contents($logoPath);
+
+        if ($svgContent === false) {
+            return null;
+        }
+
+        return $this->sanitizeSvg($svgContent);
     }
 }

@@ -3,12 +3,15 @@
 require_once(ROOT_DIR . 'Presenters/ActionPresenter.php');
 require_once(ROOT_DIR . 'lib/Application/Admin/ImageUploadDirectory.php');
 
+use enshrined\svgSanitize\Sanitizer;
+
 class ManageThemePresenter extends ActionPresenter
 {
     /**
      * @var ManageThemePage
      */
     private $page;
+    private ?Sanitizer $svgSanitizer = null;
 
     public function __construct(ManageThemePage $page)
     {
@@ -34,7 +37,7 @@ class ManageThemePresenter extends ActionPresenter
             $imageUploadDirectory = new ImageUploadDirectory();
             $uploadDir = $imageUploadDirectory->GetDirectory();
             $target = $uploadDir . '/custom-logo.' . $logoFile->Extension();
-            $copied = copy($logoFile->TemporaryName(), $target);
+            $copied = $this->copyFileOrSanitizedSvg($logoFile->TemporaryName(), $target, $logoFile->Extension());
             if (!$copied) {
                 Log::Error(
                     'Could not replace logo with %s. Ensure %s is writable.',
@@ -63,7 +66,8 @@ class ManageThemePresenter extends ActionPresenter
             $imageUploadDirectory = new ImageUploadDirectory();
             $uploadDir = $imageUploadDirectory->GetDirectory();
             $target = $uploadDir . '/custom-favicon.' . $favicon->Extension();
-            $copied = copy($favicon->TemporaryName(), $target);
+
+            $copied = $this->copyFileOrSanitizedSvg($favicon->TemporaryName(), $target, $favicon->Extension());
             if (!$copied) {
                 Log::Error(
                     'Could not replace favicon with %s. Ensure %s is writable.',
@@ -135,10 +139,48 @@ class ManageThemePresenter extends ActionPresenter
     protected function LoadValidators($action)
     {
         $this->page->RegisterValidator('logoFile', new FileUploadValidator($this->page->GetLogoFile()));
-        $this->page->RegisterValidator('logoFileExt', new FileTypeValidator($this->page->GetLogoFile(), ['jpg', 'png', 'gif']));
+        $this->page->RegisterValidator('logoFileExt', new FileTypeValidator($this->page->GetLogoFile(), ['jpg', 'png', 'gif', 'svg']));
         $this->page->RegisterValidator('cssFile', new FileUploadValidator($this->page->GetCssFile()));
         $this->page->RegisterValidator('cssFileExt', new FileTypeValidator($this->page->GetCssFile(), 'css'));
         $this->page->RegisterValidator('faviconFile', new FileUploadValidator($this->page->GetFaviconFile()));
-        $this->page->RegisterValidator('faviconFileExt', new FileTypeValidator($this->page->GetFaviconFile(), ['ico', 'jpg', 'png', 'gif']));
+        $this->page->RegisterValidator('faviconFileExt', new FileTypeValidator($this->page->GetFaviconFile(), ['ico', 'jpg', 'png', 'gif', 'svg']));
+    }
+
+    private function copyFileOrSanitizedSvg(string $sourcePath, string $targetPath, string $extension): bool
+    {
+        if (strtolower($extension) !== 'svg') {
+            return copy($sourcePath, $targetPath);
+        }
+
+        $svg = file_get_contents($sourcePath);
+        if ($svg === false) {
+            return false;
+        }
+
+        $sanitized = $this->sanitizeSvg($svg);
+        if ($sanitized === null) {
+            return false;
+        }
+
+        return file_put_contents($targetPath, $sanitized) !== false;
+    }
+
+    private function getSvgSanitizer(): Sanitizer
+    {
+        if ($this->svgSanitizer === null) {
+            $this->svgSanitizer = new Sanitizer();
+        }
+
+        return $this->svgSanitizer;
+    }
+
+    private function sanitizeSvg(string $svg): ?string
+    {
+        // Remove XML declaration to normalize uploaded SVG files.
+        $svg = preg_replace('/<\?xml[^?]*\?>\s*/i', '', $svg);
+
+        $sanitized = $this->getSvgSanitizer()->sanitize($svg);
+
+        return $sanitized !== false ? $sanitized : null;
     }
 }

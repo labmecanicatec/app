@@ -53,11 +53,11 @@ class PageTest extends TestBase
             ['dir' => $this->tempDir . '/old_img', 'url' => 'img'],
         ];
 
-        $result = Page::findCustomFile(
+        $result = Page::findCustomFileWithPath(
             baseName: 'custom-logo',
             extensions: ['png', 'gif', 'jpg'],
             locations: $locations,
-        );
+        )['url'] ?? null;
 
         $this->assertNull($result);
     }
@@ -71,11 +71,11 @@ class PageTest extends TestBase
             ['dir' => $this->tempDir . '/old_img', 'url' => 'img'],
         ];
 
-        $result = Page::findCustomFile(
+        $result = Page::findCustomFileWithPath(
             baseName: 'custom-logo',
             extensions: ['png', 'gif', 'jpg'],
             locations: $locations,
-        );
+        )['url'] ?? null;
 
         $this->assertSame('uploads/images/custom-logo.png', $result);
     }
@@ -89,11 +89,11 @@ class PageTest extends TestBase
             ['dir' => $this->tempDir . '/old_img', 'url' => 'img'],
         ];
 
-        $result = Page::findCustomFile(
+        $result = Page::findCustomFileWithPath(
             baseName: 'custom-logo',
             extensions: ['png', 'gif', 'jpg'],
             locations: $locations,
-        );
+        )['url'] ?? null;
 
         $this->assertSame('img/custom-logo.gif', $result);
     }
@@ -108,11 +108,11 @@ class PageTest extends TestBase
             ['dir' => $this->tempDir . '/old_img', 'url' => 'img'],
         ];
 
-        $result = Page::findCustomFile(
+        $result = Page::findCustomFileWithPath(
             baseName: 'custom-logo',
             extensions: ['png', 'gif', 'jpg'],
             locations: $locations,
-        );
+        )['url'] ?? null;
 
         $this->assertSame('uploads/images/custom-logo.png', $result);
     }
@@ -126,11 +126,11 @@ class PageTest extends TestBase
             ['dir' => $this->tempDir . '/new_upload', 'url' => 'uploads/images'],
         ];
 
-        $result = Page::findCustomFile(
+        $result = Page::findCustomFileWithPath(
             baseName: 'custom-logo',
             extensions: ['png', 'gif', 'jpg'],
             locations: $locations,
-        );
+        )['url'] ?? null;
 
         $this->assertSame('uploads/images/custom-logo.jpg', $result);
     }
@@ -144,11 +144,11 @@ class PageTest extends TestBase
             ['dir' => $this->tempDir . '/old_web', 'url' => ''],
         ];
 
-        $result = Page::findCustomFile(
+        $result = Page::findCustomFileWithPath(
             baseName: 'custom-favicon',
-            extensions: ['png', 'gif', 'jpg', 'ico'],
+            extensions: ['png', 'gif', 'jpg', 'ico', 'svg'],
             locations: $locations,
-        );
+        )['url'] ?? null;
 
         $this->assertSame('custom-favicon.ico', $result);
     }
@@ -162,11 +162,11 @@ class PageTest extends TestBase
             ['dir' => $this->tempDir . '/new_upload', 'url' => 'uploads/images'],
         ];
 
-        $result = Page::findCustomFile(
+        $result = Page::findCustomFileWithPath(
             baseName: 'custom-favicon',
-            extensions: ['png', 'gif', 'jpg', 'ico'],
+            extensions: ['png', 'gif', 'jpg', 'ico', 'svg'],
             locations: $locations,
-        );
+        )['url'] ?? null;
 
         $this->assertSame('uploads/images/custom-favicon.' . $extension, $result);
     }
@@ -181,6 +181,7 @@ class PageTest extends TestBase
             'gif' => ['gif'],
             'jpg' => ['jpg'],
             'ico' => ['ico'],
+            'svg' => ['svg'],
         ];
     }
 }

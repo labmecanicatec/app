@@ -26,8 +26,13 @@
             <div class="card shadow mb-2">
                 <div class="card-body mx-3">
                     <div id="login-box" class="default-box">
-                        <div class="login-icon my-2">
-                            <img src="{$Path}{$LogoUrl}?{$Version}" alt="{$Title}" class="mx-auto d-block w-50">
+                        <div class="login-logo my-2">
+                            {if $LogoSvgContent}
+                                <span class="logo-svg mx-auto d-block w-50" role="img"
+                                    aria-label="{$Title}">{$LogoSvgContent nofilter}</span>
+                            {else}
+                                <img src="{$Path}{$LogoUrl}?{$Version}" alt="{$Title}" class="mx-auto d-block w-50">
+                            {/if}
                         </div>
 
                         {if $ShowLoginError}
@@ -136,17 +141,17 @@
                         </div>
                     {/if}
                     {if count($Languages) > 1}
-                    <div id="change-language" class="text-end">
-                        <a type="button" class="link-primary" data-bs-toggle="collapse"
-                            data-bs-target="#change-language-options"><span><i class="bi bi-globe-americas"></i></span>
-                            {translate key=ChangeLanguage}
-                        </a>
-                        <div id="change-language-options" class="collapse">
-                            <select {formname key=LANGUAGE} class="form-select form-select-sm" id="languageDropDown">
-                                {object_html_options options=$Languages key='GetLanguageCode' label='GetDisplayName' selected=$SelectedLanguage}
-                            </select>
+                        <div id="change-language" class="text-end">
+                            <a type="button" class="link-primary" data-bs-toggle="collapse"
+                                data-bs-target="#change-language-options"><span><i class="bi bi-globe-americas"></i></span>
+                                {translate key=ChangeLanguage}
+                            </a>
+                            <div id="change-language-options" class="collapse">
+                                <select {formname key=LANGUAGE} class="form-select form-select-sm" id="languageDropDown">
+                                    {object_html_options options=$Languages key='GetLanguageCode' label='GetDisplayName' selected=$SelectedLanguage}
+                                </select>
+                            </div>
                         </div>
-                    </div>
                     {/if}
                 </div>
             </div>
