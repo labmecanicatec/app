@@ -44,12 +44,12 @@ function Dashboard(opts) {
       $(this).removeClass('clicked');
     });
 
-    reservations.click(function () {
+    reservations.on('click', function () {
       var refNum = $(this).attr('id');
       window.location = options.reservationUrl + refNum;
     });
 
-    $('.btnCheckin').click(function (e) {
+    $('.btnCheckin').on('click', function (e) {
       e.preventDefault();
       e.stopPropagation();
       var button = $(this);
@@ -70,7 +70,7 @@ function Dashboard(opts) {
       });
     });
 
-    $('.btnCheckout').click(function (e) {
+    $('.btnCheckout').on('click', function (e) {
       e.preventDefault();
       e.stopPropagation();
       var button = $(this);

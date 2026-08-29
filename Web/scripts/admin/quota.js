@@ -22,7 +22,7 @@ function QuotaManagement(opts) {
       elements.deleteDialog.modal('show');
     });
 
-    $('.save').click(function () {
+    $('.save').on('click', function () {
       $(this).closest('form').submit();
     });
 

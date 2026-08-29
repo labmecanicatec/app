@@ -229,31 +229,31 @@ function ResourceManagement(opts) {
       PerformAsyncAction(details, getSubmitCallback(action), $('#subscriptionIndicator'), subscriptionCallback);
     });
 
-    elements.checkAllResources.click(function (e) {
+    elements.checkAllResources.on('click', function (e) {
       e.preventDefault();
       elements.bulkUpdateList.find('input:checkbox').prop('checked', true);
     });
 
-    elements.checkNoResources.click(function (e) {
+    elements.checkNoResources.on('click', function (e) {
       e.preventDefault();
       elements.bulkUpdateList.find('input:checkbox').prop('checked', false);
     });
 
-    elements.checkAllDeleteResources.click(function (e) {
+    elements.checkAllDeleteResources.on('click', function (e) {
       e.preventDefault();
       elements.bulkDeleteList.find('input:checkbox').prop('checked', true);
     });
 
-    elements.checkNoDeleteResources.click(function (e) {
+    elements.checkNoDeleteResources.on('click', function (e) {
       e.preventDefault();
       elements.bulkDeleteList.find('input:checkbox').prop('checked', false);
     });
 
-    $('.save').click(function () {
+    $('.save').on('click', function () {
       $(this).closest('form').submit();
     });
 
-    elements.addResourceButtons.click(function (e) {
+    elements.addResourceButtons.on('click', function (e) {
       e.preventDefault();
       elements.addResourceDialog.modal('show');
       $('#resourceName').focus();
@@ -267,7 +267,7 @@ function ResourceManagement(opts) {
       populateReasonOptions(elements.statusOptionsFilter.val(), elements.statusReasonsFilter);
     });
 
-    elements.clearFilterButton.click(function (e) {
+    elements.clearFilterButton.on('click', function (e) {
       e.preventDefault();
       elements.filterTable.find('input,select,textarea').val('');
 
@@ -296,7 +296,7 @@ function ResourceManagement(opts) {
       }
     });
 
-    elements.bulkUpdatePromptButton.click(function (e) {
+    elements.bulkUpdatePromptButton.on('click', function (e) {
       e.preventDefault();
 
       var items = [];
@@ -323,7 +323,7 @@ function ResourceManagement(opts) {
       $('#bulkUpdateDialog').modal('show');
     });
 
-    elements.bulkDeletePromptButton.click(function (e) {
+    elements.bulkDeletePromptButton.on('click', function (e) {
       e.preventDefault();
 
       var items = [];
@@ -360,7 +360,7 @@ function ResourceManagement(opts) {
       elements.groupSearch.val('');
     });
 
-    elements.browseUsersButton.click(function (e) {
+    elements.browseUsersButton.on('click', function (e) {
       e.preventDefault();
       showAllUsersToAdd();
     });
@@ -379,7 +379,7 @@ function ResourceManagement(opts) {
       changeUserPermission(userId, type);
     });
 
-    elements.browseGroupsButton.click(function (e) {
+    elements.browseGroupsButton.on('click', function (e) {
       e.preventDefault();
       showAllGroupsToAdd();
     });
@@ -419,7 +419,7 @@ function ResourceManagement(opts) {
     wireUpCheckboxToggle(elements.accessForm);
     wireUpCheckboxToggle(elements.bulkUpdateForm);
 
-    elements.importTrigger.click(function (e) {
+    elements.importTrigger.on('click', function (e) {
       e.preventDefault();
       $('#importErrors').empty().addClass('d-none');
       $('#importResults').addClass('d-none');
@@ -905,7 +905,7 @@ function ResourceManagement(opts) {
     populateReasonOptions(statusOptions.val(), statusReasons);
 
     addStatusReason.unbind();
-    addStatusReason.click(function (e) {
+    addStatusReason.on('click', function (e) {
       e.preventDefault();
       statusForm.find(elements.newStatusReason).toggleClass('d-none');
       statusForm.find(elements.existingStatusReason).toggleClass('d-none');

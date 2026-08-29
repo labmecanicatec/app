@@ -270,23 +270,23 @@ function Calendar(opts) {
       );
     });
 
-    dayDialog.find('a').click(function (e) {
+    dayDialog.find('a').on('click', function (e) {
       e.preventDefault();
     });
 
-    $('#dayDialogCancel').click(function (e) {
+    $('#dayDialogCancel').on('click', function (e) {
       dayDialog.addClass('d-none');
     });
 
-    $('#dayDialogView').click(function (e) {
+    $('#dayDialogView').on('click', function (e) {
       drillDownClick();
     });
 
-    $('#dayDialogCreate').click(function (e) {
+    $('#dayDialogCreate').on('click', function (e) {
       openNewReservation();
     });
 
-    $('#showResourceGroups').click(function (e) {
+    $('#showResourceGroups').on('click', function (e) {
       e.preventDefault();
 
       var resourceGroupsContainer = $('#resourceGroupsContainer');

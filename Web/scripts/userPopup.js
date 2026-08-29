@@ -27,7 +27,7 @@ $.fn.bindUserDetails = function (userId, options) {
       }
 
       if (opts.preventClick) {
-        userElement.click(function (e) {
+        userElement.on('click', function (e) {
           e.preventDefault();
         });
       }

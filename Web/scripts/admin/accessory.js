@@ -42,7 +42,7 @@ function AccessoryManagement(opts) {
       showAccessoryResources();
     });
 
-    $('.save').click(function () {
+    $('.save').on('click', function () {
       $(this).closest('form').submit();
     });
 

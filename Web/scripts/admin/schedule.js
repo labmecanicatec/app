@@ -193,7 +193,7 @@ function ScheduleManagement(opts) {
       elements.resourcesPerReservationDialog.modal('show');
     });
 
-    elements.deletePeakTimesButton.click(function (e) {
+    elements.deletePeakTimesButton.on('click', function (e) {
       e.preventDefault();
       elements.deletePeakTimes.val('1');
     });
@@ -219,7 +219,7 @@ function ScheduleManagement(opts) {
       }
     });
 
-    $('.save').click(function (e) {
+    $('.save').on('click', function (e) {
       e.preventDefault();
       e.stopPropagation();
       $(this).closest('form').submit();
@@ -237,7 +237,7 @@ function ScheduleManagement(opts) {
       createQuickLayout();
     });
 
-    elements.createQuickLayout.click(function (e) {
+    elements.createQuickLayout.on('click', function (e) {
       e.preventDefault();
       createQuickLayout();
     });
@@ -246,7 +246,7 @@ function ScheduleManagement(opts) {
       toggleLayoutChange($(this).is(':checked'));
     });
 
-    elements.addScheduleButton.click(function (e) {
+    elements.addScheduleButton.on('click', function (e) {
       e.preventDefault();
       elements.addDialog.modal('show');
     });
@@ -255,11 +255,11 @@ function ScheduleManagement(opts) {
       elements.addName.focus();
     });
 
-    elements.cancelDeleteSlot.click(function (e) {
+    elements.cancelDeleteSlot.on('click', function (e) {
       elements.deleteCustomLayoutDialog.hide();
     });
 
-    elements.cancelCreateSlot.click(function (e) {
+    elements.cancelCreateSlot.on('click', function (e) {
       elements.confirmCreateSlotDialog.hide();
     });
 
@@ -279,7 +279,7 @@ function ScheduleManagement(opts) {
       }
     });
 
-    $('.autofillBlocked').click(function (e) {
+    $('.autofillBlocked').on('click', function (e) {
       e.preventDefault();
       autoFillBlocked();
     });
@@ -697,7 +697,7 @@ function ScheduleManagement(opts) {
               of: info.jsEvent,
             });
             $('#confirmCreateOK').unbind('click');
-            $('#confirmCreateOK').click(function (e) {
+            $('#confirmCreateOK').on('click', function (e) {
               elements.slotStartDate.val(dateHelper.formatDate(info.start, true));
               elements.slotEndDate.val(dateHelper.formatDate(info.end, true));
               ajaxPost(

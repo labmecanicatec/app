@@ -25,11 +25,11 @@ function ReservationColorManagement(opts) {
       elements.deleteDialog.modal('show');
     });
 
-    $('.save').click(function () {
+    $('.save').on('click', function () {
       $(this).closest('form').submit();
     });
 
-    $('#addRuleButton').click(function (e) {
+    $('#addRuleButton').on('click', function (e) {
       var attrId = '#attribute' + elements.attributeOption.val();
       $('#attributeFillIn').empty();
       $('#attributeFillIn').append($(attrId).clone().removeClass('d-none'));

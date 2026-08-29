@@ -35,7 +35,7 @@ function BlackoutManagement(opts) {
   BlackoutManagement.prototype.init = function () {
     wireUpUpdateButtons();
 
-    $('.save').click(function () {
+    $('.save').on('click', function () {
       $(this).closest('form').submit();
     });
 
@@ -68,11 +68,11 @@ function BlackoutManagement(opts) {
 
         wireUpUpdateButtons();
 
-        $('.save').click(function () {
+        $('.save').on('click', function () {
           $(this).closest('form').submit();
         });
 
-        $('.blackoutResources').click(function (e) {
+        $('.blackoutResources').on('click', function (e) {
           if ($('.blackoutResources input:checked').length == 0) {
             e.preventDefault();
           }
@@ -100,7 +100,7 @@ function BlackoutManagement(opts) {
       showDeleteRecurringBlackout();
     });
 
-    $('#showAll').click(function (e) {
+    $('#showAll').on('click', function (e) {
       e.preventDefault();
       elements.startDate.val('');
       elements.endDate.val('');
@@ -110,12 +110,12 @@ function BlackoutManagement(opts) {
       filterReservations();
     });
 
-    $('#filter').click(function (e) {
+    $('#filter').on('click', function (e) {
       e.preventDefault();
       filterReservations();
     });
 
-    elements.deleteMultiplePrompt.click(function (e) {
+    elements.deleteMultiplePrompt.on('click', function (e) {
       e.preventDefault();
       var checked = elements.blackoutTable.find('.delete-multiple:checked');
       elements.deleteMultipleCount.text(checked.length);
@@ -124,7 +124,7 @@ function BlackoutManagement(opts) {
       elements.deleteMultipleDialog.modal('show');
     });
 
-    elements.deleteMultipleSelectAll.click(function (e) {
+    elements.deleteMultipleSelectAll.on('click', function (e) {
       e.stopPropagation();
       var isChecked = elements.deleteMultipleSelectAll.is(':checked');
       elements.blackoutTable.find('.delete-multiple').prop('checked', isChecked);
@@ -267,11 +267,11 @@ function BlackoutManagement(opts) {
   }
 
   function wireUpUpdateButtons() {
-    $('.btnUpdateThisInstance').click(function () {
+    $('.btnUpdateThisInstance').on('click', function () {
       ChangeUpdateScope(options.scopeOpts.instance);
     });
 
-    $('.btnUpdateAllInstances').click(function () {
+    $('.btnUpdateAllInstances').on('click', function () {
       ChangeUpdateScope(options.scopeOpts.full);
     });
   }

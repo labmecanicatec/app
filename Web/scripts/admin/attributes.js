@@ -55,7 +55,7 @@ function AttributeManagement(opts) {
   var updateEntityCallback = function () {};
 
   AttributeManagement.prototype.init = function () {
-    $('.save').click(function () {
+    $('.save').on('click', function () {
       $(this).closest('form').submit();
     });
 
@@ -77,7 +77,7 @@ function AttributeManagement(opts) {
       showDeleteDialog(attributeId);
     });
 
-    $('#addAttributeButton').click(function (e) {
+    $('#addAttributeButton').on('click', function (e) {
       e.preventDefault();
       selectedEntityChoices = elements.entityChoices;
       currentAttributeEntities.entityIds = [];
@@ -112,7 +112,7 @@ function AttributeManagement(opts) {
       showEditDialog(selectedAttribute);
     });
 
-    $('#appliesTo, #editAppliesTo').click(function (e) {
+    $('#appliesTo, #editAppliesTo').on('click', function (e) {
       e.preventDefault();
       activeAppliesTo = $(this);
 
@@ -123,7 +123,7 @@ function AttributeManagement(opts) {
       };
     });
 
-    elements.secondaryPrompt.click(function (e) {
+    elements.secondaryPrompt.on('click', function (e) {
       e.preventDefault();
       activeAppliesTo = $(this);
 

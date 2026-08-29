@@ -99,7 +99,7 @@ function Schedule(opts, resourceGroups) {
       var resid = reservation.ReferenceNumber;
       var pattern = 'div.reserved[data-resid="' + resid + '"]';
 
-      div.click(function (e) {
+      div.on('click', function (e) {
         var reservationUrl = options.reservationUrlTemplate.replace('[referenceNumber]', resid);
         window.location = reservationUrl;
       });
@@ -775,7 +775,7 @@ function Schedule(opts, resourceGroups) {
       $('.schedule_dates').hide();
     }
 
-    multidateselect.click(function (e) {
+    multidateselect.on('click', function (e) {
       if (multidateselect.is(':checked')) {
         CheckMultiDateSelect();
       } else {
@@ -799,7 +799,7 @@ function Schedule(opts, resourceGroups) {
       }
     });
 
-    $('#individualDatesGo').click(function (e) {
+    $('#individualDatesGo').on('click', function (e) {
       e.preventDefault();
 
       if (multidateselect.is(':checked')) {
@@ -893,7 +893,7 @@ function Schedule(opts, resourceGroups) {
   };
 
   this.initRotateSchedule = function () {
-    $('#schedule-actions .schedule-style').click(function (e) {
+    $('#schedule-actions .schedule-style').on('click', function (e) {
       e.preventDefault();
 
       var scheduleDisplay = $(this).attr('schedule-display');
@@ -1155,7 +1155,7 @@ function Schedule(opts, resourceGroups) {
   this.initResourceFilter = function () {
     $('#advancedFilter').attr('action', opts.filterUrl);
 
-    $('#show_all_resources').click(function (e) {
+    $('#show_all_resources').on('click', function (e) {
       e.preventDefault();
 
       groupDiv.tree('selectNode', null);

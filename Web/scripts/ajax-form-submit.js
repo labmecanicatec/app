@@ -1,6 +1,6 @@
 jQuery.fn.bindAjaxSubmit = function (updateButton, successElement, modalDiv) {
   var self = this;
-  updateButton.click(function (e) {
+  updateButton.on('click', function (e) {
     e.preventDefault();
     self.submit();
   });

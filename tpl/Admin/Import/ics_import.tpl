@@ -86,7 +86,7 @@
             }
         };
 
-        $('#btnUpload').click(function(e) {
+        $('#btnUpload').on('click', function(e) {
             e.preventDefault();
             importForm.submit();
         });

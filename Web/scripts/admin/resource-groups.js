@@ -22,7 +22,7 @@ function ResourceGroupManagement(opts) {
   };
 
   ResourceGroupManagement.prototype.init = function (groups) {
-    $('.save').click(function () {
+    $('.save').on('click', function () {
       $(this).closest('form').submit();
     });
 
@@ -107,7 +107,7 @@ function ResourceGroupManagement(opts) {
 
     $('.resource-draggable').draggable({ revert: true });
 
-    elements.addGroupButton.click(function (e) {
+    elements.addGroupButton.on('click', function (e) {
       e.preventDefault();
       elements.addGroupForm.submit();
     });

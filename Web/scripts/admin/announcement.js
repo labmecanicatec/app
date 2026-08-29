@@ -55,7 +55,7 @@ function AnnouncementManagement(opts) {
       }
     });
 
-    $('.save').click(function () {
+    $('.save').on('click', function () {
       $(this).closest('form').submit();
     });
 
