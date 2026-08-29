@@ -55,11 +55,11 @@ function AnnouncementManagement(opts) {
       }
     });
 
-    $('.save').click(function () {
+    $('.save').on('click', function () {
       $(this).closest('form').submit();
     });
 
-    $('.cancel').click(function () {
+    $('.cancel').on('click', function () {
       $(this).closest('.dialog').modal('hide');
     });
 

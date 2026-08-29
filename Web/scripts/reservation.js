@@ -97,30 +97,30 @@ function Reservation(opts) {
 
     scheduleId = $('#scheduleId').val();
 
-    elements.accessoriesPrompt.click(function (e) {
+    elements.accessoriesPrompt.on('click', function (e) {
       e.preventDefault();
       ShowAccessoriesPrompt();
     });
 
-    elements.accessoriesConfirm.click(function (e) {
+    elements.accessoriesConfirm.on('click', function (e) {
       e.preventDefault();
       AddAccessories();
       elements.accessoriesDialog.modal('hide');
     });
 
-    elements.accessoriesCancel.click(function (e) {
+    elements.accessoriesCancel.on('click', function (e) {
       e.preventDefault();
       elements.accessoriesDialog.modal('hide');
     });
 
-    elements.printButton.click(function (e) {
+    elements.printButton.on('click', function (e) {
       e.preventDefault();
       window.print();
     });
 
     WireUpResourceDetailPopups();
 
-    $('#btnRemoveAttachment').click(function (e) {
+    $('#btnRemoveAttachment').on('click', function (e) {
       e.preventDefault();
       $('input:checkbox', '#attachmentDiv').toggle();
     });
@@ -133,39 +133,39 @@ function Reservation(opts) {
       handleAdditionalResourceChecked($(this), e);
     });
 
-    $('.btnClearAddResources').click(function () {
+    $('.btnClearAddResources').on('click', function () {
       elements.resourceGroupsDialog.modal('hide');
     });
 
-    elements.addResourcesConfirm.click(function () {
+    elements.addResourcesConfirm.on('click', function () {
       AddResources();
     });
 
-    $('.btnUpdateThisInstance').click(function () {
+    $('.btnUpdateThisInstance').on('click', function () {
       ChangeUpdateScope(options.scopeOpts.instance);
     });
 
-    $('.btnUpdateAllInstances').click(function () {
+    $('.btnUpdateAllInstances').on('click', function () {
       ChangeUpdateScope(options.scopeOpts.full);
     });
 
-    $('.btnUpdateFutureInstances').click(function () {
+    $('.btnUpdateFutureInstances').on('click', function () {
       ChangeUpdateScope(options.scopeOpts.future);
     });
 
-    $('.triggerDeletePrompt').click(function (e) {
+    $('.triggerDeletePrompt').on('click', function (e) {
       e.preventDefault();
       elements.deleteButtonPrompt.modal('show');
     });
 
-    $('.cancelDelete, .confirmDelete').click(function (e) {
+    $('.cancelDelete, .confirmDelete').on('click', function (e) {
       e.preventDefault();
       elements.deleteButtonPrompt.modal('hide');
     });
 
     $('#btnWaitList')
       .unbind()
-      .click(function () {
+      .on('click', function () {
         $('#wait-box').modal('show');
         JoinWaitList();
       });
@@ -228,7 +228,7 @@ function Reservation(opts) {
       elements.emailUserAutocomplete.val('');
     }
 
-    elements.btnSendEmail.click(function (e) {
+    elements.btnSendEmail.on('click', function (e) {
       e.preventDefault();
       elements.emailUserAutocomplete.val('');
       elements.emailReservationList.empty();
@@ -254,7 +254,7 @@ function Reservation(opts) {
       AddUserToEmail(ui.item.label, ui.item.data.Email);
     });
 
-    elements.sendEmailButton.click(function (e) {
+    elements.sendEmailButton.on('click', function (e) {
       e.preventDefault();
       elements.emailForm.submit();
     });
@@ -675,25 +675,25 @@ function Reservation(opts) {
   var ShowReservationAjaxResponse = function () {
     $('#btnSaveSuccessful')
       .unbind()
-      .click(function (e) {
+      .on('click', function (e) {
         window.location = options.returnUrl.replace(/&amp;/g, '&');
       });
 
     $('#btnSaveFailed')
       .unbind()
-      .click(function () {
+      .on('click', function () {
         CloseSaveDialog();
       });
 
     $('#btnWaitList')
       .unbind()
-      .click(function () {
+      .on('click', function () {
         JoinWaitList();
       });
 
     $('#btnRetry')
       .unbind()
-      .click(function (e) {
+      .on('click', function (e) {
         e.preventDefault();
         var retryParams = $('#retryParams');
         $('#retrySubmitParams').empty().append(retryParams.find('input'));
@@ -722,23 +722,23 @@ function Reservation(opts) {
   };
 
   var WireUpActions = function () {
-    $('.create').click(function () {
+    $('.create').on('click', function () {
       $('form').attr('action', options.createUrl);
     });
 
-    $('.update').click(function () {
+    $('.update').on('click', function () {
       SetDeleteReason();
       elements.deleteRecurringButtons.addClass('d-none');
       $('form').attr('action', options.updateUrl);
     });
 
-    $('.delete').click(function () {
+    $('.delete').on('click', function () {
       SetDeleteReason();
       elements.deleteRecurringButtons.removeClass('d-none');
       $('form').attr('action', options.deleteUrl);
     });
 
-    $('.btnCheckin').click(function () {
+    $('.btnCheckin').on('click', function () {
       $('#creatingNotification').find('h3').addClass('d-none');
       $('#checkingInMessage').removeClass('d-none');
       $('#wait-box').modal('show');
@@ -749,7 +749,7 @@ function Reservation(opts) {
       });
     });
 
-    $('.btnCheckout').click(function () {
+    $('.btnCheckout').on('click', function () {
       $('#creatingNotification').find('h3').addClass('d-none');
       $('#checkingOutMessage').removeClass('d-none');
       $('#wait-box').modal('show');
@@ -764,17 +764,17 @@ function Reservation(opts) {
   var WireUpButtonPrompt = function () {
     $('#updateButtons')
       .find('button')
-      .click(function () {
+      .on('click', function () {
         $('#updateButtons').modal('hide');
       });
 
-    $('.prompt').click(function () {
+    $('.prompt').on('click', function () {
       $('#updateButtons').modal('show');
     });
   };
 
   var WireUpSaveDialog = function () {
-    $('.save').click(function () {
+    $('.save').on('click', function () {
       elements.reservationForm.submit();
     });
   };
@@ -979,11 +979,11 @@ function Reservation(opts) {
   }
 
   function InitializeParticipationElements() {
-    elements.participantDialogPrompt.click(function () {
+    elements.participantDialogPrompt.on('click', function () {
       participation.showAllUsersToAdd(elements.participantDialog);
     });
 
-    elements.participantGroupDialogPrompt.click(function () {
+    elements.participantGroupDialogPrompt.on('click', function () {
       participation.showAllGroupsToAdd(elements.participantGroupDialog);
     });
 
@@ -1009,12 +1009,12 @@ function Reservation(opts) {
       participation.addParticipant(ui.item.label, ui.item.value);
     });
 
-    elements.inviteeDialogPrompt.click(function (e) {
+    elements.inviteeDialogPrompt.on('click', function (e) {
       e.preventDefault();
       participation.showAllUsersToAdd(elements.inviteeDialog);
     });
 
-    elements.inviteeGroupDialogPrompt.click(function (e) {
+    elements.inviteeGroupDialogPrompt.on('click', function (e) {
       e.preventDefault();
       participation.showAllGroupsToAdd(elements.inviteeGroupDialog);
     });
@@ -1041,12 +1041,12 @@ function Reservation(opts) {
       participation.addInvitee(ui.item.label, ui.item.value);
     });
 
-    elements.guestDialogPrompt.click(function (e) {
+    elements.guestDialogPrompt.on('click', function (e) {
       e.preventDefault();
       elements.inviteeGuestDialog.modal('show');
     });
 
-    elements.addGuestButton.click(function (e) {
+    elements.addGuestButton.on('click', function (e) {
       e.preventDefault();
       var emails = elements.guestEmail.val().split(/[ ,]+/);
       $.each(emails, function (i, email) {
@@ -1057,7 +1057,7 @@ function Reservation(opts) {
       });
     });
 
-    elements.guestEmail.keyup(function (e) {
+    elements.guestEmail.on('keyup', function (e) {
       var code = e.keyCode || e.which;
       if (code === 13) {
         elements.addGuestButton.trigger('click');
@@ -1240,7 +1240,7 @@ function Reservation(opts) {
   }
 
   changeUser.init = function () {
-    $('#showChangeUsers').click(function (e) {
+    $('#showChangeUsers').on('click', function (e) {
       e.preventDefault();
       $('#changeUsers').toggle();
       elements.changeUserAutocomplete.focus();
@@ -1250,7 +1250,7 @@ function Reservation(opts) {
       changeUser.chooseUser(ui.item.value, ui.item.label, ui.item.data.CurrentCreditCount);
     });
 
-    $('#promptForChangeUsers').click(function () {
+    $('#promptForChangeUsers').on('click', function () {
       changeUser.showAll();
     });
 

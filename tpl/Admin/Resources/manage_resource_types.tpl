@@ -176,14 +176,14 @@
 					var popoverId = $(this).data('popover-content');
 					return $(popoverId).html();
 				}
-			}).click(function(e) {
+			}).on('click', function(e) {
 				e.preventDefault();
 			}).on('show.bs.popover', function() {
 
 			}).on('shown.bs.popover', function() {
 				var trigger = $(this);
 				var popover = trigger.data('bs.popover').tip();
-				popover.find('.editable-cancel').click(function() {
+				popover.find('.editable-cancel').on('click', function() {
 					trigger.popover('hide');
 				});
 			});

@@ -9,7 +9,7 @@ function Participation(opts) {
   };
 
   Participation.prototype.initReservation = function () {
-    elements.invitationAction.click(function (e) {
+    elements.invitationAction.on('click', function (e) {
       e.preventDefault();
       e.stopPropagation();
       elements.indicator.show();
@@ -18,7 +18,7 @@ function Participation(opts) {
   };
 
   Participation.prototype.initParticipation = function () {
-    elements.invitationAction.click(function () {
+    elements.invitationAction.on('click', function () {
       elements.jsonResult.hide();
 
       var td = $(this).parents('td');

@@ -8,7 +8,7 @@ function Configuration() {
   };
 
   Configuration.prototype.init = function () {
-    $('.save').click(function (e) {
+    $('.save').on('click', function (e) {
       e.preventDefault();
       elements.form.submit();
     });
@@ -19,7 +19,7 @@ function Configuration() {
 
     elements.form.bind('onValidationFailed', onValidationFailed);
 
-    elements.updateHomepageButton.click(function (e) {
+    elements.updateHomepageButton.on('click', function (e) {
       e.preventDefault();
       $('#homepage_id').val($('#default__homepage\\|').val());
       elements.updateHomepageForm.submit();

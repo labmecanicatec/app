@@ -4,7 +4,7 @@ function Profile() {
   };
 
   Profile.prototype.init = function () {
-    $('#btnUpdate').click(function (e) {
+    $('#btnUpdate').on('click', function (e) {
       e.preventDefault();
       elements.form.submit();
     });

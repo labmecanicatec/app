@@ -75,10 +75,10 @@ function GroupManagement(opt) {
     });
 
     //main interface
-    $('.save').click((e) => $(e.currentTarget).closest('form').submit());
-    $('.cancel').click((e) => $(e.currentTarget).closest('.modal').modal('hide'));
+    $('.save').on('click', (e) => $(e.currentTarget).closest('form').trigger('submit'));
+    $('.cancel').on('click', (e) => $(e.currentTarget).closest('.modal').modal('hide'));
 
-    $('#add-group').click((e) => {
+    $('#add-group').on('click', function (e) {
       e.preventDefault();
       addDialog.modal('show');
       addDialog.find(':text').first().focus();
@@ -103,7 +103,7 @@ function GroupManagement(opt) {
       link.find('i').removeClass('bi-plus-square-fill text-success').addClass('bi-check-circle-fill text-info');
     });
 
-    $('#browseUsers').click(() => {
+    $('#browseUsers').on('click', () => {
       showAllUsersToAdd();
     });
 
@@ -115,7 +115,7 @@ function GroupManagement(opt) {
 
     //ressource selection
     // Handle click to set all resources to "Full Access"
-    elements.checkAllResourcesFull.click((e) => {
+    elements.checkAllResourcesFull.on('click', (e) => {
       e.preventDefault();
       for (var rid in permissionState) {
         permissionState[rid] = rid + '_0';
@@ -124,7 +124,7 @@ function GroupManagement(opt) {
     });
 
     // Handle click to set all resources to "View Only"
-    elements.checkAllResourcesView.click((e) => {
+    elements.checkAllResourcesView.on('click', (e) => {
       e.preventDefault();
       for (var rid in permissionState) {
         permissionState[rid] = rid + '_1';
@@ -133,7 +133,7 @@ function GroupManagement(opt) {
     });
 
     // Handle click to set all resources to "None"
-    elements.checkNoResources.click((e) => {
+    elements.checkNoResources.on('click', (e) => {
       e.preventDefault();
       for (var rid in permissionState) {
         permissionState[rid] = rid + '_none';

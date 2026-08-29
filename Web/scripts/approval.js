@@ -7,7 +7,7 @@ function Approval(opts) {
   };
 
   function initReservation() {
-    elements.approveButton.click(function () {
+    elements.approveButton.on('click', function () {
       $('<span class="spinner-border spinner-border-sm"/>').insertAfter(elements.approveButton);
       elements.approveButton.hide();
       approve(elements.referenceNumber.val());

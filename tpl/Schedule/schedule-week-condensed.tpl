@@ -149,7 +149,7 @@
             var $td = $('td.reserved', $('#reservations'));
             $td.unbind('click');
 
-            $td.click(function(e) {
+            $td.on('click', function(e) {
                 e.stopPropagation();
                 var date = $(this).attr('date').split('-');
                 var year = date[0];

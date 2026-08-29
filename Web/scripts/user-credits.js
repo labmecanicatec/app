@@ -20,10 +20,10 @@ function UserCredits(opts) {
   };
 
   function loadCreditLog(page, pageSize) {
-    elements.creditLogIndicator.removeClass('no-show');
+    elements.creditLogIndicator.removeClass('d-none');
 
     ajaxGet(opts.creditLogUrl.replace('[page]', page).replace('[pageSize]', pageSize), null, function (data) {
-      elements.creditLogIndicator.addClass('no-show');
+      elements.creditLogIndicator.addClass('d-none');
       elements.creditLog.html(data);
 
       ajaxPagination(elements.creditLog, function (page, size) {
@@ -33,10 +33,10 @@ function UserCredits(opts) {
   }
 
   function loadTransactionLog(page, pageSize) {
-    elements.transactionLogIndicator.removeClass('no-show');
+    elements.transactionLogIndicator.removeClass('d-none');
 
     ajaxGet(opts.transactionLogUrl.replace('[page]', page).replace('[pageSize]', pageSize), null, function (data) {
-      elements.transactionLogIndicator.addClass('no-show');
+      elements.transactionLogIndicator.addClass('d-none');
       elements.transactionLog.html(data);
 
       ajaxPagination(elements.transactionLog, function (page, size) {
