@@ -114,12 +114,12 @@
 
             $('#elementForm').bindAjaxSubmit($('#saveButton'), $('#successMessage'), $('#wait-box'));
 
-            $('.clearInput').click(function(e) {
+            $('.clearInput').on('click', function(e) {
                 e.preventDefault();
                 $(this).prev('input').val('');
             });
 
-            $('#removeLogo').click(function(e) {
+            $('#removeLogo').on('click', function(e) {
                 e.preventDefault();
 
                 PerformAsyncAction($(this), function() {
@@ -127,7 +127,7 @@
                 });
             });
 
-            $('#removeFavicon').click(function(e) {
+            $('#removeFavicon').on('click', function(e) {
                 e.preventDefault();
 
                 PerformAsyncAction($(this), function() {
@@ -135,7 +135,7 @@
                 });
             });
 
-            $('#removeCss').click(function(e) {
+            $('#removeCss').on('click', function(e) {
                 e.preventDefault();
 
                 PerformAsyncAction($(this), function() {

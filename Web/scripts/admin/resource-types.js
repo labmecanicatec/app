@@ -18,7 +18,7 @@ function ResourceTypeManagement(opts) {
   var types = {};
 
   ResourceTypeManagement.prototype.init = function () {
-    $('.changeAttribute').click(function (e) {
+    $('.changeAttribute').on('click', function (e) {
       e.stopPropagation();
       $(e.target).closest('.updateCustomAttribute').find('.inlineAttribute').editable('toggle');
     });
@@ -55,11 +55,11 @@ function ResourceTypeManagement(opts) {
       container.find('.validationSummary').hide();
     });
 
-    $('.save').click(function () {
+    elements.resourceTypes.on('click', '.save', function () {
       $(this).closest('form').submit();
     });
 
-    $('.cancel').click(function () {
+    elements.resourceTypes.on('click', '.cancel', function () {
       $(this).closest('.dialog').dialog('close');
     });
 

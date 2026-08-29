@@ -118,7 +118,7 @@ function UserManagement(opts) {
       $(e.target).closest('.updateCustomAttribute').find('.inlineAttribute').editable('toggle');
     });
 
-    elements.userList.find('.changeCredits').click(function (e) {
+    elements.userList.find('.changeCredits').on('click', function (e) {
       e.stopPropagation();
       $(this).editable('toggle');
     });
@@ -158,7 +158,7 @@ function UserManagement(opts) {
     });
 
     // Handle click to set all resources to "Full Access"
-    elements.checkAllResourcesFull.click(function (e) {
+    elements.checkAllResourcesFull.on('click', function (e) {
       e.preventDefault();
       for (var rid in permissionState) {
         permissionState[rid] = rid + '_0';
@@ -167,7 +167,7 @@ function UserManagement(opts) {
     });
 
     // Handle click to set all resources to "View Only"
-    elements.checkAllResourcesView.click(function (e) {
+    elements.checkAllResourcesView.on('click', function (e) {
       e.preventDefault();
       for (var rid in permissionState) {
         permissionState[rid] = rid + '_1';
@@ -176,7 +176,7 @@ function UserManagement(opts) {
     });
 
     // Handle click to set all resources to "None"
-    elements.checkNoResources.click(function (e) {
+    elements.checkNoResources.on('click', function (e) {
       e.preventDefault();
       for (var rid in permissionState) {
         permissionState[rid] = rid + '_none';
@@ -184,36 +184,36 @@ function UserManagement(opts) {
       syncSelectsFromState();
     });
 
-    $('.save').click(function () {
+    $('.save').on('click', function () {
       $(this).closest('form').submit();
     });
 
-    $('.cancel').click(function () {
+    $('.cancel').on('click', function () {
       $(this).closest('.dialog').dialog('close');
     });
 
-    $('.clearform').click(function () {
+    $('.clearform').on('click', function () {
       $(this).closest('form')[0].reset();
     });
 
-    $('#add-user').click(function (e) {
+    $('#add-user').on('click', function (e) {
       e.preventDefault();
       elements.addDialog.modal('show');
     });
 
-    $('#invite-users').click(function (e) {
+    $('#invite-users').on('click', function (e) {
       e.preventDefault();
       elements.invitationDialog.modal('show');
     });
 
-    $('#import-users').click(function (e) {
+    $('#import-users').on('click', function (e) {
       e.preventDefault();
       $('#importErrors').empty().addClass('d-none');
       $('#importResults').addClass('d-none');
       elements.importUsersDialog.modal('show');
     });
 
-    elements.deleteMultiplePrompt.click(function (e) {
+    elements.deleteMultiplePrompt.on('click', function (e) {
       e.preventDefault();
       var checked = elements.userList.find('.delete-multiple:checked');
       elements.deleteMultipleCount.text(checked.length);
@@ -222,7 +222,7 @@ function UserManagement(opts) {
       elements.deleteMultipleDialog.modal('show');
     });
 
-    elements.deleteMultipleSelectAll.click(function (e) {
+    elements.deleteMultipleSelectAll.on('click', function (e) {
       e.stopPropagation();
       var isChecked = elements.deleteMultipleSelectAll.is(':checked');
       elements.userList.find('.delete-multiple').prop('checked', isChecked);
