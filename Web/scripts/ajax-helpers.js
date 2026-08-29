@@ -129,7 +129,7 @@ function ConfigureAsyncForm(formElement, urlCallback, successHandler, responseHa
 }
 
 function ConfigureUploadForm(buttonElement, urlCallback, preSubmitCallback, successHandler, responseHandler) {
-  buttonElement.click(function () {
+  buttonElement.on('click', function () {
     if (preSubmitCallback && !preSubmitCallback()) {
       return false;
     }

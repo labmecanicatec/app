@@ -164,7 +164,7 @@
 		var groupManagement = new ResourceGroupManagement(groupOptions);
 		groupManagement.init({$ResourceGroups});
 
-		$('#help-button').click(function(e) {
+		$('#help-button').on('click', function(e) {
 			$('#' + $(this).attr('help-ref')).dialog();
 		});
 	});

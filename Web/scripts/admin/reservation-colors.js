@@ -25,15 +25,15 @@ function ReservationColorManagement(opts) {
       elements.deleteDialog.modal('show');
     });
 
-    $('.save').click(function () {
+    $('.save').on('click', function () {
       $(this).closest('form').submit();
     });
 
-    $('.cancel').click(function () {
+    $('.cancel').on('click', function () {
       $(this).closest('.modal').modal('hide');
     });
 
-    $('#addRuleButton').click(function (e) {
+    $('#addRuleButton').on('click', function (e) {
       var attrId = '#attribute' + elements.attributeOption.val();
       $('#attributeFillIn').empty();
       $('#attributeFillIn').append($(attrId).clone().removeClass('d-none'));

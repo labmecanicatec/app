@@ -12,7 +12,7 @@ function Payments(opts) {
   };
 
   Payments.prototype.init = function () {
-    $('.save').click(function (e) {
+    $('.save').on('click', function (e) {
       e.preventDefault();
       $(e.target).closest('form').submit();
     });

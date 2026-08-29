@@ -228,7 +228,7 @@ function ResourceDisplay(opts) {
     $('#wait-modal').modal('hide');
   }
 
-  elements.loginButton.click(function (e) {
+  elements.loginButton.on('click', function (e) {
     e.preventDefault();
     showWait();
     elements.loginForm.submit();

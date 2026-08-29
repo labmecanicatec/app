@@ -33,7 +33,7 @@ function AvailabilitySearch(options) {
         .replace('[ed]', encodeURIComponent(opening.data('enddate')));
     });
 
-    elements.anyResource.click(function (e) {
+    elements.anyResource.on('click', function (e) {
       if (elements.anyResource.is(':checked')) {
         elements.resourceGroups.val('').change();
         elements.resourceGroups.attr('disabled', 'disabled');

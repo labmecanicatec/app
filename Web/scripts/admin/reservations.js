@@ -106,11 +106,11 @@ function ReservationManagement(opts, approval) {
       approveReservation(getActiveReferenceNumber());
     });
 
-    elements.deleteTerms.click(function (e) {
+    elements.deleteTerms.on('click', function (e) {
       elements.termsOfServiceForm.attr('ajaxAction', options.deleteTermsOfServiceAction);
     });
 
-    $('.save').click(function () {
+    $('.save').on('click', function () {
       $(this).closest('form').submit();
     });
 
@@ -162,25 +162,25 @@ function ReservationManagement(opts, approval) {
       }
     });
 
-    elements.deleteSeriesForm.find('.saveSeries').click(function () {
+    elements.deleteSeriesForm.find('.saveSeries').on('click', function () {
       var updateScope = opts.updateScope[$(this).attr('id')];
       elements.updateScope.val(updateScope);
       elements.deleteSeriesForm.submit();
     });
 
-    elements.statusDialog.find('.saveAll').click(function () {
+    elements.statusDialog.find('.saveAll').on('click', function () {
       $('#statusUpdateScope').val('all');
       $(this).closest('form').submit();
     });
 
-    elements.filterButton.click(filterReservations);
-    elements.clearFilterButton.click(function (e) {
+    elements.filterButton.on('click', filterReservations);
+    elements.clearFilterButton.on('click', function (e) {
       e.preventDefault();
       elements.filterTable.find('input,select,textarea').val('');
       elements.filterTable.find('checkbox').prop('checked', false);
     });
 
-    $('#import-reservations').click(function (e) {
+    $('#import-reservations').on('click', function (e) {
       this.referenceNumber = '';
       e.preventDefault();
       $('#importErrors').empty().addClass('d-none');
@@ -188,7 +188,7 @@ function ReservationManagement(opts, approval) {
       elements.importReservationsDialog.modal('show');
     });
 
-    elements.deleteMultiplePrompt.click(function (e) {
+    elements.deleteMultiplePrompt.on('click', function (e) {
       e.preventDefault();
       var checked = elements.reservationTable.find('.delete-multiple:checked');
       elements.deleteMultipleCount.text(checked.length);
@@ -197,7 +197,7 @@ function ReservationManagement(opts, approval) {
       elements.deleteMultipleDialog.modal('show');
     });
 
-    elements.deleteMultipleSelectAll.click(function (e) {
+    elements.deleteMultipleSelectAll.on('click', function (e) {
       e.stopPropagation();
       var isChecked = elements.deleteMultipleSelectAll.is(':checked');
       elements.reservationTable.find('.delete-multiple').prop('checked', isChecked);
@@ -213,13 +213,13 @@ function ReservationManagement(opts, approval) {
       elements.deleteMultiplePrompt.toggleClass('d-none', numberChecked == 0);
     });
 
-    elements.addTermsOfService.click(function (e) {
+    elements.addTermsOfService.on('click', function (e) {
       e.preventDefault();
       loadExistingTermsOfService();
       elements.termsOfServiceDialog.modal('show');
     });
 
-    elements.termsOfServiceDialog.find('.toggle').click(function (e) {
+    elements.termsOfServiceDialog.find('.toggle').on('click', function (e) {
       elements.termsOfServiceDialog.find('.tos-div').addClass('d-none');
       var radio = $(e.target);
       $('#' + radio.data('ref')).removeClass('d-none');

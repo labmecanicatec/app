@@ -34,11 +34,11 @@ function ResourceStatusManagement(opts) {
       showDeletePrompt(e);
     });
 
-    $('.save').click(function () {
+    $('.save').on('click', function () {
       $(this).closest('form').submit();
     });
 
-    $('.add-link').click(function (e) {
+    $('.add-link').on('click', function (e) {
       e.preventDefault();
       $('#add-reason-status').val($(this).attr('add-to'));
       showAddPrompt(e);

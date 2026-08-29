@@ -31,7 +31,7 @@ $.fn.bindResourceDetails = function (resourceId, options) {
     }
 
     if (opts.preventClick) {
-      resourceNameElement.click(function (e) {
+      resourceNameElement.on('click', function (e) {
         e.preventDefault();
       });
     }
@@ -81,7 +81,7 @@ $.fn.bindResourceDetails = function (resourceId, options) {
 
           function showData(data) {
             tag.html(data).show();
-            tag.find('.hideResourceDetailsPopup').click(function (e) {
+            tag.find('.hideResourceDetailsPopup').on('click', function (e) {
               e.preventDefault();
               hideDiv();
             });
