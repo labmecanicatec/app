@@ -1190,7 +1190,9 @@ class Queries
 			`end_date` = @end_date,
 			`default_layout` = @default_layout,
 			`total_concurrent_reservations` = @total_concurrent_reservations,
-			`max_resources_per_reservation` = @max_resources_per_reservation
+			`max_resources_per_reservation` = @max_resources_per_reservation,
+			`notes` = COALESCE(@notes, `notes`),
+			`published` = COALESCE(@published, `published`)
 		WHERE
 			`schedule_id` = @scheduleid';
 

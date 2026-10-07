@@ -27,6 +27,8 @@ class ManageSchedules
     public const ActionChangeDefaultStyle = 'changeDefaultStyle';
     public const ActionChangeMaximumConcurrent = 'changeMaximumConcurrent';
     public const ActionChangeResourcesPerReservation = 'changeResourcesPerReservation';
+    public const ActionChangeNotes = 'changeNotes';
+    public const ActionChangePublished = 'changePublished';
 }
 
 class ManageScheduleService
@@ -394,6 +396,20 @@ class ManageScheduleService
         $schedule->SetMaxResourcesPerReservation($unlimited ? 0 : intval($max));
         $this->scheduleRepository->Update($schedule);
     }
+
+    public function ChangeNotes($scheduleId, $notes)
+    {
+        $schedule = $this->scheduleRepository->LoadById($scheduleId);
+        $schedule->SetNotes($notes);
+        $this->scheduleRepository->Update($schedule);
+    }
+
+    public function ChangePublished($scheduleId, $published)
+    {
+        $schedule = $this->scheduleRepository->LoadById($scheduleId);
+        $schedule->SetPublished($published);
+        $this->scheduleRepository->Update($schedule);
+    }
 }
 
 class ManageSchedulesPresenter extends ActionPresenter
@@ -442,6 +458,8 @@ class ManageSchedulesPresenter extends ActionPresenter
         $this->AddAction(ManageSchedules::ActionChangeDefaultStyle, 'ChangeDefaultStyle');
         $this->AddAction(ManageSchedules::ActionChangeMaximumConcurrent, 'ChangeMaximumConcurrentReservations');
         $this->AddAction(ManageSchedules::ActionChangeResourcesPerReservation, 'ChangeResourcesPerReservation');
+        $this->AddAction(ManageSchedules::ActionChangeNotes, 'ChangeNotes');
+        $this->AddAction(ManageSchedules::ActionChangePublished, 'ChangePublished');
     }
 
     public function PageLoad()
@@ -720,6 +738,26 @@ class ManageSchedulesPresenter extends ActionPresenter
         Log::Debug('Changing maximum number of resources per reservation. Schedule %s, Max %s, Unlimited %s', $scheduleId, $max, $unlimited);
 
         $this->manageSchedulesService->ChangeResourcesPerReservation($scheduleId, $max, $unlimited);
+    }
+
+    public function ChangeNotes()
+    {
+        $scheduleId = $this->page->GetScheduleId();
+        $notes = $this->page->GetScheduleNotes();
+
+        Log::Debug('Changing schedule notes. Schedule %s', $scheduleId);
+
+        $this->manageSchedulesService->ChangeNotes($scheduleId, $notes);
+    }
+
+    public function ChangePublished()
+    {
+        $scheduleId = $this->page->GetScheduleId();
+        $published = $this->page->GetScheduleIsPublished();
+
+        Log::Debug('Changing schedule published status. Schedule %s, Published %s', $scheduleId, $published ? 'true' : 'false');
+
+        $this->manageSchedulesService->ChangePublished($scheduleId, $published);
     }
 
     protected function LoadValidators($action)

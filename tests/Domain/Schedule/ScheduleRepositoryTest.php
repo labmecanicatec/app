@@ -380,7 +380,9 @@ class ScheduleRepositoryTest extends TestBase
                 $end,
                 $style,
                 $maxConcurrent,
-                $maxResources
+                $maxResources,
+                '',
+                false
             ),
             $this->db->_LastCommand
         );

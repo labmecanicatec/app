@@ -228,6 +228,8 @@ class ParameterNames
     public const SCHEDULE_DEFAULT_STYLE = '@default_layout';
     public const SCHEDULE_TOTAL_CONCURRENT_RESERVATIONS = '@total_concurrent_reservations';
     public const SCHEDULE_MAX_RESOURCES_PER_RESERVATION = '@max_resources_per_reservation';
+    public const SCHEDULE_NOTES = '@notes';
+    public const SCHEDULE_PUBLISHED = '@published';
     public const SERIES_ID = '@seriesid';
     public const SESSION_TOKEN = '@session_token';
     public const START_DATE = '@startDate';

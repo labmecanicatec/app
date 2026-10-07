@@ -242,12 +242,25 @@ class ScheduleRepository implements IScheduleRepository
             $schedule->GetAvailabilityEnd(),
             $schedule->GetDefaultStyleInt(),
             $schedule->GetTotalConcurrentReservations(),
-            $schedule->GetMaxResourcesPerReservation()
+            $schedule->GetMaxResourcesPerReservation(),
+            $schedule->GetNotes(),
+            $schedule->IsPublished()
         ));
 
         if ($schedule->GetIsDefault()) {
             ServiceLocator::GetDatabase()->Execute(new SetDefaultScheduleCommand($schedule->GetId()));
         }
+
+        $this->InvalidateCache($schedule->GetId());
+    }
+
+    /**
+     * @param int $scheduleId
+     * @internal
+     */
+    protected function InvalidateCache($scheduleId)
+    {
+        $this->_cache->Remove($scheduleId);
     }
 
     public function Add(Schedule $schedule, $copyLayoutFromScheduleId)

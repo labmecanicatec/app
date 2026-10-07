@@ -1,4 +1,4 @@
-{include file='globalheader.tpl' InlineEdit=true Fullcalendar=true DataTable=true}
+{include file='globalheader.tpl' InlineEdit=true Fullcalendar=true DataTable=true Trumbowyg=true}
 
 <div id="page-manage-schedules" class="admin-page">
 
@@ -49,6 +49,8 @@
 														<input type="hidden" class="id" value="{$id}" />
 														<input type="hidden" class="daysVisible" value="{$daysVisible}" />
 														<input type="hidden" class="dayOfWeek" value="{$dayOfWeek}" />
+														<input type="hidden" class="scheduleNotes" value="{$schedule->GetNotes()|escape:'html'}" />
+														<input type="hidden" class="schedulePublished" value="{$schedule->IsPublished() ? '1':'0'}" />
 
 														<div>
 															<span class="title scheduleName fw-bold" data-type="text"
@@ -244,6 +246,25 @@
 																	data-switch-to="{ScheduleLayout::Custom}">{translate key=SwitchToACustomLayout}</a>
 															</div>
 														{/if}
+													</div>
+													<div class="col-12">
+														<div>
+															{translate key=Notes}
+															<span class="fw-bold">{if $schedule->HasNotes()}{translate key=Update}{else}{translate key=None}{/if}</span>
+															<a class="update changeNotesButton link-primary" href="#">
+																<span class="visually-hidden">{translate key=Notes}</span>
+																<span class="bi bi-pencil-square"></span>
+															</a>
+														</div>
+
+														<div>
+															{translate key=Published}
+															<span class="fw-bold">{if $schedule->IsPublished()}{translate key=Yes}{else}{translate key=No}{/if}</span>
+															<a class="update changePublishedButton link-primary" href="#">
+																<span class="visually-hidden">{translate key=Published}</span>
+																<span class="bi bi-pencil-square"></span>
+															</a>
+														</div>
 													</div>
 													<div class="actions col-12">
 														<div
@@ -848,11 +869,61 @@
 		</form>
 	</div>
 
+	<div id="scheduleNotesDialog" class="modal fade" tabindex="-1" role="dialog"
+		aria-labelledby="scheduleNotesDialogLabel" aria-hidden="true">
+		<form id="scheduleNotesForm" method="post">
+			<input type="hidden" name="pk" />
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="scheduleNotesDialogLabel">{translate key=Notes}</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+					</div>
+					<div class="modal-body">
+						<textarea id="scheduleNotesText" class="form-control" name="{FormKeys::SCHEDULE_NOTES}"></textarea>
+					</div>
+					<div class="modal-footer">
+						{cancel_button}
+						{update_button submit=true}
+						{indicator}
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+
+	<div id="schedulePublishedDialog" class="modal fade" tabindex="-1" role="dialog"
+		aria-labelledby="schedulePublishedDialogLabel" aria-hidden="true">
+		<form id="schedulePublishedForm" method="post">
+			<input type="hidden" name="pk" />
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="schedulePublishedDialogLabel">{translate key=Published}</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+					</div>
+					<div class="modal-body">
+						<div class="form-check">
+							<input class="form-check-input" type="checkbox" id="schedulePublishedCheckbox"
+								name="{FormKeys::SCHEDULE_PUBLISHED}" />
+							<label class="form-check-label" for="schedulePublishedCheckbox">{translate key=Published}</label>
+						</div>
+					</div>
+					<div class="modal-footer">
+						{cancel_button}
+						{update_button submit=true}
+						{indicator}
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+
 	{control type="DatePickerSetupControl" ControlId="availabilityStartDate" DefaultDate=$StartDate}
 	{control type="DatePickerSetupControl" ControlId="availabilityEndDate" DefaultDate=$EndDate}
 
 	{csrf_token}
-	{include file="javascript-includes.tpl" InlineEdit=true Fullcalendar=true DataTable=true}
+	{include file="javascript-includes.tpl" InlineEdit=true Fullcalendar=true DataTable=true Trumbowyg=true}
 	{datatablefilter tableId=$tableIdFilter}
 	{jsfile src="ajax-helpers.js"}
 	{jsfile src="date-helper.js"}
@@ -948,6 +1019,8 @@
 				deleteLayoutSlot: '{ManageSchedules::ActionDeleteLayoutSlot}',
 				maximumConcurrentAction: '{ManageSchedules::ActionChangeMaximumConcurrent}',
 				maximumResourcesAction: '{ManageSchedules::ActionChangeResourcesPerReservation}',
+				changeNotesAction: '{ManageSchedules::ActionChangeNotes}',
+				changePublishedAction: '{ManageSchedules::ActionChangePublished}',
 				calendarOptions: {
 					buttonText: {
 						today: "{{translate key=Today}|escape:'javascript'}",
