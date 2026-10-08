@@ -246,6 +246,16 @@ interface IManageSchedulesPage extends IUpdateSchedulePage, IActionPage, IPageab
      * @return int
      */
     public function GetDefaultStyle();
+
+    /**
+     * @return string
+     */
+    public function GetScheduleNotes();
+
+    /**
+     * @return bool
+     */
+    public function GetScheduleIsPublished();
 }
 
 class ManageSchedulesPage extends ActionPage implements IManageSchedulesPage
@@ -650,5 +660,22 @@ class ManageSchedulesPage extends ActionPage implements IManageSchedulesPage
     public function GetIsUnlimitedMaximumResourcesPerReservation()
     {
         return $this->GetCheckbox(FormKeys::MAXIMUM_RESOURCES_PER_RESERVATION_UNLIMITED);
+    }
+
+    /**
+     * @return string
+     */
+    public function GetScheduleNotes()
+    {
+        return $this->server->GetForm(FormKeys::SCHEDULE_NOTES);
+    }
+
+    /**
+     * @return bool
+     */
+    public function GetScheduleIsPublished()
+    {
+        $published = $this->server->GetForm(FormKeys::SCHEDULE_PUBLISHED);
+        return !empty($published);
     }
 }

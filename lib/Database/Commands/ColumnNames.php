@@ -2,9 +2,7 @@
 
 class ColumnNames
 {
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 
     // USERS //
     public const USER_ID = 'user_id';
@@ -157,6 +155,8 @@ class ColumnNames
     public const SCHEDULE_AVAILABLE_END_DATE = 'end_date';
     public const SCHEDULE_ALLOW_CONCURRENT_RESERVATIONS = 'allow_concurrent_bookings';
     public const SCHEDULE_DEFAULT_STYLE = 'default_layout';
+    public const SCHEDULE_NOTES = 'notes';
+    public const SCHEDULE_PUBLISHED = 'published';
     public const TOTAL_CONCURRENT_RESERVATIONS = 'total_concurrent_reservations';
     public const MAX_RESOURCES_PER_RESERVATION = 'max_resources_per_reservation';
 

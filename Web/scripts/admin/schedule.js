@@ -64,6 +64,13 @@ function ScheduleManagement(opts) {
     resourcesPerReservationUnlimited: $('#resourcesPerReservationUnlimited'),
     resourcesPerReservationResources: $('#resourcesPerReservationResources'),
 
+    scheduleNotesDialog: $('#scheduleNotesDialog'),
+    scheduleNotesForm: $('#scheduleNotesForm'),
+    scheduleNotesText: $('#scheduleNotesText'),
+    schedulePublishedDialog: $('#schedulePublishedDialog'),
+    schedulePublishedForm: $('#schedulePublishedForm'),
+    schedulePublishedCheckbox: $('#schedulePublishedCheckbox'),
+
     layoutSlotForm: $('#layoutSlotForm'),
     slotStartDate: $('#slotStartDate'),
     slotEndDate: $('#slotEndDate'),
@@ -193,6 +200,40 @@ function ScheduleManagement(opts) {
       elements.resourcesPerReservationDialog.modal('show');
     });
 
+    elements.scheduleList.on('click', '.changeNotesButton', function (e) {
+      e.preventDefault();
+      var id = getActiveScheduleId();
+      var scheduleEl = $('[data-schedule-id="' + id + '"]');
+      elements.scheduleNotesForm.find('input[name="pk"]').val(id);
+      var notesContent = scheduleEl.data('schedule-notes') || '';
+      if (elements.scheduleNotesText.data('trumbowyg')) {
+        elements.scheduleNotesText.trumbowyg('destroy');
+      }
+      elements.scheduleNotesText.val(notesContent);
+      elements.scheduleNotesText.trumbowyg({
+        btns: [
+          ['formatting'],
+          ['strong', 'em', 'del'],
+          ['link'],
+          ['justifyLeft', 'justifyCenter', 'justifyRight'],
+          ['unorderedList', 'orderedList'],
+          ['viewHTML'],
+        ],
+        height: 300,
+      });
+      elements.scheduleNotesDialog.modal('show');
+    });
+
+    elements.scheduleList.on('click', '.changePublishedButton', function (e) {
+      e.preventDefault();
+      var id = getActiveScheduleId();
+      var scheduleEl = $('[data-schedule-id="' + id + '"]');
+      elements.schedulePublishedForm.find('input[name="pk"]').val(id);
+      var isPublished = scheduleEl.data('schedule-published') === '1';
+      elements.schedulePublishedCheckbox.prop('checked', isPublished);
+      elements.schedulePublishedDialog.modal('show');
+    });
+
     elements.deletePeakTimesButton.click(function (e) {
       e.preventDefault();
       elements.deletePeakTimes.val('1');
@@ -301,6 +342,25 @@ function ScheduleManagement(opts) {
     ConfigureAsyncForm(elements.deleteCustomTimeSlotForm, getSubmitCallback(options.deleteLayoutSlot), afterDeleteSlot);
     ConfigureAsyncForm(elements.concurrentMaximumForm, getSubmitCallback(options.maximumConcurrentAction));
     ConfigureAsyncForm(elements.resourcesPerReservationForm, getSubmitCallback(options.maximumResourcesAction));
+    ConfigureAsyncForm(
+      elements.scheduleNotesForm,
+      getSubmitCallback(options.changeNotesAction),
+      refreshScheduleDetails,
+      null,
+      {
+        onBeforeSubmit: function () {
+          if (elements.scheduleNotesText.data('trumbowyg')) {
+            var content = elements.scheduleNotesText.trumbowyg('html');
+            elements.scheduleNotesText.val(content);
+          }
+        },
+      }
+    );
+    ConfigureAsyncForm(
+      elements.schedulePublishedForm,
+      getSubmitCallback(options.changePublishedAction),
+      refreshScheduleDetails
+    );
   };
 
   var getSubmitCallback = function (action) {
@@ -612,6 +672,12 @@ function ScheduleManagement(opts) {
     if (modalInstance) {
       modalInstance.hide();
     }
+  };
+
+  var refreshScheduleDetails = function (resultHtml) {
+    elements.scheduleNotesDialog.modal('hide');
+    elements.schedulePublishedDialog.modal('hide');
+    location.reload();
   };
 
   var toggleConcurrentReservations = function (scheduleId, toggle, container) {

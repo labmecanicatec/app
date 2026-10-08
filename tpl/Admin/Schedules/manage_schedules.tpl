@@ -44,7 +44,7 @@
 										</h2>
 										<div id="panel{$id}" class="accordion-collapse collapse show">
 											<div class="accordion-body">
-												<div class="scheduleDetails row" data-schedule-id="{$id}">
+												<div class="scheduleDetails row" data-schedule-id="{$id}" data-schedule-notes="{$schedule->GetNotes()|escape:'html'}" data-schedule-published="{$schedule->IsPublished()|ternary:'1':'0'}">
 													<div class="col-12 col-sm-6">
 														<input type="hidden" class="id" value="{$id}" />
 														<input type="hidden" class="daysVisible" value="{$daysVisible}" />
@@ -136,13 +136,23 @@
 																data-value="{$schedule->GetDefaultStyle()->value}">{$StyleNames[$schedule->GetDefaultStyle()->value]}</span>
 														</div>
 
-														{if $CreditsEnabled}
-															<span>{translate key=PeakTimes}</span>
-															<a class="update changePeakTimes link-primary" href="#">
-																<span class="visually-hidden">{translate key=PeakTimes}</span>
-																<span class="bi bi-pencil-square"></span>
-															</a>
-															<div class="peakPlaceHolder">
+													<div>
+														{translate key=Notes}
+														<span class="fw-bold">{if $schedule->HasNotes()}{$schedule->GetNotes()|escape:'html'|nl2br}{else}{translate key=None}{/if}</span>
+														<a class="update changeNotesButton link-primary" href="#">
+															<span class="visually-hidden">{translate key=Notes}</span>
+															<span class="bi bi-pencil-square"></span>
+														</a>
+													</div>
+
+													<div>
+														{translate key=Published}
+														<span class="fw-bold">{if $schedule->IsPublished()}{translate key=Yes}{else}{translate key=No}{/if}</span>
+														<a class="update changePublishedButton link-primary" href="#">
+															<span class="visually-hidden">{translate key=Published}</span>
+															<span class="bi bi-pencil-square"></span>
+														</a>
+													</div>
 																{include file="Admin/Schedules/manage_peak_times.tpl" Layout=$Layouts[$id] Months=$Months DayNames=$DayNames}
 															</div>
 														{/if}
@@ -848,6 +858,56 @@
 		</form>
 	</div>
 
+	<div id="scheduleNotesDialog" class="modal fade" tabindex="-1" role="dialog"
+		aria-labelledby="scheduleNotesDialogLabel" aria-hidden="true">
+		<form id="scheduleNotesForm" method="post">
+			<input type="hidden" name="pk" />
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="scheduleNotesDialogLabel">{translate key=Notes}</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+					</div>
+					<div class="modal-body">
+						<textarea id="scheduleNotesText" class="form-control" rows="5" name="{FormKeys::SCHEDULE_NOTES}"></textarea>
+					</div>
+					<div class="modal-footer">
+						{cancel_button}
+						{update_button submit=true}
+						{indicator}
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+
+	<div id="schedulePublishedDialog" class="modal fade" tabindex="-1" role="dialog"
+		aria-labelledby="schedulePublishedDialogLabel" aria-hidden="true">
+		<form id="schedulePublishedForm" method="post">
+			<input type="hidden" name="pk" />
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="schedulePublishedDialogLabel">{translate key=Published}</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+					</div>
+					<div class="modal-body">
+						<div class="form-check">
+							<input class="form-check-input" type="checkbox" id="schedulePublishedCheckbox"
+								name="{FormKeys::SCHEDULE_PUBLISHED}" />
+							<label class="form-check-label" for="schedulePublishedCheckbox">{translate key=Published}</label>
+						</div>
+					</div>
+					<div class="modal-footer">
+						{cancel_button}
+						{update_button submit=true}
+						{indicator}
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+
 	{control type="DatePickerSetupControl" ControlId="availabilityStartDate" DefaultDate=$StartDate}
 	{control type="DatePickerSetupControl" ControlId="availabilityEndDate" DefaultDate=$EndDate}
 
@@ -948,6 +1008,8 @@
 				deleteLayoutSlot: '{ManageSchedules::ActionDeleteLayoutSlot}',
 				maximumConcurrentAction: '{ManageSchedules::ActionChangeMaximumConcurrent}',
 				maximumResourcesAction: '{ManageSchedules::ActionChangeResourcesPerReservation}',
+				changeNotesAction: '{ManageSchedules::ActionChangeNotes}',
+				changePublishedAction: '{ManageSchedules::ActionChangePublished}',
 				calendarOptions: {
 					buttonText: {
 						today: "{{translate key=Today}|escape:'javascript'}",

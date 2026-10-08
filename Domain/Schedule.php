@@ -65,6 +65,8 @@ class Schedule implements ISchedule
     protected $_layoutType;
     protected $_totalConcurrentReservations = 0;
     protected $_maxResourcesPerReservation = 0;
+    protected $_notes = '';
+    protected $_published = false;
 
     public const Today = 100;
 
@@ -90,6 +92,8 @@ class Schedule implements ISchedule
         $this->_layoutType = ScheduleLayout::Standard;
         $this->_totalConcurrentReservations = 0;
         $this->_maxResourcesPerReservation = 0;
+        $this->_notes = '';
+        $this->_published = false;
     }
 
     public function GetId()
@@ -325,6 +329,12 @@ class Schedule implements ISchedule
         }
         $schedule->SetTotalConcurrentReservations($row[ColumnNames::TOTAL_CONCURRENT_RESERVATIONS]);
         $schedule->SetMaxResourcesPerReservation($row[ColumnNames::MAX_RESOURCES_PER_RESERVATION]);
+        if (in_array(ColumnNames::SCHEDULE_NOTES, $row)) {
+            $schedule->SetNotes($row[ColumnNames::SCHEDULE_NOTES]);
+        }
+        if (in_array(ColumnNames::SCHEDULE_PUBLISHED, $row)) {
+            $schedule->SetPublished($row[ColumnNames::SCHEDULE_PUBLISHED]);
+        }
         return $schedule;
     }
 
@@ -423,6 +433,46 @@ class Schedule implements ISchedule
     public function EnforceMaxResourcesPerReservation()
     {
         return $this->_maxResourcesPerReservation > 0;
+    }
+
+    /**
+     * @param string $notes
+     */
+    public function SetNotes($notes)
+    {
+        $this->_notes = $notes ?? '';
+    }
+
+    /**
+     * @return string
+     */
+    public function GetNotes()
+    {
+        return $this->_notes;
+    }
+
+    /**
+     * @return bool
+     */
+    public function HasNotes()
+    {
+        return !empty($this->_notes);
+    }
+
+    /**
+     * @param bool $published
+     */
+    public function SetPublished($published)
+    {
+        $this->_published = (bool)$published;
+    }
+
+    /**
+     * @return bool
+     */
+    public function IsPublished()
+    {
+        return $this->_published;
     }
 }
 

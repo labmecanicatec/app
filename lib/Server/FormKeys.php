@@ -2,9 +2,7 @@
 
 class FormKeys
 {
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 
     public const ACCESSORY_LIST = 'accessoryList';
     public const ACCESSORY_NAME = 'accessoryName';
@@ -258,6 +256,8 @@ class FormKeys
     public const SUBMIT = 'SUBMIT';
     public const SUMMARY = 'summary';
     public const SCHEDULE_ADMIN_GROUP_ID = 'adminGroupId';
+    public const SCHEDULE_NOTES = 'scheduleNotes';
+    public const SCHEDULE_PUBLISHED = 'schedulePublished';
     public const SELECTED_COLUMNS = 'SELECTED_COLUMNS';
     public const SLACK_COMMAND = 'command';
     public const SLACK_TEXT = 'text';
