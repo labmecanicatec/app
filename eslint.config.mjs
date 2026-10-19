@@ -91,6 +91,9 @@ export default [
         resourceOrder: 'readonly',
         filterResources: 'readonly',
 
+        // Reservation popup globals (reservationPopup.js)
+        attachReservationPopup: 'readonly',
+
         // Calendar globals (calendar.js)
         rebindSubscriptionData: 'readonly',
         drillDownClick: 'readonly',

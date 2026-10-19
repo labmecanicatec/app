@@ -422,6 +422,7 @@ img.schedule_icon {
   margin: 1px;
 }
 
+/*
 .no-resource-warning {
   padding: 10px;
   -webkit-border-radius: 2px;
@@ -432,7 +433,7 @@ img.schedule_icon {
 #showFullWeek {
   display: block;
 }
-
+*/
 .schedule-legend {
   margin-bottom: 10px;
 }

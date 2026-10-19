@@ -2,12 +2,12 @@
     <div id="filter" class="text-center">
 
         {if isset($GroupName) && $GroupName}
-            <span class="groupName fw-bold fs-5">{$GroupName}</span>
+            <span class="groupName fw-bold">{$GroupName}</span>
         {else}
             <div class="d-flex justify-content-center align-items-center">
                 <div>{indicator id=loadingIndicator}</div>
                 <label class="fw-bold me-2" for="calendarFilter">{translate key="ChangeCalendar"}</label>
-                <select id="calendarFilter" class="form-select w-auto">
+                <select id="calendarFilter" class="form-control w-auto">
                     {foreach from=$filters->GetFilters() item=filter}
                         <option value="s{$filter->Id()}" class="schedule" {if $filter->Selected()}selected="selected" {/if}>
                             {$filter->Name()}</option>
@@ -18,7 +18,7 @@
                     {/foreach}
                 {/if}
             </select>
-            <a href="#" id="showResourceGroups" class="link-primary ms-1">{translate key=ResourceGroups}</a>
+            <a href="#" id="showResourceGroups" class="theme-primary ms-1">{translate key=ResourceGroups}</a>
         </div>
     </div>
 

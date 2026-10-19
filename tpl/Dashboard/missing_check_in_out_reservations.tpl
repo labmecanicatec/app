@@ -1,44 +1,46 @@
-<div class="dashboard upcomingReservationsDashboard accordion-item shadow mb-2" id="upcomingReservationsDashboard">
-	<div class="accordion-header dashboardHeader">
-		<button class="accordion-button collapsed link-primary fw-bold" type="button" data-bs-toggle="collapse"
-			data-bs-target="#MissingCheckOutReservationsContents" aria-expanded="false"
-			aria-controls="MissingCheckOutReservationsContents">{translate key="MissingCheckOutReservations"}<span
-				class="badge bg-primary ms-1">{$Total}</span>
-		</button>
-	</div>
-	<div id="MissingCheckOutReservationsContents" class="accordion-collapse collapse">
+<details class="dashboard upcomingReservationsDashboard accordion-item shadow mb-2"
+	name="missingCheckOutReservationsDashboard">
+	<summary class="accordion-header dashboardHeader">
+		{translate key="MissingCheckOutReservations"}
+		<span class="badge bg-primary fg-contrast-primary ms-1">{$Total}</span>
+		<svg class="accordion-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none"
+			stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+			<path d="m2 5 6 6 6-6" />
+		</svg>
+	</summary>
+	<div id="MissingCheckOutReservationsContents">
 		<div class="dashboardContents accordion-body">
 			{if $Total > 0}
 				<div>
-					<div class="timespan bg-warning border-bottom p-1 fw-medium fst-italic">
+					<div class="timespan bg-subtle-warning border-bottom p-1 fw-medium fst-italic">
 						{translate key="Today"} ({$TodaysReservations|default:array()|count})
 					</div>
 					{foreach from=$TodaysReservations item=reservation}
 						{include file='Dashboard/dashboard_reservation.tpl' reservation=$reservation allowCheckin=$allowCheckin allowCheckout=$allowCheckout}
 					{/foreach}
 
-					<div class="timespan bg-warning border-bottom p-1 fw-medium fst-italic">
+					<div class="timespan bg-subtle-warning border-bottom p-1 fw-medium fst-italic">
 						{translate key="Yesterday"} ({$YesterdayReservations|default:array()|count})
 					</div>
 					{foreach from=$YesterdayReservations item=reservation}
 						{include file='Dashboard/dashboard_reservation.tpl' reservation=$reservation allowCheckin=$allowCheckin allowCheckout=$allowCheckout}
 					{/foreach}
 
-					<div class="timespan bg-warning border-bottom p-1 fw-medium fst-italic">
+					<div class="timespan bg-subtle-warning border-bottom p-1 fw-medium fst-italic">
 						{translate key="EarlierThisWeek"} ({$ThisWeeksReservations|default:array()|count})
 					</div>
 					{foreach from=$ThisWeeksReservations item=reservation}
 						{include file='Dashboard/dashboard_reservation.tpl' reservation=$reservation allowCheckin=$allowCheckin allowCheckout=$allowCheckout}
 					{/foreach}
 
-					<div class="timespan bg-warning border-bottom p-1 fw-medium fst-italic">
+					<div class="timespan bg-subtle-warning border-bottom p-1 fw-medium fst-italic">
 						{translate key="PreviousWeek"} ({$PreviousWeekReservations|default:array()|count})
 					</div>
 					{foreach from=$PreviousWeekReservations item=reservation}
 						{include file='Dashboard/dashboard_reservation.tpl' reservation=$reservation allowCheckin=$allowCheckin allowCheckout=$allowCheckout}
 					{/foreach}
 
-					<div class="timespan bg-warning border-bottom p-1 fw-medium fst-italic">
+					<div class="timespan bg-subtle-warning border-bottom p-1 fw-medium fst-italic">
 						{translate key="Other"} ({$RemainingReservations|default:array()|count})
 					</div>
 					{foreach from=$RemainingReservations item=reservation}
@@ -60,4 +62,4 @@
 	{*<input type="hidden" id="referenceNumber" {formname key=REFERENCE_NUMBER} />*}
 	{*{csrf_token}*}
 	{*</form>*}
-</div>
+</summary>

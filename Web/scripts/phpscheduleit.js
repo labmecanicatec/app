@@ -183,43 +183,27 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function initializeAccordions() {
-  // Get all elements with the class 'accordion-item' (representing the accordions)
-  var accordionItems = document.querySelectorAll('.accordion-item');
-  // Create an array to store the IDs of the accordions
-  var accordionIds = [];
-  // Iterate over each 'accordion-item' element
-  accordionItems.forEach(function (item) {
-    // Get the ID of each accordion and add it to the array
-    var accordionId = item.getAttribute('id');
-    accordionIds.push(accordionId);
-  });
+  document.querySelectorAll('details.accordion-item').forEach((item) => {
+    const id = item.id || item.dataset.accordionId || item.getAttribute('name');
+    if (!id) return;
 
-  // Iterate over each accordion
-  accordionIds.forEach(function (accordionId) {
-    var accordionState = localStorage.getItem(accordionId); // Get the accordion state from localStorage
-    if (accordionState === 'collapsed') {
-      $('#' + accordionId + ' .accordion-collapse').collapse('hide'); // Collapse the accordion if it's saved as "collapsed"
-    } else {
-      $('#' + accordionId + ' .accordion-collapse').collapse('show'); // Expand the accordion if it's saved as "expanded"
-    }
+    // Restaurar el estado guardado
+    const state = localStorage.getItem(id);
+    if (state === 'collapsed') item.open = false;
+    else if (state === 'expanded') item.open = true;
+
+    // Guardar el estado cada vez que el usuario abre o cierra
+    item.addEventListener('toggle', () => {
+      localStorage.setItem(id, item.open ? 'expanded' : 'collapsed');
+    });
   });
 }
 
-// Function to save the state of accordions when they are collapsed or expanded
-$('.accordion-collapse').on('hidden.bs.collapse', function () {
-  var accordionId = $(this).closest('.accordion-item').attr('id'); // Get the unique identifier of the accordion
-  localStorage.setItem(accordionId, 'collapsed'); // Save the "collapsed" state in localStorage
-});
-
-$('.accordion-collapse').on('shown.bs.collapse', function () {
-  var accordionId = $(this).closest('.accordion-item').attr('id'); // Get the unique identifier of the accordion
-  localStorage.setItem(accordionId, 'expanded'); // Save the "expanded" state in localStorage
-});
-
-// Call the function to initialize the accordions when the page is fully loaded
-document.addEventListener('DOMContentLoaded', function () {
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeAccordions);
+} else {
   initializeAccordions();
-});
+}
 
 // Exposed on window because it's invoked from inline onclick="" handlers in
 // Smarty templates, which ESLint has no visibility into for usage checks.
