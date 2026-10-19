@@ -2,11 +2,11 @@
 
 <div id="page-manage-schedules" class="admin-page">
 
-	<div class="border-bottom mb-3 clearfix">
+	<div class="border-bottom mb-3 d-flow-root">
 		<h1 class="float-start">{translate key=ManageSchedules}</h1>
-		<a href="#" class="add-link btn btn-sm btn-primary float-end" id="add-schedule">
-			<span class="bi bi-plus-circle-fill me-1 icon add"></span>{translate key="AddSchedule"}
-		</a>
+		<button type="button" class="add-link btn-solid btn-sm theme-primary float-end" id="add-schedule" data-bs-toggle="dialog" data-bs-target="#addDialog">
+			<span class="bi bi-plus-circle-fill me-1"></span>{translate key="AddSchedule"}
+		</button>
 	</div>
 
 	<div class="card shadow" id="list-schedules-panel">
@@ -34,30 +34,29 @@
 											data-type='select' data-pk='{$id}' data-name='{FormKeys::SCHEDULE_WEEKDAY_START}'
 											data-value='{$dayOfWeek}'>{if $dayOfWeek == Schedule::Today}{$Today}{else}{$DayNames[$dayOfWeek]}{/if}</span>
 									{/capture}
-									<div class="accordion-item">
-										<h2 class="accordion-header">
-											<button class="accordion-button" type="button" data-bs-toggle="collapse"
-												data-bs-target="#panel{$id}" aria-expanded="true"
-												aria-controls="panel{$id}">
-												{$schedule->GetName()}
-											</button>
-										</h2>
-										<div id="panel{$id}" class="accordion-collapse collapse show">
+									<details class="accordion-item">
+										<summary class="accordion-header">
+											{$schedule->GetName()}
+											<svg class="accordion-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m2 5 6 6 6-6"/></svg>
+										</summary>
 											<div class="accordion-body">
 												<div class="scheduleDetails row" data-schedule-id="{$id}">
-													<div class="col-12 col-sm-6">
+													<div class="col-12 sm:col-6">
 														<input type="hidden" class="id" value="{$id}" />
 														<input type="hidden" class="daysVisible" value="{$daysVisible}" />
 														<input type="hidden" class="dayOfWeek" value="{$dayOfWeek}" />
 
-														<div>
-															<span class="title scheduleName fw-bold" data-type="text"
-																data-pk="{$id}"
-																data-name="{FormKeys::SCHEDULE_NAME}">{$schedule->GetName()}</span>
-															<a class="update renameButton link-primary" href="#"><span
-																	class="visually-hidden">{translate key=Rename}</span><span
-																	class="bi bi-pencil-square"></span></a>
-														</div>
+														{control type="BootstrapPopoverEditControl"
+															FieldId="scheduleName_{$id}"
+															FieldValue=$schedule->GetName()
+															DisplayValue=$schedule->GetName()
+															PrimaryKey=$id
+															ParameterName=FormKeys::SCHEDULE_NAME
+															SubmitUrl=$smarty.server.SCRIPT_NAME|cat:'?action=rename'
+															CssClass='fw-bold'
+															ButtonClass='theme-primary'
+														}
+
 
 														<div>
 															{translate key="LayoutDescription" args="{$smarty.capture.dayName},
@@ -77,7 +76,7 @@
 																{/if}
 															</span>
 															{if $AdminGroups|default:array()|count > 0}
-																<a class="link-primary update changeScheduleAdmin"><span
+																<a class="theme-primary update changeScheduleAdmin"><span
 																		class="visually-hidden">{translate key='ScheduleAdministrator'}</span><span
 																		class="bi bi-pencil-square"></span>
 																</a>
@@ -90,7 +89,7 @@
 																{include file="Admin/Schedules/manage_availability.tpl" schedule=$schedule timezone=$Timezone}
 															</div>
 
-															<a class="update changeAvailability link-primary ms-1" href="#">
+															<a class="update changeAvailability theme-primary ms-1" href="#">
 																<span
 																	class="visually-hidden">{translate key='Availability'}</span>
 																<span class="bi bi-pencil-square"></span>
@@ -105,7 +104,7 @@
 																{translate key=ScheduleConcurrentMaximumNone}
 															{/if}
 															<a href="#"
-																class="update changeScheduleConcurrentMaximum link-primary">
+																class="update changeScheduleConcurrentMaximum theme-primary">
 																<span
 																	class="visually-hidden">{translate key='ScheduleMaximumConcurrent'}</span>
 																<span class="bi bi-pencil-square"></span>
@@ -120,13 +119,15 @@
 																{translate key=ScheduleResourcesPerReservationNone}
 															{/if}
 															<a href="#"
-																class="update changeResourcesPerReservation link-primary">
+																class="update changeResourcesPerReservation theme-primary">
 																<span
 																	class="visually-hidden">{translate key='ScheduleResourcesPerReservation'}</span>
 																<span class="bi bi-pencil-square"></span>
 															</a>
 														</div>
 
+													</div>
+													<div class="col-12 sm:col-6">
 														<div>
 															{translate key=DefaultStyle}
 															<span
@@ -137,14 +138,14 @@
 														</div>
 
 														{if $CreditsEnabled}
-															<span>{translate key=PeakTimes}</span>
-															<a class="update changePeakTimes link-primary" href="#">
+															<span>{translate key=PeakTimes} <a class="update changePeakTimes theme-primary" href="#">
 																<span class="visually-hidden">{translate key=PeakTimes}</span>
 																<span class="bi bi-pencil-square"></span>
 															</a>
-															<div class="peakPlaceHolder">
+															<span class="peakPlaceHolder">
 																{include file="Admin/Schedules/manage_peak_times.tpl" Layout=$Layouts[$id] Months=$Months DayNames=$DayNames}
-															</div>
+															</span>
+																														</span>
 														{/if}
 
 														<div>{translate key=Resources}
@@ -170,15 +171,14 @@
 
 													</div>
 
-													<div class="layout col-12 col-sm-6">
+													<div class="layout col-12">
 														{function name="display_periods"}
 															{foreach from=$Layouts[$id]->GetSlots($day) item=period name=layouts}
 																{if $period->IsReservable() == $showReservable}
-																	{$period->Start->Format("H:i")} - {$period->End->Format("H:i")}
-																	{if $period->IsLabelled()}
-																		{$period->Label}
-																	{/if}
-																	{if !$smarty.foreach.layouts.last}, {/if}
+																	<span class="badge me-1 mb-1 {if $showReservable}bg-subtle-success fg-success{else}bg-subtle-danger fg-danger{/if}">
+																		{$period->Start->Format("H:i")} - {$period->End->Format("H:i")}
+																		{if $period->IsLabelled()}{$period->Label}{/if}
+																	</span>
 																{/if}
 															{foreachelse}
 																{translate key=None}
@@ -187,7 +187,7 @@
 
 														<div>
 															{translate key=ScheduleLayout args=$schedule->GetTimezone()}
-															<a class="update changeLayoutButton link-primary" href="#"
+															<a class="update changeLayoutButton theme-primary" href="#"
 																title="{translate key=ChangeLayout}">
 																<span class="bi bi-pencil-square"
 																	data-layout-type="{$Layouts[$id]->GetType()}"></span>
@@ -199,55 +199,71 @@
 															value="{$schedule->GetTimezone()}" />
 
 														{if $Layouts[$id]->UsesDailyLayouts()}
-															<input type="hidden" class="usesDailyLayouts" value="true" />
-															{translate key=LayoutVariesByDay} - <a href="#layout{$id}"
-																class="link-primary" role="button"
-																data-bs-toggle="collapse">{translate key=ShowHide}</a>
-															<div class="collapse" id="layout{$id}">
-																{foreach from=DayOfWeek::Days() item=day}
-																	{$DayNames[$day]}
-																	<div class="reservableSlots" id="reservableSlots_{$day}"
-																		ref="reservableEdit_{$day}">
-																		{display_periods showReservable=true day=$day}
-																	</div>
-																	<div class="blockedSlots" id="blockedSlots_{$day}"
-																		ref="blockedEdit_{$day}">
-																		{display_periods showReservable=false day=$day}
-																	</div>
-																{/foreach}
-															</div>
-															<div class="mt-4 fw-bold">
-																{translate key=ThisScheduleUsesAStandardLayout}</div>
-															<div><a href="#" class="update switchLayout link-primary"
-																	data-switch-to="{ScheduleLayout::Custom}">{translate key=SwitchToACustomLayout}</a>
-															</div>
-														{elseif $Layouts[$id]->UsesCustomLayout()}
-															<div class="mt-4 fw-bold">
-																{translate key=ThisScheduleUsesACustomLayout}</div>
-															<div><a href="#" class="update switchLayout link-primary"
-																	data-switch-to="{ScheduleLayout::Standard}">{translate key=SwitchToAStandardLayout}</a>
-															</div>
-														{else}
-															<input type="hidden" class="usesDailyLayouts" value="false" />
-															{translate key=ReservableTimeSlots}
-															<div class="reservableSlots" id="reservableSlots"
-																ref="reservableEdit">
-																{display_periods showReservable=true day=null}
-															</div>
-															{translate key=BlockedTimeSlots}
-															<div class="blockedSlots" id="blockedSlots" ref="blockedEdit">
-																{display_periods showReservable=false day=null}
-															</div>
-															<div class="mt-4 fw-bold">
-																{translate key=ThisScheduleUsesAStandardLayout}</div>
-															<div><a href="#" class="update switchLayout link-primary"
-																	data-switch-to="{ScheduleLayout::Custom}">{translate key=SwitchToACustomLayout}</a>
-															</div>
-														{/if}
+	<input type="hidden" class="usesDailyLayouts" value="true" />
+	<div class="mb-2">
+		{translate key=LayoutVariesByDay} -
+		<a href="#layout{$id}" class="theme-primary" role="button" data-bs-toggle="collapse"
+			data-bs-target="#layout{$id}" aria-expanded="false" aria-controls="layout{$id}">{translate key=ShowHide}</a>
+	</div>
+
+	{* .collapse sin utilidades de display: un d-flex aquí lo dejaría siempre visible *}
+	<div class="d-flex" id="layout{$id}">
+		<div class="d-flex flex-column gap-3 mt-2">
+			{foreach from=DayOfWeek::Days() item=day}
+				<div class="d-flex flex-column sm:flex-row gap-1 sm:gap-3 pb-3 border-bottom">
+					<div class="fw-bold" style="min-width: 8rem;">{$DayNames[$day]}</div>
+					<div>
+						<div class="reservableSlots mb-2" id="reservableSlots_{$day}" ref="reservableEdit_{$day}">
+							{translate key=ReservableTimeSlots}:
+							{display_periods showReservable=true day=$day}
+						</div>
+						<div class="blockedSlots" id="blockedSlots_{$day}" ref="blockedEdit_{$day}">
+						{translate key=BlockedTimeSlots}:
+							{display_periods showReservable=false day=$day}
+						</div>
+					</div>
+				</div>
+			{/foreach}
+		</div>
+	</div>
+
+	<div class="mt-4 fw-bold">{translate key=ThisScheduleUsesAStandardLayout}</div>
+	<div>
+		<a href="#" class="update switchLayout theme-primary"
+			data-switch-to="{ScheduleLayout::Custom}">{translate key=SwitchToACustomLayout}</a>
+	</div>
+{elseif $Layouts[$id]->UsesCustomLayout()}
+	<div class="mt-4 fw-bold">{translate key=ThisScheduleUsesACustomLayout}</div>
+	<div>
+		<a href="#" class="update switchLayout theme-primary"
+			data-switch-to="{ScheduleLayout::Standard}">{translate key=SwitchToAStandardLayout}</a>
+	</div>
+{else}
+	<input type="hidden" class="usesDailyLayouts" value="false" />
+	<div class="mb-2">
+		<span class="fg-2 mb-1">{translate key=ReservableTimeSlots}</span>
+		<span class="reservableSlots" id="reservableSlots" ref="reservableEdit">
+			{display_periods showReservable=true day=null}
+		</span>
+	</div>
+	<div class="mb-2">
+		<span class="fg-2 mb-1">{translate key=BlockedTimeSlots}</span>
+		<span class="blockedSlots" id="blockedSlots" ref="blockedEdit">
+			{display_periods showReservable=false day=null}
+		</span>
+	</div>
+
+	<div class="mt-4 fw-bold">{translate key=ThisScheduleUsesAStandardLayout}</div>
+	<div>
+		<a href="#" class="update switchLayout theme-primary"
+			data-switch-to="{ScheduleLayout::Custom}">{translate key=SwitchToACustomLayout}</a>
+	</div>
+{/if}
+
 													</div>
 													<div class="actions col-12">
 														<div
-															class="alert alert-light  d-flex align-items-center gap-1 mb-0">
+															class="alert theme-light  d-flex align-items-center gap-1 mb-0">
 															{if $schedule->GetIsDefault()}
 																<span
 																	class="note fst-italic">{translate key=ThisIsTheDefaultSchedule}</span>
@@ -256,32 +272,32 @@
 																	class="note fst-italic">{translate key=DefaultScheduleCannotBeDeleted}</span>
 																<div class="vr"></div>
 															{else}
-																<a class="update makeDefaultButton link-primary"
+																<a class="update makeDefaultButton theme-primary"
 																	href="#">{translate key=MakeDefault}</a>
 																<div class="vr"></div>
-																<a class="update deleteScheduleButton link-primary"
+																<a class="update deleteScheduleButton theme-primary"
 																	href="#">{translate key=Delete}</a>
 																<div class="vr"></div>
 															{/if}
 															{if $IcsEnabled}
 																{if $schedule->GetIsCalendarSubscriptionAllowed()}
-																	<a class="update disableSubscription link-primary"
+																	<a class="update disableSubscription theme-primary"
 																		href="#">{translate key=TurnOffSubscription}</a>
 																	<div class="vr"></div>
 																{else}
-																	<a class="update enableSubscription link-primary"
+																	<a class="update enableSubscription theme-primary"
 																		href="#">{translate key=TurnOnSubscription}</a>
 																{/if}
 																{if $schedule->GetIsCalendarSubscriptionAllowed()}
 																	{assign var="atomUrl" value=$schedule->GetSubscriptionUrl()->GetAtomUrl()}
 																	{assign var="icalUrl" value=$schedule->GetSubscriptionUrl()->GetWebcalUrl()}
-																	<a target="_blank" class="link-primary"
+																	<a target="_blank" class="theme-primary"
 																		title="{translate key=UrlCopiedToClipboard}"
 																		onclick="copyUrlToClipboard('{$atomUrl|escape:'javascript'|escape:'html'}'); return false;"
 																		href="{$atomUrl|escape:'html'}"> <i
-																			class="bi bi-rss-fill link-primary me-1"></i>Atom</a>
+																			class="bi bi-rss-fill theme-primary me-1"></i>Atom</a>
 																	<div class="vr"></div>
-																	<a target="_blank" class="link-primary"
+																	<a target="_blank" class="theme-primary"
 																		title="{translate key=UrlCopiedToClipboard}"
 																		onclick="copyUrlToClipboard('{$icalUrl|escape:'javascript'|escape:'html'}'); return false;"
 																		href="{$icalUrl|escape:'html'}">iCalendar</a>
@@ -292,8 +308,7 @@
 													</div>
 												</div>
 											</div>
-										</div>
-									</div>
+									</details>
 								</td>
 							</tr>
 						{/foreach}
@@ -303,25 +318,23 @@
 		</div>
 	</div>
 
-	<div id="addDialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addScheduleDialogLabel"
-		aria-hidden="true">
+	<dialog class="dialog" id="addDialog">
 		<form id="addScheduleForm" method="post">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
+			<div class="dialog-dialog">
+					<div class="dialog-header">
 						<h5 class="modal-title" id="addScheduleDialogLabel">{translate key=AddSchedule}</h5>
-						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+						<button type="button" class="btn-close" data-bs-dismiss="dialog" aria-label="{translate key=Close}"></button>
 					</div>
-					<div class="modal-body vstack gap-2">
+					<div class="dialog-body vstack gap-2">
 						<div class="form-group">
 							<label class="fw-bold" for="addName">{translate key=Name}<i
-									class="bi bi-asterisk text-danger align-top" style="font-size: 0.5rem;"></i></label>
-							<input type="text" id="addName" class="form-control has-feedback required"
+									class="bi bi-asterisk fg-danger align-top" style="font-size: 0.5rem;"></i></label>
+							<input type="text" id="addName" class="form-control form-control-sm has-feedback required"
 								{formname key=SCHEDULE_NAME} />
 						</div>
 						<div class="form-group">
 							<label class="fw-bold" for="addStartsOn">{translate key=StartsOn}</label>
-							<select {formname key=SCHEDULE_WEEKDAY_START} class="form-select" id="addStartsOn">
+							<select {formname key=SCHEDULE_WEEKDAY_START} class="form-control form-control-sm" id="addStartsOn">
 								<option value="{Schedule::Today}">{$Today}</option>
 								{foreach from=$DayNames item="dayName" key="dayIndex"}
 									<option value="{$dayIndex}">{$dayName}</option>
@@ -329,28 +342,28 @@
 							</select>
 						</div>
 						<div class="form-group">
-							<label class="fw-bold" for="addNumDaysVisible">{translate key=NumberOfDaysVisible}</label>
-							<input type="number" min="1" max="100" class="form-control required" id="addNumDaysVisible"
+							<label class="fw-bold" for="addNumDaysVisible">{translate key=NumberOfDaysVisible}<i
+									class="bi bi-asterisk fg-danger align-top" style="font-size: 0.5rem;"></i></label></label>
+							<input type="number" min="1" max="100" class="form-control form-control-sm required" id="addNumDaysVisible"
 								value="7" {formname key=SCHEDULE_DAYS_VISIBLE} />
 						</div>
 						<div class="form-group">
 							<label class="fw-bold" for="addSameLayoutAs">{translate key=UseSameLayoutAs}</label>
-							<select class="form-select" {formname key=SCHEDULE_ID} id="addSameLayoutAs">
+							<select class="form-control form-control-sm" {formname key=SCHEDULE_ID} id="addSameLayoutAs">
 								{foreach from=$SourceSchedules item=schedule}
 									<option value="{$schedule->GetId()}">{$schedule->GetName()}</option>
 								{/foreach}
 							</select>
 						</div>
 					</div>
-					<div class="modal-footer">
+					<div class="dialog-footer">
 						{cancel_button}
 						{add_button submit=true}
 						{indicator}
 					</div>
-				</div>
 			</div>
 		</form>
-	</div>
+	</dialog>
 
 	<input type="hidden" id="activeId" value="" />
 

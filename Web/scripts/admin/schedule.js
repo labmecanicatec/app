@@ -84,12 +84,12 @@ function ScheduleManagement(opts) {
       var id = $(this).closest('.scheduleDetails').attr('data-schedule-id');
       setActiveScheduleId(id);
     });
-
+    /*
     elements.scheduleList.on('click', '.renameButton', function (e) {
       e.stopPropagation();
       $(this).closest('.scheduleDetails').find('.scheduleName').editable('toggle');
     });
-
+*/
     elements.scheduleList.on('click', '.dayName', function (e) {
       e.stopPropagation();
       $(this).editable('toggle');
@@ -225,9 +225,9 @@ function ScheduleManagement(opts) {
       $(this).closest('form').submit();
     });
 
-    $('.cancel').click(function () {
+    /*$('.cancel').click(function () {
       $(this).closest('.dialog').dialog('close');
-    });
+    });*/
 
     elements.quickLayoutConfig.change(function () {
       createQuickLayout();
@@ -250,14 +250,14 @@ function ScheduleManagement(opts) {
       toggleLayoutChange($(this).is(':checked'));
     });
 
-    elements.addScheduleButton.click(function (e) {
+    /*elements.addScheduleButton.click(function (e) {
       e.preventDefault();
       elements.addDialog.modal('show');
     });
 
     elements.addDialog.on('shown.bs.modal', function () {
       elements.addName.focus();
-    });
+    });*/
 
     elements.cancelDeleteSlot.click(function (e) {
       elements.deleteCustomLayoutDialog.hide();

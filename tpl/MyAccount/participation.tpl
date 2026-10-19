@@ -9,8 +9,8 @@
 
 	<div id="participation-box" class="default-box card shadow">
 		<div class="card-body">
-			<h1 class="text-center border-bottom mb-3">{translate key=OpenInvitations}
-				<span class="badge bg-primary">{$Reservations|default:array()|count}</span>
+			<h1 class="text-center border-bottom mb-5">{translate key=OpenInvitations}
+				<span class="badge theme-primary">{$Reservations|default:array()|count}</span>
 			</h1>
 
 			<table class="table table-hover table-striped align-middle participation">
