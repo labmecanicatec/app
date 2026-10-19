@@ -3,22 +3,23 @@
 <div class="page-change-password">
 
 	{if !$AllowPasswordChange}
-		<div class="alert alert-danger text-center">
-			<i class="bi bi-exclamation-triangle-fill fs-5"></i> {translate key=PasswordControlledExternallyError}
+		<div class="alert theme-danger shadow d-flex justify-content-center align-items-center col-12 sm:col-8 mx-auto">
+			<i class="bi bi-exclamation-triangle-fill fs-xl"></i> {translate key=PasswordControlledExternallyError}
 		</div>
 	{else}
 		<form id="password-reset-form" method="post" action="{$smarty.server.SCRIPT_NAME}">
-			<div id="password-reset-box" class="default-box card shadow col-12 col-sm-8 mx-auto">
+			<div id="password-reset-box" class="card shadow col-12 sm:col-8 mx-auto">
 				<div class="card-body">
 					<h1 class="text-center border-bottom mb-2">{translate key="ChangePassword"}</h1>
 
 					{if isset($ResetPasswordSuccess) && $ResetPasswordSuccess}
-						<div class="success alert alert-success">
+						<div class="success alert theme-success">
 							<i class="bi bi-check-circle-fill"></i> {translate key=PasswordChangedSuccessfully}
+							<button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
 						</div>
 					{/if}
 
-					{validation_group class="alert alert-danger"}
+					{validation_group class="alert theme-danger"}
 					{validator id="currentpassword" key="InvalidPassword"}
 					{validator id="passwordmatch" key="PwMustMatch"}
 					{validator id="passwordcomplexity" key=""}
@@ -42,14 +43,14 @@
 
 					<div class="form-group d-grid">
 						<button type="submit" name="{Actions::CHANGE_PASSWORD}" value="{translate key='ChangePassword'}"
-							class="btn btn-primary">{translate key='ChangePassword'}</button>
+							class="btn theme-primary btn-solid">{translate key='ChangePassword'}</button>
 					</div>
 				</div>
 				{csrf_token}
+			</div>
 		</form>
-	</div>
-	{setfocus key='CURRENT_PASSWORD'}
-{/if}
+		{setfocus key='CURRENT_PASSWORD'}
+	{/if}
 
 </div>
 {include file="javascript-includes.tpl"}

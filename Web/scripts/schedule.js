@@ -729,16 +729,20 @@ function Schedule(opts, resourceGroups) {
     //var datePicker = $("#datepicker");
     var expandCalendar = readCookie('schedule_calendar_toggle');
 
+    const CALENDAR_PANELS = ['datepicker', 'individualDates'];
+
     function collapse() {
       createCookie('schedule_calendar_toggle', false, 30, opts.scriptUrl);
-      $('#datepicker').collapse('hide');
-      $('#individualDates').collapse('hide');
+      CALENDAR_PANELS.forEach(id => {
+        bootstrap.Collapse.getOrCreateInstance(document.getElementById(id)).hide();
+      });
     }
 
     function expand() {
       createCookie('schedule_calendar_toggle', true, 30, opts.scriptUrl);
-      $('#datepicker').collapse('show');
-      $('#individualDates').collapse('show');
+      CALENDAR_PANELS.forEach(id => {
+        bootstrap.Collapse.getOrCreateInstance(document.getElementById(id)).show();
+      });
     }
 
     if (expandCalendar == 'true') {
@@ -907,7 +911,7 @@ function Schedule(opts, resourceGroups) {
     function hide() {
       shown = false;
       $('#reservations-left').addClass('d-none');
-      $('#reservations').removeClass('col-md-10').addClass('col-md-12');
+      $('#reservations').removeClass('md:col-10').addClass('md:col-12');
       $('#restore-sidebar').removeClass('bi-chevron-double-left');
       $('#restore-sidebar').addClass('bi-chevron-double-right');
 
@@ -917,7 +921,7 @@ function Schedule(opts, resourceGroups) {
     function show() {
       shown = true;
       $('#reservations-left').removeClass('d-none');
-      $('#reservations').addClass('col-md-10').removeClass('col-md-12');
+      $('#reservations').addClass('md:col-10').removeClass('md:col-12');
       $('#restore-sidebar').removeClass('bi-chevron-double-right');
       $('#restore-sidebar').addClass('bi-chevron-double-left');
 

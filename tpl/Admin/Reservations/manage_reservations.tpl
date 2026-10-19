@@ -1,176 +1,164 @@
 {include file='globalheader.tpl' InlineEdit=true DataTable=true}
 
 <div id="page-manage-reservations" class="admin-page">
-	<div class="clearfix border-bottom mb-3">
-		<div class="dropdown admin-header-more float-end">
-			<button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="moreReservationActions"
-				data-bs-toggle="dropdown">
-				<i class="bi bi-three-dots"></i>
-				<span class="visually-hidden">Expand</span>
-			</button>
-			<ul class="dropdown-menu" role="menu" aria-labelledby="moreReservationActions">
-				{if $CanViewAdmin}
-					<li role="presentation">
-						<a role="menuitem" href="#" id="import-reservations" class="add-link dropdown-item">
+	<div class="border-bottom mb-3">
+		<div class="d-flex justify-content-between align-items-center">
+			<h1 class="mb-0">{translate key=ManageReservations}</h1>
+
+			<div class="admin-header-more">
+				<button class="btn-solid theme-primary btn-sm" type="button" id="moreReservationActions"
+					data-bs-toggle="menu" data-bs-placement="bottom-end" aria-expanded="false">
+					<i class="bi bi-three-dots"></i>
+					<span class="visually-hidden">Expand</span>
+				</button>
+				<div class="menu" aria-labelledby="moreReservationActions">
+					{if $CanViewAdmin}
+						<a href="#" id="import-reservations" class="add-link menu-item">
 							<i class="bi bi-box-arrow-in-down"></i>
 							{translate key=Import}
 						</a>
-					</li>
-				{/if}
-				<li role="presentation">
-					<a role="menuitem" href="{$CsvExportUrl}" download="{$CsvExportUrl}" class="add-link dropdown-item"
-						target="_blank">
+					{/if}
+					<a href="{$CsvExportUrl}" download="{$CsvExportUrl}" class="add-link menu-item" target="_blank">
 						<i class="bi bi-box-arrow-in-up"></i>
-						{translate key=Export} CVS
+						{translate key=Export} CSV
 					</a>
-				</li>
-				{if $CanViewAdmin}
-					<li role="separator" class="divider"></li>
-					<li role="presentation">
-						<a role="menuitem" href="#" id="addTermsOfService" class="add-link dropdown-item">
+					{if $CanViewAdmin}
+						<hr class="menu-divider">
+						<a href="#" id="addTermsOfService" class="add-link menu-item">
 							<i class="bi bi-journals"></i>
 							{translate key=TermsOfService}
 						</a>
-					</li>
-					<li role="presentation">
-						<a role="menuitem" href="manage_reservation_colors.php" id="addTermsOfService"
-							class="add-link dropdown-item">
+						<a href="manage_reservation_colors.php" id="manageReservationColors" class="add-link menu-item">
 							<i class="bi bi-brush"></i>
 							{translate key=ReservationColors}
 						</a>
-					</li>
-				{/if}
-			</ul>
-		</div>
-		<h1 class="float-start">{translate key=ManageReservations}</h1>
-	</div>
-
-	<div class="accordion">
-		<div class="filterTable accordion-item shadow mb-2" id="filter-reservations-panel">
-			<h2 class="accordion-header">
-				<button class="accordion-button link-primary fw-bold" type="button" data-bs-toggle="collapse"
-					data-bs-target="#filter-reservations-content" aria-expanded="true"
-					aria-controls="filter-reservations-content">
-					<i class="bi bi-funnel-fill me-1"></i>{translate key="Filter"}
-				</button>
-			</h2>
-			<div id="filter-reservations-content" class="accordion-collapse collapse show">
-				<div class="accordion-body">
-					{assign var=groupClass value="col-12 col-sm-4 col-md-3"}
-					<form id="filterForm" role="form" class="row gy-2">
-						<div
-							class="form-group filter-dates {$groupClass} d-flex justify-content-between align-items-center">
-							<div>
-								<label for="startDate" class="fw-bold">{translate key='BeginDate'}</label>
-								<input id="startDate" type="text" class="form-control form-control-sm" />
-							</div>
-							<div>
-								<label for="endDate" class="fw-bold">{translate key='EndDate'}</label>
-								<input id="endDate" type="text" class="form-control form-control-sm" />
-							</div>
-						</div>
-						<div class="form-group filter-user {$groupClass}">
-							<label for="userFilter" class="fw-bold">{translate key=User}</label>
-							<div class="position-relative">
-								<input id="userFilter" type="text" class="form-control form-control-sm"
-									value="{$UserNameFilter}" placeholder="{translate key=User}" />
-								<input id="userId" type="hidden" value="{$UserIdFilter}" />
-								<span class="searchclear bi bi-x-circle-fill" ref="userFilter,userId"></span>
-							</div>
-						</div>
-						<div class="form-group filter-schedule {$groupClass}">
-							<label for="scheduleId" class="fw-bold">{translate key=Schedule}</label>
-							<select id="scheduleId" class="form-select form-select-sm">
-								<option value="">{translate key=AllSchedules}</option>
-								{object_html_options options=$Schedules key='GetId' label="GetName" selected=$ScheduleId}
-							</select>
-						</div>
-						<div class="form-group filter-resource {$groupClass}">
-							<label for="resourceId" class="fw-bold">{translate key=Resource}</label>
-							<select id="resourceId" class="form-select form-select-sm">
-								<option value="">{translate key=AllResources}</option>
-								{object_html_options options=$Resources key='GetId' label="GetName" selected=$ResourceId}
-							</select>
-						</div>
-						<div class="form-group filter-status {$groupClass}">
-							<label for="statusId" class="fw-bold">{translate key=Status}</label>
-							<select id="statusId" class="form-select form-select-sm">
-								<option value="">{translate key=AllReservations}</option>
-								<option value="{ReservationStatus::Pending}"
-									{if $ReservationStatusId eq ReservationStatus::Pending}selected="selected" {/if}>
-									{translate key=PendingReservations}</option>
-							</select>
-						</div>
-						<div class="form-group filter-referenceNumber {$groupClass}">
-							<label for="referenceNumber" class="fw-bold">{translate key=ReferenceNumber}</label>
-							<div class="position-relative">
-								<input id="referenceNumber" type="text" class="form-control form-control-sm"
-									value="{$ReferenceNumber}" placeholder="{translate key=ReferenceNumber}" />
-								<span class="searchclear bi bi-x-circle-fill" ref="referenceNumber"></span>
-							</div>
-						</div>
-						<div class="form-group filter-title {$groupClass}">
-							<label for="reservationTitle" class="fw-bold">{translate key=Title}</label>
-							<div class="position-relative">
-								<input id="reservationTitle" type="text" class="form-control form-control-sm"
-									value="{$ReservationTitle}" placeholder="{translate key=Title}" />
-								<span class="searchclear bi bi-x-circle-fill" ref="reservationTitle"></span>
-							</div>
-						</div>
-						<div class="form-group filter-title {$groupClass}">
-							<label for="reservationDescription"
-								class="fw-bold">{translate key=ReservationDescription}</label>
-							<div class="position-relative">
-								<input id="reservationDescription" type="text" class="form-control form-control-sm"
-									value="{$ReservationDescription}" placeholder="{translate key=Description}" />
-								<span class="searchclear bi bi-x-circle-fill" ref="reservationDescription"></span>
-							</div>
-						</div>
-						<div class="form-group filter-resourceStatus {$groupClass}">
-							<label for="resourceStatusIdFilter" class="fw-bold">{translate key=ResourceStatus}</label>
-							<select id="resourceStatusIdFilter" class="form-select form-select-sm">
-								<option value="">{translate key=AllResourceStatuses}</option>
-								<option value="{ResourceStatus::AVAILABLE}">{translate key=Available}</option>
-								<option value="{ResourceStatus::UNAVAILABLE}">{translate key=Unavailable}</option>
-								<option value="{ResourceStatus::HIDDEN}">{translate key=Hidden}</option>
-							</select>
-						</div>
-						<div class="form-group filter-resourceStatusReason {$groupClass}">
-							<label for="resourceReasonIdFilter" class="fw-bold">{translate key=Reason}</label>
-							<select id="resourceReasonIdFilter" class="form-select form-select-sm"></select>
-						</div>
-						<div class="form-group filter-checkin {$groupClass} d-flex align-items-center">
-							<div class="form-check">
-								<input class="form-check-input" type="checkbox" id="missedCheckin"
-									{if $MissedCheckin}checked="checked" {/if} />
-								<label class="form-check-label"
-									for="missedCheckin">{translate key=MissedCheckin}</label>
-							</div>
-						</div>
-						<div class="form-group filter-checkout {$groupClass} d-flex align-items-center">
-							<div class="form-check">
-								<input class="form-check-input" type="checkbox" id="missedCheckout"
-									{if $MissedCheckout}checked="checked" {/if} />
-								<label class="form-check-label"
-									for="missedCheckout">{translate key=MissedCheckout}</label>
-							</div>
-						</div>
-						{foreach from=$AttributeFilters item=attribute}
-							{control type="AttributeControl" attribute=$attribute searchmode=true class="customAttribute filter-customAttribute{$attribute->Id()}
-						{$groupClass}"}
-						{/foreach}
-					</form>
-
-					<div class="accordion-footer border-top mt-3 pt-3">
-						{filter_button id="filter"}
-						{reset_button id="clearFilter"}
-					</div>
+					{/if}
 				</div>
 			</div>
 		</div>
 	</div>
 
-	<div class="card shadow">
+	<div class="accordion">
+		<details class="filterTable accordion-item shadow mb-2" id="filter-reservations-panel">
+			<summary class="accordion-header">
+				<i class="bi bi-funnel-fill theme-primary me-1"></i>{translate key="Filter"}
+				<svg class="accordion-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m2 5 6 6 6-6"/></svg>
+			</summary>
+			<div class="accordion-body"  id="filter-reservations-content">
+				{assign var=groupClass value="col-12 col-sm-4 col-md-3"}
+				<form id="filterForm" role="form" class="row gy-2">
+					<div
+						class="form-group filter-dates {$groupClass} d-flex justify-content-between align-items-center">
+						<div>
+							<label for="startDate" class="fw-bold">{translate key='BeginDate'}</label>
+							<input id="startDate" type="text" class="form-control form-control-sm" />
+						</div>
+						<div>
+							<label for="endDate" class="fw-bold">{translate key='EndDate'}</label>
+							<input id="endDate" type="text" class="form-control form-control-sm" />
+						</div>
+					</div>
+					<div class="form-group filter-user {$groupClass}">
+						<label for="userFilter" class="fw-bold">{translate key=User}</label>
+						<div class="position-relative">
+							<input id="userFilter" type="text" class="form-control form-control-sm"
+								value="{$UserNameFilter}" placeholder="{translate key=User}" />
+							<input id="userId" type="hidden" value="{$UserIdFilter}" />
+							<span class="searchclear bi bi-x-circle-fill" ref="userFilter,userId"></span>
+						</div>
+					</div>
+					<div class="form-group filter-schedule {$groupClass}">
+						<label for="scheduleId" class="fw-bold">{translate key=Schedule}</label>
+						<select id="scheduleId" class="form-select form-select-sm">
+							<option value="">{translate key=AllSchedules}</option>
+							{object_html_options options=$Schedules key='GetId' label="GetName" selected=$ScheduleId}
+						</select>
+					</div>
+					<div class="form-group filter-resource {$groupClass}">
+						<label for="resourceId" class="fw-bold">{translate key=Resource}</label>
+						<select id="resourceId" class="form-select form-select-sm">
+							<option value="">{translate key=AllResources}</option>
+							{object_html_options options=$Resources key='GetId' label="GetName" selected=$ResourceId}
+						</select>
+					</div>
+					<div class="form-group filter-status {$groupClass}">
+						<label for="statusId" class="fw-bold">{translate key=Status}</label>
+						<select id="statusId" class="form-select form-select-sm">
+							<option value="">{translate key=AllReservations}</option>
+							<option value="{ReservationStatus::Pending}"
+								{if $ReservationStatusId eq ReservationStatus::Pending}selected="selected" {/if}>
+								{translate key=PendingReservations}</option>
+						</select>
+					</div>
+					<div class="form-group filter-referenceNumber {$groupClass}">
+						<label for="referenceNumber" class="fw-bold">{translate key=ReferenceNumber}</label>
+						<div class="position-relative">
+							<input id="referenceNumber" type="text" class="form-control form-control-sm"
+								value="{$ReferenceNumber}" placeholder="{translate key=ReferenceNumber}" />
+							<span class="searchclear bi bi-x-circle-fill" ref="referenceNumber"></span>
+						</div>
+					</div>
+					<div class="form-group filter-title {$groupClass}">
+						<label for="reservationTitle" class="fw-bold">{translate key=Title}</label>
+						<div class="position-relative">
+							<input id="reservationTitle" type="text" class="form-control form-control-sm"
+								value="{$ReservationTitle}" placeholder="{translate key=Title}" />
+							<span class="searchclear bi bi-x-circle-fill" ref="reservationTitle"></span>
+						</div>
+					</div>
+					<div class="form-group filter-title {$groupClass}">
+						<label for="reservationDescription"
+							class="fw-bold">{translate key=ReservationDescription}</label>
+						<div class="position-relative">
+							<input id="reservationDescription" type="text" class="form-control form-control-sm"
+								value="{$ReservationDescription}" placeholder="{translate key=Description}" />
+							<span class="searchclear bi bi-x-circle-fill" ref="reservationDescription"></span>
+						</div>
+					</div>
+					<div class="form-group filter-resourceStatus {$groupClass}">
+						<label for="resourceStatusIdFilter" class="fw-bold">{translate key=ResourceStatus}</label>
+						<select id="resourceStatusIdFilter" class="form-select form-select-sm">
+							<option value="">{translate key=AllResourceStatuses}</option>
+							<option value="{ResourceStatus::AVAILABLE}">{translate key=Available}</option>
+							<option value="{ResourceStatus::UNAVAILABLE}">{translate key=Unavailable}</option>
+							<option value="{ResourceStatus::HIDDEN}">{translate key=Hidden}</option>
+						</select>
+					</div>
+					<div class="form-group filter-resourceStatusReason {$groupClass}">
+						<label for="resourceReasonIdFilter" class="fw-bold">{translate key=Reason}</label>
+						<select id="resourceReasonIdFilter" class="form-select form-select-sm"></select>
+					</div>
+					<div class="form-group filter-checkin {$groupClass} d-flex align-items-center">
+						<div class="form-check">
+							<input class="form-check-input" type="checkbox" id="missedCheckin"
+								{if $MissedCheckin}checked="checked" {/if} />
+							<label class="form-check-label"
+								for="missedCheckin">{translate key=MissedCheckin}</label>
+						</div>
+					</div>
+					<div class="form-group filter-checkout {$groupClass} d-flex align-items-center">
+						<div class="form-check">
+							<input class="form-check-input" type="checkbox" id="missedCheckout"
+								{if $MissedCheckout}checked="checked" {/if} />
+							<label class="form-check-label"
+								for="missedCheckout">{translate key=MissedCheckout}</label>
+						</div>
+					</div>
+					{foreach from=$AttributeFilters item=attribute}
+						{control type="AttributeControl" attribute=$attribute searchmode=true class="customAttribute filter-customAttribute{$attribute->Id()}
+					{$groupClass}"}
+					{/foreach}
+				</form>
+
+				<div class="accordion-footer border-top mt-3 pt-3">
+					{filter_button id="filter"}
+					{reset_button id="clearFilter"}
+				</div>
+			</div>
+		</details>
+	</div>
+
+	<div class="card shadow d-none">
 		<div class="card-body">
 			<div class="table-responsive">
 				{assign var=tableId value=reservationTable}
@@ -437,7 +425,7 @@
 		</div>
 	</div>
 
-	<div id="importReservationsDialog" class="modal" tabindex="-1" role="dialog"
+	<div id="importReservationsDialog" class="modal d-none" tabindex="-1" role="dialog"
 		aria-labelledby="importReservationsModalLabel" aria-hidden="true">
 		<form id="importReservationsForm" class="form" role="form" method="post" enctype="multipart/form-data"
 			ajaxAction="{ManageReservationsActions::Import}">

@@ -11,60 +11,60 @@
   --label-text-on-light: #1a2b30;
   --label-text-on-dark: #ffffff;
 }
-
+/* ==========================================================
+   Un tema = un color. Todo lo demás se deriva en el bloque final.
+   Opcional por tema: --brand-hover y --brand-disabled.
+   ========================================================== */
 [data-bs-theme='default'] {
-  --primary: #2b6b6b;
-  --primary-hover: color-mix(in oklab, var(--primary) 80%, black);
-  --primary-disabled: color-mix(in oklab, var(--primary) 40%, white);
-  --text-color-btn: #ffffff;
+  --brand: #2b6b6b;
 }
-
 [data-bs-theme='dimgray'] {
-  --primary: #4d5a5a;
-  --primary-hover: color-mix(in oklab, var(--primary) 80%, black);
-  --primary-disabled: color-mix(in oklab, var(--primary) 40%, white);
-  --text-color-btn: #ffffff;
+  --brand: #4d5a5a;
 }
-
 [data-bs-theme='dark_red'] {
-  --primary: #6b2d3a;
-  --primary-hover: color-mix(in oklab, var(--primary) 80%, black);
-  --primary-disabled: color-mix(in oklab, var(--primary) 40%, white);
-  --text-color-btn: #ffffff;
+  --brand: #6b2d3a;
 }
-
 [data-bs-theme='dark_green'] {
-  --primary: #0d4d2e;
-  --primary-hover: color-mix(in oklab, var(--primary) 80%, black);
-  --primary-disabled: color-mix(in oklab, var(--primary) 40%, white);
-  --text-color-btn: #ffffff;
+  --brand: #0d4d2e;
 }
-
 [data-bs-theme='french_blue'] {
-  --primary: #0072b5;
-  --primary-hover: color-mix(in oklab, var(--primary) 80%, black);
-  --primary-disabled: color-mix(in oklab, var(--primary) 40%, white);
-  --text-color-btn: #ffffff;
+  --brand: #0072b5;
 }
-
-[data-bs-theme='cake_blue'] {
-  --primary: #003873;
-  --primary-hover: #002042;
-  --primary-disabled: #909090;
-  --text-color-btn: #ffffff;
-}
-
 [data-bs-theme='orange'] {
-  --primary: #b05e2a;
-  --primary-hover: color-mix(in oklab, var(--primary) 80%, black);
-  --primary-disabled: color-mix(in oklab, var(--primary) 40%, white);
-  --text-color-btn: #ffffff;
+  --brand: #b05e2a;
+}
+[data-bs-theme='cake_blue'] {
+  --brand: #003873;
+}
+
+/* ==========================================================
+   Bloque único: redefine los tokens primary de Bootstrap 6.
+   Con esto .theme-primary (y todo lo que use primary: botones,
+   badges, alertas, anillos de foco, enlaces) sigue al tema
+   sin tener que sobrescribir .theme-primary.
+   Se excluyen light/dark para no pisar los modos estándar
+   de componentes anidados (por ejemplo, un navbar oscuro).
+   ========================================================== */
+[data-bs-theme]:not([data-bs-theme='light'], [data-bs-theme='dark']) {
+  /* Los temas propios no son "light" ni "dark": sin esto, light-dark()
+     sigue la preferencia del sistema y un SO en modo oscuro lo oscurece todo. */
+  color-scheme: light;
+
+  /* Tokens de Bootstrap 6 */
+  --bs-primary-base: var(--brand);
+  --bs-primary-bg: var(--brand);
+  --bs-primary-fg: var(--brand);
+  --bs-primary-fg-emphasis: color-mix(in oklab, var(--brand) 60%, black);
+  --bs-primary-bg-subtle: color-mix(in oklab, var(--brand) 12%, white);
+  --bs-primary-bg-muted: color-mix(in oklab, var(--brand) 22%, white);
+  --bs-primary-border: color-mix(in oklab, var(--brand) 40%, white);
+  --bs-primary-focus-ring: color-mix(in oklab, var(--brand) 50%, white);
+  --bs-primary-contrast: #ffffff;
 }
 
 body {
-  font-family: 'Hind', 'system-ui', 'sans-serif';
+  font-family: 'Lato', 'system-ui', 'sans-serif';
   font-weight: 400;
-  font-style: normal;
   font-size: 14px;
   display: flex;
   flex-direction: column;
@@ -75,107 +75,112 @@ body {
 footer {
   margin-top: auto;
 }
-
+a:not(.text-decoration-underline) {
+  text-decoration: none;
+}
 img.logo {
   max-height: 50px;
 }
 
-.dropdown-item:hover,
-.dropdown-item:focus,
-.dropdown-item:focus-visible {
-  color: var(--text-color-btn);
-  background-color: var(--primary);
+.menu-item.active,
+.menu-item:active,
+.menu-item:hover,
+.menu-item:focus,
+.menu-item:focus-visible {
+  color: var(--bs-primary-contrast);
+  background-color: var(--brand);
 }
 
 .nav-link:hover {
-  color: var(--primary-hover) !important;
+  color: var(--brand-hover) !important;
 }
 
 .dropdown-menu {
-  --bs-dropdown-link-active-bg: var(--primary);
+  --bs-dropdown-link-active-bg: var(--brand);
   font-size: 12px;
 }
 
 .page-link {
-  color: var(--primary);
-  border: var(--bs-pagination-border-width) solid var(--primary);
+  color: var(--brand);
+  border: var(--bs-pagination-border-width) solid var(--brand);
 }
 
 .active > .page-link,
 .page-link.active {
   z-index: 3;
   color: var(--bs-pagination-active-color);
-  background-color: var(--primary);
-  border-color: var(--primary);
+  background-color: var(--brand);
+  border-color: var(--brand);
 }
 
 .page-link:hover {
-  background-color: var(--primary-hover);
-  border-color: var(--primary);
+  background-color: var(--brand-hover);
+  border-color: var(--brand);
   color: #ffffff;
 }
 
 .page-link:focus {
-  color: var(--primary) !important;
+  color: var(--brand) !important;
 }
 
 .disabled > .page-link {
-  border-color: var(--primary);
+  border-color: var(--brand);
 }
 
+/*
 .btn-primary {
-  --bs-btn-bg: var(--primary);
-  --bs-btn-border-color: var(--primary-hover);
-  --bs-btn-hover-bg: var(--primary-hover);
-  --bs-btn-hover-border-color: var(--primary);
-  --bs-btn-active-bg: var(--primary);
-  --bs-btn-active-border-color: var(--primary);
-  --bs-btn-focus-border-color: var(--primary);
+  --bs-btn-bg: var(--brand);
+  --bs-btn-border-color: var(--brand-hover);
+  --bs-btn-hover-bg: var(--brand-hover);
+  --bs-btn-hover-border-color: var(--brand);
+  --bs-btn-active-bg: var(--brand);
+  --bs-btn-active-border-color: var(--brand);
+  --bs-btn-focus-border-color: var(--brand);
 }
 
 .btn-outline-primary {
-  --bs-btn-border-color: var(--primary);
-  --bs-btn-color: var(--primary);
-  --bs-btn-hover-bg: var(--primary-hover);
-  --bs-btn-active-bg: var(--primary);
-  --bs-btn-hover-border-color: var(--primary);
-  --bs-btn-active-border-color: var(--primary);
+  --bs-btn-border-color: var(--brand);
+  --bs-btn-color: var(--brand);
+  --bs-btn-hover-bg: var(--brand-hover);
+  --bs-btn-active-bg: var(--brand);
+  --bs-btn-hover-border-color: var(--brand);
+  --bs-btn-active-border-color: var(--brand);
 }
 
 .btn.disabled,
 .btn:disabled,
 fieldset:disabled .btn {
-  background-color: var(--primary-disabled);
-  border-color: var(--primary-disabled);
+  background-color: var(--brand-disabled);
+  border-color: var(--brand-disabled);
 }
 
 .link-primary {
-  color: var(--primary) !important;
+  color: var(--brand) !important;
   text-decoration: none;
 }
 
 .link-primary:hover,
 .link-primary:focus {
-  color: var(--primary-hover) !important;
+  color: var(--brand-hover) !important;
 }
 
 .bg-primary {
-  background-color: var(--primary) !important;
+  background-color: var(--brand) !important;
 }
 
 .bg-primary-opacity {
-  background-color: var(--primary) !important;
+  background-color: var(--brand) !important;
   --bs-bg-opacity: 0.5 !important;
 }
 
 .form-check-input:checked {
-  background-color: var(--primary);
-  border-color: var(--primary);
+  background-color: var(--brand);
+  border-color: var(--brand);
 }
 
 .form-check-input.is-valid:checked,
 .was-validated .form-check-input:valid:checked {
-  background-color: var(--primary);
+  background-color: var(--brand);
 }
 
 .has-error .checkbox,
@@ -190,7 +195,7 @@ fieldset:disabled .btn {
 .has-error.radio-inline label {
   color: var(--bs-danger);
 }
-
+*/
 .wait-box {
   display: none;
   text-align: center;
@@ -205,34 +210,35 @@ fieldset:disabled .btn {
   cursor: pointer;
 }
 
+/*
 .accordion-button.collapsed {
   background: #ffffff;
-  color: var(--primary) !important;
+  color: var(--brand) !important;
 }
 
 .accordion-button:not(.collapsed) {
   background: var(--bs-secondary-bg);
-  color: var(--primary) !important;
+  color: var(--brand) !important;
 }
 
 .accordion-button:hover {
   background: var(--bs-secondary-bg);
-  color: var(--primary) !important;
+  color: var(--brand) !important;
 }
 
 .accordion-header {
   background: var(--bs-secondary-bg);
-  color: var(--primary) !important;
+  color: var(--brand) !important;
 }
 
 .accordion-header:has(.accordion-icon-container.collapsed) {
   background: #ffffff;
-  color: var(--primary) !important;
+  color: var(--brand) !important;
 }
-
+*/
 .accordion-header:hover {
   background: var(--bs-secondary-bg) !important;
-  color: var(--primary) !important;
+  color: var(--brand) !important;
 }
 
 .accordion-footer button {
@@ -243,10 +249,11 @@ fieldset:disabled .btn {
   min-height: 100px;
 }
 
+/*
 .timespan {
   --bs-bg-opacity: 0.2;
 }
-
+*/
 .upcomingReservationsDashboard .reservation.hover {
   cursor: pointer;
   background-color: #eaf2f2;
@@ -280,7 +287,7 @@ fieldset:disabled .btn {
 }
 
 .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
-  background-color: var(--primary);
+  background-color: var(--brand);
 }
 
 .ui-widget {
@@ -320,7 +327,7 @@ fieldset:disabled .btn {
 }
 
 .carousel-indicators [data-bs-target] {
-  background-color: var(--primary);
+  background-color: var(--brand);
 }
 
 span.searchclear,
@@ -453,11 +460,12 @@ span.searchclear-label {
   font-family: 'bootstrap-icons';
 }
 
+/*
 .announcement a,
 .announcement a:visited {
-  color: var(--primary);
+  color: var(--brand);
 }
-
+*/
 .resource-draggable {
   cursor: move;
   border: solid 1px transparent;
@@ -563,8 +571,8 @@ input.mid-number {
 }
 
 .resourceName {
-  background-color: var(--primary);
-  color: var(--text-color-btn);
+  background-color: var(--brand);
+  color: var(--bs-primary-contrast);
 }
 
 .resourceName a {
@@ -573,7 +581,7 @@ input.mid-number {
 }
 
 .reserveButton .btn {
-  color: var(--text-color-btn);
+  color: var(--bs-primary-contrast);
 }
 
 .repeat-date-list {
@@ -591,8 +599,8 @@ input.mid-number {
 }
 
 .trumbowyg-modal-submit {
-  background-color: var(--primary) !important;
-  color: var(--text-color-btn) !important;
+  background-color: var(--brand) !important;
+  color: var(--bs-primary-contrast) !important;
 }
 
 .descriptionValue a,
@@ -600,10 +608,11 @@ input.mid-number {
 .notesValue a,
 .noteContent a,
 .announcement a,
+.announcement a:visited,
 .announcementText a,
 .announcementContent a,
 .trumbowyg-editor a {
-  color: var(--primary);
+  color: var(--brand);
 }
 
 .editable-container.editable-popup {
@@ -642,12 +651,12 @@ input.mid-number {
 }
 
 .flatpickr-months .flatpickr-month {
-  background: var(--primary) !important;
-  color: var(--text-color-btn) !important;
+  background: var(--brand) !important;
+  color: var(--bs-primary-contrast) !important;
 }
 
 .flatpickr-monthDropdown-months {
-  background-color: var(--primary);
+  background-color: var(--brand);
   color: #ffffff;
 }
 
@@ -657,12 +666,12 @@ input.mid-number {
 }
 
 .flatpickr-weekdays {
-  background: var(--primary) !important;
+  background: var(--brand) !important;
 }
 
 span.flatpickr-weekday {
-  background: var(--primary) !important;
-  color: var(--text-color-btn) !important;
+  background: var(--brand) !important;
+  color: var(--bs-primary-contrast) !important;
 }
 
 .flatpickr-day.selected,
@@ -683,9 +692,9 @@ span.flatpickr-weekday {
 .flatpickr-day.selected.nextMonthDay,
 .flatpickr-day.startRange.nextMonthDay,
 .flatpickr-day.endRange.nextMonthDay {
-  background: var(--primary) !important;
-  color: var(--text-color-btn) !important;
-  border-color: var(--primary) !important;
+  background: var(--brand) !important;
+  color: var(--bs-primary-contrast) !important;
+  border-color: var(--brand) !important;
 }
 
 .flatpickr-wrapper:has(.customAttribute) {
@@ -693,21 +702,21 @@ span.flatpickr-weekday {
 }
 
 .flatpickr-day.today {
-  border-color: var(--primary) !important;
+  border-color: var(--brand) !important;
 }
 
 .flatpickr-months .flatpickr-prev-month,
 .flatpickr-months .flatpickr-next-month {
-  fill: var(--text-color-btn) !important;
+  fill: var(--bs-primary-contrast) !important;
 }
 
 .fc .fc-button-primary {
-  background-color: var(--primary) !important;
-  border-color: var(--primary) !important;
+  background-color: var(--brand) !important;
+  border-color: var(--brand) !important;
 }
 
 .fc .fc-col-header-cell-cushion {
-  color: var(--primary);
+  color: var(--brand);
   text-decoration: none;
 }
 

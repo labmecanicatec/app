@@ -2,7 +2,7 @@
 
 <div class="page-profile">
 
-    <div id="profile-box" class="default-box card shadow col-12 col-sm-8 mx-auto">
+    <div id="profile-box" class="default-box card shadow col-12 sm:col-8 mx-auto">
 
         <form method="post" ajaxAction="{ProfileActions::Update}" id="form-profile" class="was-validated"
             action="{$smarty.server.SCRIPT_NAME}" role="form" data-bv-submitbuttons='button[type="submit"]'
@@ -11,11 +11,11 @@
             <div class="card-body">
                 <h1 class="text-center border-bottom mb-2">{translate key=EditProfile}</h1>
 
-                <div class="d-none alert alert-success" role="alert" id="profileUpdatedMessage">
-                    <i class="bi bi-check-circle-fill text-success"></i> {translate key=YourProfileWasUpdated}
+                <div class="d-none alert theme-success" role="alert" id="profileUpdatedMessage">
+                    <i class="bi bi-check-circle-fill"></i> {translate key=YourProfileWasUpdated}
                 </div>
 
-                <div class="validationSummary alert alert-danger d-none" id="validationErrors">
+                <div class="validationSummary alert theme-danger d-none" id="validationErrors">
                     <ul>
                         {async_validator id="fname" key="FirstNameRequired"}
                         {async_validator id="lname" key="LastNameRequired"}
@@ -31,9 +31,9 @@
                 </div>
 
                 <div class="row gy-2">
-                    <div class="col-12 col-sm-6">
-                        <div class="form-group">
-                            <label class="reg fw-bold" for="username">{translate key="Username"}</label>
+                    <div class="col-12 sm:col-6">
+                        <div class="form-field">
+                            <label class="form-label fw-bold" for="username">{translate key="Username"}</label>
                             {if $AllowUsernameChange}
                                 {textbox name="USERNAME" value="Username" required="required" data-bv-notempty="true" autofocus="autofocus" data-bv-notempty-message="{translate key=UserNameRequired}"}
                             {else}
@@ -43,9 +43,9 @@
                         </div>
                     </div>
 
-                    <div class="col-12 col-sm-6">
-                        <div class="form-group">
-                            <label class="reg fw-bold" for="email">{translate key="Email"}</label>
+                    <div class="col-12 sm:col-6">
+                        <div class="form-field">
+                            <label class="form-label fw-bold" for="email">{translate key="Email"}</label>
                             {if $AllowEmailAddressChange}
                                 {textbox type="email" name="EMAIL" class="input" value="Email" required="required" data-bv-notempty="true" data-bv-notempty-message="{translate key=ValidEmailRequired}"
                                 data-bv-emailaddress="true"
@@ -57,9 +57,9 @@
                         </div>
                     </div>
 
-                    <div class="col-12 col-sm-6">
-                        <div class="form-group">
-                            <label class="reg fw-bold" for="fname">{translate key="FirstName"}</label>
+                    <div class="col-12 sm:col-6">
+                        <div class="form-field">
+                            <label class="form-label fw-bold" for="fname">{translate key="FirstName"}</label>
                             {if $AllowNameChange}
                                 {textbox name="FIRST_NAME" class="input" value="FirstName" required="required" data-bv-notempty="true" data-bv-notempty-message="{translate key=FirstNameRequired}"}
                             {else}
@@ -69,9 +69,9 @@
                         </div>
                     </div>
 
-                    <div class="col-12 col-sm-6">
-                        <div class="form-group">
-                            <label class="reg fw-bold" for="lname">{translate key="LastName"}</label>
+                    <div class="col-12 sm:col-6">
+                        <div class="form-field">
+                            <label class="form-label fw-bold" for="lname">{translate key="LastName"}</label>
                             {if $AllowNameChange} {$Language}
                                 {textbox name="LAST_NAME" class="input" value="LastName" required="required" data-bv-notempty="true" data-bv-notempty-message="{translate key=LastNameRequired}"}
                             {else}
@@ -81,27 +81,29 @@
                         </div>
                     </div>
 
-                    <div class="col-12 col-sm-6">
-                        <div class="form-group">
-                            <label class="reg fw-bold" for="homepage">{translate key="DefaultPage"}</label>
-                            <select {formname key='DEFAULT_HOMEPAGE'} id="homepage" class="form-select form-select-sm">
+                    <div class="col-12 sm:col-6">
+                        <div class="form-field">
+                            <label class="form-label fw-bold" for="homepage">{translate key="DefaultPage"}</label>
+                            <select {formname key='DEFAULT_HOMEPAGE'} id="homepage"
+                                class="form-control form-control-sm">
                                 {html_options values=$HomepageValues output=$HomepageOutput selected=$Homepage}
                             </select>
                         </div>
 
                     </div>
-                    <div class="col-12 col-sm-6">
-                        <div class="form-group">
-                            <label class="reg fw-bold" for="timezoneDropDown">{translate key="Timezone"}</label>
-                            <select {formname key='TIMEZONE'} class="form-select form-select-sm" id="timezoneDropDown">
+                    <div class="col-12 sm:col-6">
+                        <div class="form-field">
+                            <label class="form-label fw-bold" for="timezoneDropDown">{translate key="Timezone"}</label>
+                            <select {formname key='TIMEZONE'} class="form-control form-control-sm"
+                                id="timezoneDropDown">
                                 {html_options values=$TimezoneValues output=$TimezoneOutput selected=$Timezone}
                             </select>
                         </div>
                     </div>
 
-                    <div class="col-12 col-sm-6">
-                        <div class="form-group">
-                            <label class="reg fw-bold" for="phone">{translate key="Phone"}</label>
+                    <div class="col-12 sm:col-6">
+                        <div class="form-field">
+                            <label class="form-label fw-bold" for="phone">{translate key="Phone"}</label>
                             {if $AllowPhoneChange}
                                 <input type="text" id="phone" {formname key="PHONE"} class="form-control form-control-sm"
                                     size="20" value="{$Phone}" {if $RequirePhone}required="required" data-bv-notempty="true"
@@ -113,9 +115,10 @@
                         </div>
                     </div>
 
-                    <div class="col-12 col-sm-6">
-                        <div class="form-group">
-                            <label class="reg fw-bold" for="txtOrganization">{translate key="Organization"}</label>
+                    <div class="col-12 sm:col-6">
+                        <div class="form-field">
+                            <label class="form-label fw-bold"
+                                for="txtOrganization">{translate key="Organization"}</label>
                             {if $AllowOrganizationChange}
                                 <input type="text" id="txtOrganization" {formname key="ORGANIZATION"}
                                     class="form-control form-control-sm" size="20" value="{$Organization}"
@@ -128,9 +131,9 @@
                         </div>
                     </div>
 
-                    <div class="col-12 col-sm-6">
-                        <div class="form-group">
-                            <label class="reg fw-bold" for="txtPosition">{translate key="Position"}</label>
+                    <div class="col-12 sm:col-6">
+                        <div class="form-field">
+                            <label class="form-label fw-bold" for="txtPosition">{translate key="Position"}</label>
                             {if $AllowPositionChange}
                                 <input type="text" id="txtPosition" {formname key="POSITION"}
                                     class="form-control form-control-sm" size="20" value="{$Position}"
@@ -144,13 +147,13 @@
                     </div>
 
                     {foreach from=$Attributes item=attribute}
-                        <div class="col-12 col-sm-6">
+                        <div class="col-12 sm:col-6">
                             {control type="AttributeControl" attribute=$attribute}
                         </div>
                     {/foreach}
 
                     <div class="d-grid mt-3">
-                        <button type="submit" class="update btn btn-primary btn-block" name="{Actions::SAVE}"
+                        <button type="submit" class="update theme-primary btn-solid" name="{Actions::SAVE}"
                             id="btnUpdate">
                             {translate key='Update'}
                         </button>

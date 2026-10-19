@@ -1,13 +1,13 @@
-<div class="dashboard accordion-item shadow mb-2 availabilityDashboard" id="availabilityDashboard">
-    <div class="accordion-header dashboardHeader">
-        <button class="accordion-button collapsed link-primary fw-bold" type="button" data-bs-toggle="collapse"
-            data-bs-target="#ResourceAvailabilityContents" aria-expanded="false"
-            aria-controls="ResourceAvailabilityContents">
-            {translate key="ResourceAvailability"}
-        </button>
-    </div>
+<details class="dashboard accordion-item shadow mb-2 availabilityDashboard" name="availabilityDashboard">
+    <summary class="accordion-header dashboardHeader">
+        {translate key="ResourceAvailability"}
+        <svg class="accordion-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none"
+            stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m2 5 6 6 6-6" />
+        </svg>
+    </summary>
 
-    <div id="ResourceAvailabilityContents" class="dashboardContents accordion-collapse collapse">
+    <div id="ResourceAvailabilityContents" class="dashboardContents">
         <div class="accordion-body">
 
             {* Section settings *}
@@ -35,7 +35,7 @@
             {* Main loop *}
             {foreach from=$sections item=section}
 
-                <div class="header fw-bold fs-5 mt-3">
+                <div class="header fw-bold fs-lg mt-3">
                     {translate key=$section.title}
                 </div>
 
@@ -46,62 +46,74 @@
 
                     {if is_array($availability) && $availability|count > 0}
                         {assign var=hasData value=true}
+                        <div class="accordion accordion-gap mb-3">
+                            <details class="accordion-item" name="schedule_{$s->GetId()}_Dashboard_{$section.title}">
+                                <summary class="accordion-header">
+                                    {$s->GetName()}
+                                    <svg class="accordion-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none"
+                                        stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="m2 5 6 6 6-6" />
+                                    </svg>
+                                </summary>
+                                <div class="accordion-body">
 
-                        <div class="text-body-secondary fs-4 mt-3 text-center fw-bold">
-                            {$s->GetName()}
+                                    {foreach from=$availability item=i}
+                                        {if $section.dateField == 'NextTime'}
+                                            {assign var=date value=$i->NextTime()}
+                                        {else}
+                                            {assign var=date value=$i->ReservationEnds()}
+                                        {/if}
+
+                                        {* Determine date format for future schedule availability *}
+                                        {assign var=dateFormat value='dashboard'}
+                                        {if $section.dateField == 'ReservationEnds' && $i->IsFutureScheduleAvailability()}
+                                            {assign var=dateFormat value='schedule_daily'}
+                                        {/if}
+
+                                        <div
+                                            class="availabilityItem d-flex flex-wrap md:flex-nowrap align-items-center gap-2 p-2 m-2 border-bottom">
+
+                                            {* Resource name *}
+                                            <div class="resourceName-wrapper w-100 md:w-50">
+                                                <span class="resourceName px-2 py-1 rounded-5"
+                                                    {if $i->GetColor()}style="background-color:{$i->GetColor()};color:{$i->GetTextColor()};"
+                                                    {/if}>
+
+                                                    <i resource-id="{$i->ResourceId()}"
+                                                        class="resourceNameSelector bi bi-info-circle-fill"></i>
+                                                    <a resource-id="{$i->ResourceId()}" class="resourceNameSelector"
+                                                        {if $i->GetColor()}style="color:{$i->GetTextColor()};" {/if}
+                                                        href="{$Path}{Pages::SCHEDULE}?{QueryStringKeys::SCHEDULE_ID}={$s->GetId()}&{QueryStringKeys::RESOURCE_ID}={$i->ResourceId()}{if ($section.dateField == 'ReservationEnds') && $date}&{QueryStringKeys::START_DATE}={format_date date=$date timezone=$Timezone key=url}{/if}">
+                                                        {$i->ResourceName()}
+                                                    </a>
+                                                </span>
+                                            </div>
+
+                                            {* Availability *}
+                                            <div class="availability w-100 md:w-25 text-muted">
+                                                {if $date != null}
+                                                    {translate key=$section.label}
+                                                    {format_date date=$date timezone=$Timezone key=$dateFormat}
+                                                {else}
+                                                    <span class="no-data fst-italic">
+                                                        {translate key=AllNoUpcomingReservations args=30}
+                                                    </span>
+                                                {/if}
+                                            </div>
+
+                                            {* Button *}
+                                            <div class="reserveButton w-100 md:w-25 d-grid">
+                                                <button class="btn-solid theme-primary btn-sm"
+                                                    onclick="window.location.href='{$Path}{Pages::RESERVATION}?{QueryStringKeys::RESOURCE_ID}={$i->ResourceId()}{if ($section.dateField == 'ReservationEnds') && $date}&{QueryStringKeys::START_DATE}={format_date date=$date timezone=$Timezone key=url_full}{/if}'">
+                                                    {translate key=Reserve}
+                                                </button>
+                                            </div>
+
+                                        </div>
+                                    {/foreach}
+                                </div>
+                            </details>
                         </div>
-
-                        {foreach from=$availability item=i}
-                            {if $section.dateField == 'NextTime'}
-                                {assign var=date value=$i->NextTime()}
-                            {else}
-                                {assign var=date value=$i->ReservationEnds()}
-                            {/if}
-
-                            {* Determine date format for future schedule availability *}
-                            {assign var=dateFormat value='dashboard'}
-                            {if $section.dateField == 'ReservationEnds' && $i->IsFutureScheduleAvailability()}
-                                {assign var=dateFormat value='schedule_daily'}
-                            {/if}
-
-                            <div class="availabilityItem row gy-2 p-2 border-bottom align-items-center">
-
-                                {* Resource name *}
-                                <div class="col-12 col-sm-5">
-                                    <span class="resourceName px-2 py-1 rounded-1"
-                                        {if $i->GetColor()}style="background-color:{$i->GetColor()};color:{$i->GetTextColor()};" {/if}>
-
-                                        <i resource-id="{$i->ResourceId()}" class="resourceNameSelector bi bi-info-circle-fill"></i>
-                                        <a resource-id="{$i->ResourceId()}" class="resourceNameSelector"
-                                            {if $i->GetColor()}style="color:{$i->GetTextColor()};" {/if}
-                                            href="{$Path}{Pages::SCHEDULE}?{QueryStringKeys::SCHEDULE_ID}={$s->GetId()}&{QueryStringKeys::RESOURCE_ID}={$i->ResourceId()}{if ($section.dateField == 'ReservationEnds') && $date}&{QueryStringKeys::START_DATE}={format_date date=$date timezone=$Timezone key=url}{/if}">
-                                            {$i->ResourceName()}
-                                        </a>
-                                    </span>
-                                </div>
-
-                                {* Availability *}
-                                <div class="availability col-12 col-sm-4">
-                                    {if $date != null}
-                                        {translate key=$section.label}
-                                        {format_date date=$date timezone=$Timezone key=$dateFormat}
-                                    {else}
-                                        <span class="no-data fst-italic">
-                                            {translate key=AllNoUpcomingReservations args=30}
-                                        </span>
-                                    {/if}
-                                </div>
-
-                                {* Button *}
-                                <div class="reserveButton col-12 col-sm-3 d-grid">
-                                    <button class="btn btn-sm btn-primary"
-                                        onclick="window.location.href='{$Path}{Pages::RESERVATION}?{QueryStringKeys::RESOURCE_ID}={$i->ResourceId()}{if ($section.dateField == 'ReservationEnds') && $date}&{QueryStringKeys::START_DATE}={format_date date=$date timezone=$Timezone key=url_full}{/if}'">
-                                        {translate key=Reserve}
-                                    </button>
-                                </div>
-
-                            </div>
-                        {/foreach}
                     {/if}
                 {/foreach}
 
@@ -116,4 +128,4 @@
 
         </div>
     </div>
-</div>
+</details>
