@@ -1,9 +1,9 @@
 {include file='globalheader.tpl'}
 
-<div class="accordion" id="page-dashboard">
-	<div id="dashboardList">
+<div id="page-dashboard">
+	<div class="accordion accordion-gap" id="dashboardList">
 		{foreach from=$items item=dashboardItem}
-			<div>{$dashboardItem->PageLoad()}</div>
+			{$dashboardItem->PageLoad()}
 		{/foreach}
 	</div>
 

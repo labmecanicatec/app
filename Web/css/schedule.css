@@ -421,14 +421,14 @@ img.schedule_icon {
   padding: 1px 2px;
   margin: 1px;
 }
-
+/*
 .no-resource-warning {
   padding: 10px;
   -webkit-border-radius: 2px;
   -moz-border-radius: 2px;
   border-radius: 2px;
 }
-
+*/
 #showFullWeek {
   display: block;
 }

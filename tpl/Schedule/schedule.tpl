@@ -47,47 +47,50 @@
     {assign var=startTime value=microtime(true)}
 
     {if isset($ShowResourceWarning) && $ShowResourceWarning}
-        <div class="alert alert-warning no-resource-warning"><i class="bi bi-exclamation-triangle-fill"></i>
+        <div class="alert theme-warning d-flex justify-content-center align-items-center" role="alert">
+            <i class="bi bi-exclamation-triangle-fill fs-xl"></i>
             {translate key=NoResources}
             <a class="alert-link" href="admin/manage_resources.php">{translate key=AddResource}</a>
-    </div> {/if}
+        </div>
+    {/if}
 
     {if $CanViewAdmin}
-        <div id="slow-schedule-warning" class="alert alert-warning d-flex align-items-center d-none" role="alert">
+        <div id="slow-schedule-warning" class="alert theme-warning d-flex align-items-center d-none" role="alert">
+            <i class="bi bi-exclamation-triangle-fill fs-xl"></i>
             <div>
-                <p>We noticed this page is taking a long time to load. To speed ths page up, try
+                <div>We noticed this page is taking a long time to load. To speed ths page up, try
                     reducing the number of <a class="alert-link" href="admin/manage_resources.php">resources</a> on this
                     schedule or
                     reducing the number of <a class="alert-link" href="admin/manage_schedules.php">days</a> being shown.
-                </p>
-                <p class="mb-0">
+                </div>
+                <div>
                     This page is taking <span id="warning-time"></span> seconds to load
                     <span id="warning-resources"></span> resources for <span id="warning-days"></span> days.
                     <button type="button" class="close close-forever btn btn-link alert-link"
                         aria-label="Do not show again">
                         <span aria-hidden="true">Do not show again</span>
                     </button>
-                </p>
+                </div>
             </div>
-            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label={translate key="Close"}></button>
         </div>
     {/if}
 
     {if $IsAccessible}
         {block name="schedule_control"}
             <div class="row">
-                {assign var=titleWidth value="col-sm-12 col-12"}
+                {assign var=titleWidth value="sm:col-12 col-12"}
                 {if !isset($HideSchedule) || !$HideSchedule}
-                    {assign var=titleWidth value="col-sm-6 col-12"}
-                    <div id="schedule-actions" class="col-sm-3 col-12">
+                    {assign var=titleWidth value="sm:col-6 col-12"}
+                    <div id="schedule-actions" class="sm:col-3 col-12">
                         {block name="actions"}
                             <div class="d-flex align-items-center mb-2">
                                 <div class="me-4 d-flex align-items-center gap-2">
-                                    <a href="#" id="print_schedule" class="link-primary me-1" title="{translate key=Print}">
+                                    <a href="#" id="print_schedule" class="theme-primary me-1" title="{translate key=Print}">
                                         <i class="bi bi-printer schedule_icon"></i>
                                     </a>
                                     {if $LoggedIn}
-                                        <a href="#" id="make_default" class="link-primary" title="{translate key='MakeDefaultSchedule'}">
+                                        <a href="#" id="make_default" class="theme-primary" title="{translate key='MakeDefaultSchedule'}">
                                             <i class="bi bi-star-fill schedule_icon"></i>
                                         </a>
                                     {/if}
@@ -96,7 +99,8 @@
                                     class="schedule-style me-2 d-inline-flex align-items-center{if $ScheduleStyle == ScheduleStyle::Standard->value} active{/if}"
                                     id="schedule_standard" schedule-display="{ScheduleStyle::Standard->value}"
                                     title="{if $IsMobile && !$IsTablet}{translate key='CondensedWeekScheduleDisplay'}{else}{translate key='StandardScheduleDisplay'}{/if}">
-                                    <img class="schedule_icon shadow-sm" src="{if $IsMobile && !$IsTablet}img/table-week.png{else}img/table.png{/if}"
+                                    <img class="schedule_icon shadow-sm"
+                                        src="{if $IsMobile && !$IsTablet}img/table-week.png{else}img/table.png{/if}"
                                         alt="{if $IsMobile && !$IsTablet}{translate key='CondensedWeekScheduleDisplay'}{else}{translate key='StandardScheduleDisplay'}{/if}" />
                                 </a>
                                 <a href="#"
@@ -107,31 +111,31 @@
                                         alt="{translate key='TallScheduleDisplay'}" />
                                 </a>
                                 {if !$IsMobile || $IsTablet}
-                                <a href="#"
-                                    class="schedule-style d-inline-flex me-2 align-items-center{if $ScheduleStyle == ScheduleStyle::Wide->value} active{/if}"
-                                    id="schedule_wide" schedule-display="{ScheduleStyle::Wide->value}"
-                                    title="{translate key='WideScheduleDisplay'}">
-                                    <img class="schedule_icon shadow-sm" src="img/table-wide.png"
-                                        alt="{translate key='WideScheduleDisplay'}" />
-                                </a>
-                                <a href="#"
-                                    class="schedule-style d-inline-flex align-items-center{if $ScheduleStyle == ScheduleStyle::CondensedWeek->value} active{/if}"
-                                    id="schedule_week" schedule-display="{ScheduleStyle::CondensedWeek->value}"
-                                    title="{translate key='CondensedWeekScheduleDisplay'}">
-                                    <img class="schedule_icon shadow-sm" src="img/table-week.png"
-                                        alt="{translate key='CondensedWeekScheduleDisplay'}" />
-                                </a>
+                                    <a href="#"
+                                        class="schedule-style d-inline-flex me-2 align-items-center{if $ScheduleStyle == ScheduleStyle::Wide->value} active{/if}"
+                                        id="schedule_wide" schedule-display="{ScheduleStyle::Wide->value}"
+                                        title="{translate key='WideScheduleDisplay'}">
+                                        <img class="schedule_icon shadow-sm" src="img/table-wide.png"
+                                            alt="{translate key='WideScheduleDisplay'}" />
+                                    </a>
+                                    <a href="#"
+                                        class="schedule-style d-inline-flex align-items-center{if $ScheduleStyle == ScheduleStyle::CondensedWeek->value} active{/if}"
+                                        id="schedule_week" schedule-display="{ScheduleStyle::CondensedWeek->value}"
+                                        title="{translate key='CondensedWeekScheduleDisplay'}">
+                                        <img class="schedule_icon shadow-sm" src="img/table-week.png"
+                                            alt="{translate key='CondensedWeekScheduleDisplay'}" />
+                                    </a>
                                 {/if}
                             </div>
                             {if isset($SubscriptionUrl) && $SubscriptionUrl != null && $ShowSubscription && $LoggedIn}
                                 {assign var="atomUrl" value=$SubscriptionUrl->GetAtomUrl()}
                                 {assign var="icalUrl" value=$SubscriptionUrl->GetWebcalUrl()}
-                                <div class="d-flex align-items-center"><i class="bi bi-rss-fill link-primary me-1"></i>
+                                <div class="d-flex align-items-center"><i class="bi bi-rss-fill theme-primary me-1"></i>
                                     <a class="link-primary me-1" target="_blank" href="{$atomUrl|escape:'html'}"
                                         title="{translate key=UrlCopiedToClipboard}"
                                         onclick="copyUrlToClipboard('{$atomUrl|escape:'javascript'|escape:'html'}'); return false;">Atom</a>
                                     <div class="vr me-1"></div>
-                                    <a class="link-primary" target="_blank" href="{$icalUrl|escape:'html'}"
+                                    <a class="theme-primary" target="_blank" href="{$icalUrl|escape:'html'}"
                                         title="{translate key=UrlCopiedToClipboard}"
                                         onclick="copyUrlToClipboard('{$icalUrl|escape:'javascript'|escape:'html'}'); return false;">iCalendar</a>
                                 </div>
@@ -141,10 +145,10 @@
                 {/if}
 
                 <div id="schedule-title" class="schedule_title {$titleWidth}">
-                    <div class="d-flex justify-content-center">
+                    <div class="d-flex justify-content-center align-items-center gap-2">
                         {if count($Schedules) > 1}
                             <label for="schedules" class="visually-hidden">{translate key='Schedules'}</label>
-                            <select id="schedules" class="form-select w-auto">
+                            <select id="schedules" class="form-control w-auto">
                                 {foreach from=$Schedules item=schedule}
                                     <option value="{$schedule->GetId()}" {if $schedule->GetId() == $ScheduleId}selected="selected"
                                         {/if}>
@@ -152,9 +156,8 @@
                                 {/foreach}
                             </select>
                         {/if}
-                        <a class="link-primary" href="#" id="calendar_toggle" title="{translate key=ShowHideNavigation}"
-                            data-bs-toggle="collapse" data-bs-target="#individualDates" aria-expanded="false"
-                            aria-controls="individualDates">
+                        <a class="theme-primary" href="#individualDates" id="calendar_toggle" title="{translate key=ShowHideNavigation}"
+                            data-bs-toggle="collapse" aria-expanded="false" aria-controls="individualDates">
                             <span class="bi bi-calendar schedule_icon"></span>
                             <span class="visually-hidden">{translate key=ShowHideNavigation}</span>
                         </a>
@@ -162,15 +165,17 @@
                 </div>
             </div>
 
-            <div id="individualDates" class="collapse mb-3">
-                <div class="d-flex justify-content-center align-items-center mt-2">
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type='checkbox' id='multidateselect' />
-                        <label class="form-check-label" for='multidateselect'>{translate key=SpecificDates}</label>
+            <div id="individualDates" class="collapse my-3">
+                <div class="d-flex justify-content-center align-items-center gap-2">
+                    <div class="form-field">
+                        <div class="switch theme-primary">
+                            <input type='checkbox' id='multidateselect' role="switch" switch/>
+                        </div>
+                        <label for='multidateselect'>{translate key=SpecificDates}</label>
                     </div>
                 </div>
                 <div class="text-center" id="individualDatesList"></div>
-                <button class="btn btn-sm btn-primary mx-auto" href="#" id="individualDatesGo">
+                <button class="btn btn-sm theme-primary btn-solid mx-auto" href="#" id="individualDatesGo">
                     <i class="bi bi-search me-1"></i>{translate key=SpecificDates}
                 </button>
                 <div class="d-flex justify-content-center align-items-center">
@@ -182,15 +187,15 @@
 
             {capture name="date_navigation"}
                 {if !isset($HideSchedule) || !$HideSchedule}
-                    <div class="schedule-dates d-flex justify-content-center mt-2 fs-5 gap-2">
+                    <div class="schedule-dates d-flex justify-content-center mt-2 gap-2 fs-md">
                         {assign var=TodaysDate value=Date::Now()}
-                        <a href="#" class="change-date link-primary" data-year="{$TodaysDate->Year()}"
+                        <a href="#" class="change-date theme-primary" data-year="{$TodaysDate->Year()}"
                             data-month="{$TodaysDate->Month()}" data-day="{$TodaysDate->Day()}" aria-label="{translate key=Today}">
                             <i class="bi bi-house-fill" aria-hidden="true"></i>
                         </a>
                         {assign var=FirstDate value=$DisplayDates->GetBegin()}
                         {assign var=LastDate value=$DisplayDates->GetEnd()->AddDays(-1)}
-                        <a href="#" class="change-date link-primary" data-year="{$PreviousDate->Year()}"
+                        <a href="#" class="change-date theme-primary" data-year="{$PreviousDate->Year()}"
                             data-month="{$PreviousDate->Month()}" data-day="{$PreviousDate->Day()}"
                             aria-label="{translate key=PreviousWeek}">
                             <i class="bi bi-arrow-left-circle-fill" aria-hidden="true"></i>
@@ -200,14 +205,14 @@
                         -
                         {formatdate date=$LastDate}
                         {if $ShowWeekNumbers}({$LastDate->WeekNumber()}){/if}
-                        <a href="#" class="change-date link-primary" data-year="{$NextDate->Year()}" data-month="{$NextDate->Month()}"
+                        <a href="#" class="change-date theme-primary" data-year="{$NextDate->Year()}" data-month="{$NextDate->Month()}"
                             data-day="{$NextDate->Day()}" aria-label="{translate key=NextWeek}">
                             <i class="bi bi-arrow-right-circle-fill" aria-hidden="true"></i>
                         </a>
                     </div>
                     {if $ShowFullWeekLink}
-                        <div class="d-flex justify-content-center fs-5">
-                            <a class="link-primary" href="{add_querystring key=SHOW_FULL_WEEK value=1}"
+                        <div class="d-flex justify-content-center fs-md">
+                            <a class="theme-primary" href="{add_querystring key=SHOW_FULL_WEEK value=1}"
                                 id="showFullWeek">({translate key=ShowFullWeek})</a>
                         </div>
                     {/if}
@@ -218,8 +223,8 @@
         {/block}
 
         {if isset($ScheduleAvailabilityEarly) && $ScheduleAvailabilityEarly}
-            <div class="alert alert-warning text-center">
-                <i class="bi bi-exclamation-triangle-fill"></i> {translate key=ScheduleAvailabilityEarly}
+            <div class="alert theme-warning d-flex justify-content-center align-items-center">
+                <i class="bi bi-exclamation-triangle-fill fs-xl"></i> {translate key=ScheduleAvailabilityEarly}
                 <a href="#" class="change-date alert-link" data-year="{$ScheduleAvailabilityStart->Year()}"
                     data-month="{$ScheduleAvailabilityStart->Month()}" data-day="{$ScheduleAvailabilityStart->Day()}">
                     {format_date date=$ScheduleAvailabilityStart timezone=$timezone}
@@ -232,8 +237,8 @@
         {/if}
 
         {if isset($ScheduleAvailabilityLate) && $ScheduleAvailabilityLate}
-            <div class="alert alert-warning text-center">
-                <i class="bi bi-exclamation-triangle-fill"></i>
+            <div class="alert theme-warning d-flex justify-content-center align-items-center">
+                <i class="bi bi-exclamation-triangle-fill fs-xl"></i>
                 {translate key=ScheduleAvailabilityLate}
                 <a href="#" class="change-date alert-link" data-year="{$ScheduleAvailabilityStart->Year()}"
                     data-month="{$ScheduleAvailabilityStart->Month()}" data-day="{$ScheduleAvailabilityStart->Day()}">
@@ -249,50 +254,49 @@
         {if !isset($HideSchedule) || !$HideSchedule}
             {block name="legend"}
                 <div class="schedule-legend mt-3">
-                    <div class="d-none d-sm-flex justify-content-center flex-wrap gap-1 text-center">
+                    <div class="d-none sm:d-flex justify-content-center flex-wrap gap-1 text-center">
                         <div
-                            class="legend reservable border border-dark-subtle rounded-2 d-flex align-items-center justify-content-center lh-sm py-1">
+                            class="legend reservable border border-dark-subtle rounded-5 d-flex align-items-center justify-content-center lh-sm py-1">
                             {translate key=Reservable}</div>
                         <div
-                            class="legend unreservable border border-dark-subtle rounded-2 d-flex align-items-center justify-content-center lh-sm py-1">
+                            class="legend unreservable border border-dark-subtle rounded-5 d-flex align-items-center justify-content-center lh-sm py-1">
                             {translate key=Unreservable}</div>
                         <div
-                            class="legend reserved border border-dark-subtle rounded-2 d-flex align-items-center justify-content-center lh-sm py-1">
+                            class="legend reserved border border-dark-subtle rounded-5 d-flex align-items-center justify-content-center lh-sm py-1">
                             {translate key=Reserved}</div>
                         {if $LoggedIn}
                             <div
-                                class="legend reserved mine border border-dark-subtle rounded-2 d-flex align-items-center justify-content-center lh-sm py-1">
+                                class="legend reserved mine border border-dark-subtle rounded-5 d-flex align-items-center justify-content-center lh-sm py-1">
                                 {translate key=MyReservation}
                             </div>
                             <div
-                                class="legend reserved participating border border-dark-subtle rounded-2 d-flex align-items-center justify-content-center lh-sm py-1">
+                                class="legend reserved participating border border-dark-subtle rounded-5 d-flex align-items-center justify-content-center lh-sm py-1">
                                 {translate key=Participant}</div>
                         {/if}
                         <div
-                            class="legend reserved pending border border-dark-subtle rounded-2 d-flex align-items-center justify-content-center lh-sm py-1">
+                            class="legend reserved pending border border-dark-subtle rounded-5 d-flex align-items-center justify-content-center lh-sm py-1">
                             {translate key=Pending}</div>
                         <div
-                            class="legend pasttime border border-dark-subtle rounded-2 d-flex align-items-center justify-content-center lh-sm py-1">
+                            class="legend pasttime border border-dark-subtle rounded-5 d-flex align-items-center justify-content-center lh-sm py-1">
                             {translate key=Past}</div>
                         <div
-                            class="legend restricted border border-dark-subtle rounded-2 d-flex align-items-center justify-content-center lh-sm py-1">
+                            class="legend restricted border border-dark-subtle rounded-5 d-flex align-items-center justify-content-center lh-sm py-1">
                             {translate key=Restricted}</div>
                     </div>
                 </div>
             {/block}
 
             <div>
-                <a href="#" title="Show Reservation Filter" class="toggle-sidebar link-primary"><i
+                <a href="#" title="Show Reservation Filter" class="toggle-sidebar theme-primary"><i
                         class="bi bi-funnel-fill me-1"></i>{translate key=ResourceFilter}
                     <i id="restore-sidebar" class="bi bi-chevron-double-right"></i></a>
             </div>
             <div class="row g-2">
-                <div id="reservations-left" class="col-md-2 col-sm-12">
+                <div id="reservations-left" class="md:col-2 sm:col-12">
                     <div class="card h-100">
-                        <div
-                            class="reservations-left-header card-header d-flex justify-content-between align-items-center px-3 py-2">
-                            <h5 class="card-title text-center mb-0">{translate key=Filter}</h5>
-                            <a href="#" class="toggle-sidebar link-primary" title="Hide Reservation Filter">
+                        <div class="reservations-left-header card-header d-flex flex-row justify-content-between align-items-center px-3 py-2">
+                            <div class="card-title mb-0">{translate key=Filter}</div>
+                            <a href="#" class="toggle-sidebar theme-primary" title="Hide Reservation Filter">
                                 <i class="bi bi-x-circle-fill"></i>
                                 <span class="visually-hidden">Hide Reservation Filter</span>
                             </a>
@@ -345,7 +349,7 @@
                                     <div class="form-group mb-2">
                                         <label for="resourceType" class="fw-bold">{translate key=ResourceType}</label>
                                         <select id="resourceType" {formname key=RESOURCE_TYPE_ID}
-                                            class="form-select form-select-sm">
+                                            class="form-control form-control-sm">
                                             <option value="">- {translate key=All} -</option>
                                             {object_html_options options=$ResourceTypes label='Name' key='Id' selected=$ResourceTypeIdFilter}
                                         </select>
@@ -359,11 +363,11 @@
                                         {control type="AttributeControl" attribute=$attribute searchmode=true namePrefix='rt' class="customAttribute mb-2"}
                                     {/foreach}
 
-                                    <div class="d-grid gap-2">
-                                        <button type="submit" class="btn btn-primary btn-block btn-sm"
+                                    <div class="d-grid gap-2 mt-5">
+                                        <button type="submit" class="btn-solid theme-primary btn-sm"
                                             value="submit">{translate key=Filter}</button>
                                         <button id="show_all_resources" type="button"
-                                            class="btn btn-outline-secondary btn-sm">{translate key=ClearFilter}</button>
+                                            class="btn-outline theme-inverse btn-sm">{translate key=ClearFilter}</button>
                                     </div>
                                 </div>
 
@@ -378,7 +382,7 @@
                     </div>
                 </div>
 
-                <div id="reservations" class="col-md-10 col-sm-12">
+                <div id="reservations" class="md:col-10 sm:col-12">
                     {block name="reservations"}
                         {include file="Schedule/schedule-reservations-grid.tpl" }
                     {/block}
@@ -386,9 +390,11 @@
             </div>
         {/if}
     {else}
-        <div class="error">{translate key=NoResourcePermission}</div>
+        <div class="alert theme-danger d-flex justify-content-center align-items-center" role="alert">
+            <i class="bi bi-exclamation-triangle-fill fs-xl"></i>
+            {translate key=NoResourcePermission}
+        </div>
     {/if}
-
     <input type="hidden" value="{$ScheduleId}" id="scheduleId" />
 
     <div class="mt-2">

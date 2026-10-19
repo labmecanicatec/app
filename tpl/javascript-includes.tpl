@@ -54,6 +54,7 @@
     {vendor_js src="moment/2.13.0/js/moment.min.js"}
     {*The version of X-editable that supports Bootstrap 5 does not have a CDN link*}
     {vendor_js src="x-editable/1.5.1/js/bootstrap-editable.js"}
+    {jsfile src="bootstrap-popover-edit.js"}
 {/if}
 {if isset($Select2) && $Select2}
     {if isset($UseLocalJquery) && $UseLocalJquery}
