@@ -919,7 +919,7 @@ function Schedule(opts, resourceGroups) {
     function hide() {
       shown = false;
       $('#reservations-left').addClass('d-none');
-      $('#reservations').removeClass('col-md-10').addClass('col-md-12');
+      $('#reservations').removeClass('md:col-10').addClass('md:col-12');
       $('#restore-sidebar').removeClass('bi-chevron-double-left');
       $('#restore-sidebar').addClass('bi-chevron-double-right');
 
@@ -929,7 +929,7 @@ function Schedule(opts, resourceGroups) {
     function show() {
       shown = true;
       $('#reservations-left').removeClass('d-none');
-      $('#reservations').addClass('col-md-10').removeClass('col-md-12');
+      $('#reservations').addClass('md:col-10').removeClass('md:col-12');
       $('#restore-sidebar').removeClass('bi-chevron-double-right');
       $('#restore-sidebar').addClass('bi-chevron-double-left');
 

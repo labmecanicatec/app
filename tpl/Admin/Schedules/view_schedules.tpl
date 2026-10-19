@@ -1,9 +1,9 @@
 {include file='globalheader.tpl' DataTable=true}
 
-<div id="page-manage-schedules" class="admin-page">
+<div id="page-manage-schedules">
 
-	<div class="border-bottom mb-3 clearfix">
-		<h1 class="float-start">{translate key=ManageSchedules}</h1>
+	<div class="border-bottom mb-3">
+		<h1>{translate key=ManageSchedules}</h1>
 	</div>
 
 	<div class="card shadow" id="list-schedules-panel">
@@ -29,23 +29,18 @@
 										<span
 											class='fw-bold'>{if $dayOfWeek == Schedule::Today}{$Today}{else}{$DayNames[$dayOfWeek]}{/if}</span>
 									{/capture}
-									<div class="accordion-item">
-										<h2 class="accordion-header">
-											<button class="accordion-button" type="button" data-bs-toggle="collapse"
-												data-bs-target="#panel{$id}" aria-expanded="true"
-												aria-controls="panel{$id}">
-												{$schedule->GetName()}
-											</button>
-										</h2>
-										<div id="panel{$id}" class="accordion-collapse collapse show">
+									<details  class="accordion-item">
+										<summary  class="accordion-header">
+											{$schedule->GetName()}
+											<svg class="accordion-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m2 5 6 6 6-6"/></svg>
+										</summary >
 											<div class="accordion-body">
-												<div class="scheduleDetails row">
-													<div class="col-12 col-sm-6">
-														<div class="fw-bold">{$schedule->GetName()}</div>
-
+												<div class="scheduleDetails">
+													<div>
 														<div>
 															{translate key="LayoutDescription" args="{$smarty.capture.dayName},
-														{$smarty.capture.daysVisible}"}</div>
+															{$smarty.capture.daysVisible}"}
+														</div>
 
 														<div>{translate key='ScheduleAdministrator'}
 															<span
@@ -59,8 +54,16 @@
 															</span>
 														</div>
 
-														<div class="">
-															{include file="Admin/Schedules/manage_availability.tpl" schedule=$schedule timezone=$Timezone}
+														<div>
+															{translate key=Available}
+															<span class="propertyValue fw-bold">
+																{if $schedule->HasAvailability()}
+																	{formatdate date=$schedule->GetAvailabilityBegin() timezone=$timezone key=schedule_daily} -
+																	{formatdate date=$schedule->GetAvailabilityEnd() timezone=$timezone key=schedule_daily}
+																{else}
+																	{translate key=AvailableAllYear}
+																{/if}
+															</span>
 														</div>
 
 														<div class="maximumConcurrentContainer">
@@ -114,15 +117,14 @@
 
 													</div>
 
-													<div class="layout col-12 col-sm-6">
+													<div class="layout mt-3">
 														{function name="display_periods"}
 															{foreach from=$Layouts[$id]->GetSlots($day) item=period name=layouts}
 																{if $period->IsReservable() == $showReservable}
-																	{$period->Start->Format("H:i")} - {$period->End->Format("H:i")}
-																	{if $period->IsLabelled()}
-																		{$period->Label}
-																	{/if}
-																	{if !$smarty.foreach.layouts.last}, {/if}
+																	<span class="badge me-1 mb-1 {if $showReservable}bg-subtle-success fg-success{else}bg-subtle-danger fg-danger{/if}">
+																		{$period->Start->Format("H:i")} - {$period->End->Format("H:i")}
+																		{if $period->IsLabelled()}{$period->Label}{/if}
+																	</span>
 																{/if}
 															{foreachelse}
 																{translate key=None}
@@ -130,24 +132,31 @@
 														{/function}
 
 														<div>
-															{translate key=ScheduleLayout args=$schedule->GetTimezone()}
+															{translate key=Timezone} <span class="fw-bold">{$schedule->GetTimezone()}</span>
+															<a class="theme-primary" data-bs-toggle="collapse" href="#collapseExample{$id}" role="button" aria-expanded="false" aria-controls="collapseExample">
+																{translate key=ShowHide}
+															</a>
 														</div>
 
+														<div class="allDailyLayouts d-flex flex-column gap-3 mt-2 collapse" id="collapseExample{$id}">
 														{if $Layouts[$id]->UsesDailyLayouts()}
-															{translate key=LayoutVariesByDay} -
-															<div class="allDailyLayouts">
+															{translate key=LayoutVariesByDay}
 																{foreach from=DayOfWeek::Days() item=day}
-																	{$DayNames[$day]}
-																	<div class="reservableSlots" id="reservableSlots_{$day}"
-																		ref="reservableEdit_{$day}">
-																		{display_periods showReservable=true day=$day}
-																	</div>
-																	<div class="blockedSlots" id="blockedSlots_{$day}"
-																		ref="blockedEdit_{$day}">
-																		{display_periods showReservable=false day=$day}
+																	<div class="d-flex flex-column sm:flex-row gap-1 sm:gap-3 pb-3 border-bottom">
+																		<div class="fw-bold" style="min-width: 8rem;">{$DayNames[$day]}</div>
+
+																		<div>
+																			<div class="reservableSlots mb-2" id="reservableSlots_{$day}" ref="reservableEdit_{$day}">
+																				<span class="fg-2 me-1">{translate key=ReservableTimeSlots}</span>
+																				{display_periods showReservable=true day=$day}
+																			</div>
+																			<div class="blockedSlots" id="blockedSlots_{$day}" ref="blockedEdit_{$day}">
+																				<span class="fg-2 me-1">{translate key=BlockedTimeSlots}</span>
+																				{display_periods showReservable=false day=$day}
+																			</div>
+																		</div>
 																	</div>
 																{/foreach}
-															</div>
 															<div class="mt-4 fw-bold">
 																{translate key=ThisScheduleUsesAStandardLayout}
 															</div>
@@ -156,32 +165,33 @@
 																{translate key=ThisScheduleUsesACustomLayout}
 															</div>
 														{else}
-															{translate key=ReservableTimeSlots}
-															<div class="reservableSlots" id="reservableSlots"
-																ref="reservableEdit">
-																{display_periods showReservable=true day=null}
+															<div class="mb-2">
+																<span class="fg-2">{translate key=ReservableTimeSlots}</span>
+																<span class="reservableSlots" id="reservableSlots" ref="reservableEdit">
+																	{display_periods showReservable=true day=null}
+																</span>
 															</div>
-															{translate key=BlockedTimeSlots}
-															<div class="blockedSlots" id="blockedSlots" ref="blockedEdit">
-																{display_periods showReservable=false day=null}
+															<div class="mb-2">
+																<span class="fg-2">{translate key=BlockedTimeSlots}</span>
+																<span class="blockedSlots" id="blockedSlots" ref="blockedEdit">
+																	{display_periods showReservable=false day=null}
+																</span>
 															</div>
 															<div class="mt-4 fw-bold">
 																{translate key=ThisScheduleUsesAStandardLayout}
 															</div>
 														{/if}
+														</div>
 													</div>
-													<div class="actions col-12">
+													<div class="actions">
 														{if $schedule->GetIsDefault()}
 															<span
 																class="fst-italic fw-bold">{translate key=ThisIsTheDefaultSchedule}</span>
 														{/if}
-														{indicator id="action-indicator"}
-														<div class="clear"></div>
 													</div>
 												</div>
 											</div>
-										</div>
-									</div>
+									</details >
 								</td>
 							</tr>
 						{/foreach}

@@ -1,38 +1,49 @@
 {if $Openings|default:array()|count == 0}
-    <div class="alert alert-warning shadow mt-3 text-center">
-        <h4 class="alert-heading">
-            <i class="bi bi-exclamation-triangle-fill"></i> {translate key=NoAvailableMatchingTimes}
-        </h4>
+    <div class="alert theme-warning d-flex justify-content-center align-items-center" role="alert">
+        <i class="bi bi-exclamation-triangle-fill fs-xl"></i>
+        {translate key=NoAvailableMatchingTimes}
     </div>
 {else}
     <div class="card shadow">
         <div class="card-body py-4">
-            <div class="row gy-3">
-                {foreach from=$Openings item=opening}
-                    <div class="col-sm-3">
-                        <div class="opening card shadow-sm" data-resourceid="{$opening->Resource()->Id}"
-                            data-startdate="{format_date date=$opening->Start() key=system_datetime}"
-                            data-enddate="{format_date date=$opening->End() key=system_datetime}">
-                            <h5 class="card-header resourceName" data-resourceId="{$opening->Resource()->Id}"
-                                {if $opening->Resource()->HasColor()}
-                                    style="background-color: {$opening->Resource()->Color};color:{$opening->Resource()->TextColor};"
-                                {/if}>
-                                <i class="bi bi-info-circle-fill pe-1"></i> {$opening->Resource()->Name}
-                            </h5>
-                            {assign var=key value=short_reservation_date}
-                            {if $opening->SameDate()}
-                                {assign var=key value=period_time}
-                            {/if}
-                            <div class="card-body dates px-2 py-1">
-                                <h6 class="card-text">
-                                    {format_date date=$opening->Start() key=res_popup} -
-                                    {format_date date=$opening->End() key=$key}
-                                </h6>
-                            </div>
+            {assign var=groupedOpenings value=[]}
+            {foreach from=$Openings item=opening}
+                {$name = $opening->Resource()->Name}
+                {if !isset($groupedOpenings[$name])}
+                    {$groupedOpenings[$name] = []}
+                {/if}
+                {$groupedOpenings[$name][] = $opening}
+            {/foreach}
+
+            <ul class="list-group list-group-flush">
+                {foreach from=$groupedOpenings key=resourceName item=group}
+                    {$resource = $group[0]->Resource()}
+                    <li class="list-group-item py-3">
+                        <div class="mb-2">
+                            <span class="resourceName chip theme-success" {if $resource->HasColor()}
+                                style="background-color: {$resource->Color};color:{$resource->TextColor};" {/if}>
+                                <i class="bi bi-info-circle-fill pe-1"></i>{$resourceName}
+                            </span>
                         </div>
-                    </div>
+
+                        <div class="d-flex flex-wrap gap-2">
+                            {foreach from=$group item=opening}
+                                {assign var=key value=short_reservation_date}
+                                {if $opening->SameDate()}
+                                    {assign var=key value=period_time}
+                                {/if}
+
+                                <span class="chip theme-info opening" data-resourceid="{$resource->Id}"
+                                    data-startdate="{format_date date=$opening->Start() key=system_datetime}"
+                                    data-enddate="{format_date date=$opening->End() key=system_datetime}">
+                                    {format_date date=$opening->Start() key=schedule_daily} -
+                                    {format_date date=$opening->End() key=$key}
+                                </span>
+                            {/foreach}
+                        </div>
+                    </li>
                 {/foreach}
-            </div>
+            </ul>
         </div>
     </div>
 {/if}

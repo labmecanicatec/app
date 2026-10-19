@@ -896,7 +896,7 @@ class SmartyPage extends Smarty
     public function CreateJavascriptArray(array $params, Template $template): string
     {
         // Keep the existing string-array contract, including for keyed input arrays.
-        $values = array_map(static fn ($value): string => (string) $value, array_values($params['array']));
+        $values = array_map(static fn($value): string => (string) $value, array_values($params['array']));
 
         return json_encode(
             $values,
@@ -1054,7 +1054,7 @@ class SmartyPage extends Smarty
     {
         $key = $params['key'] ?? 'Cancel';
         $class = $params['class'] ?? '';
-        return '<button type="button" class="btn btn-outline-secondary btn-sm cancel ' . $class . '" data-bs-dismiss="modal" ' . $this->GetButtonAttributes($params) . '>' .
+        return '<button type="button" class="btn-solid theme-secondary btn-sm cancel ' . $class . '" data-bs-dismiss="dialog" ' . $this->GetButtonAttributes($params) . '>' .
             Resources::GetInstance()->GetString($key) . '</button>';
     }
 
@@ -1065,7 +1065,7 @@ class SmartyPage extends Smarty
         $type = isset($params['submit']) ? 'submit' : 'button';
         $save = $type == 'submit' ? '' : ' save ';
 
-        return '<button type="' . $type . '" class="btn btn-primary btn-sm' . $save . $class . '" ' . $this->GetButtonAttributes($params) . '><i class="bi bi-check2-circle"></i> ' . Resources::GetInstance()
+        return '<button type="' . $type . '" class="btn-solid theme-primary btn-sm' . $save . $class . '" ' . $this->GetButtonAttributes($params) . '><i class="bi bi-check2-circle"></i> ' . Resources::GetInstance()
             ->GetString($key) . '</button>';
     }
 
@@ -1079,7 +1079,7 @@ class SmartyPage extends Smarty
             $type = 'submit';
         }
 
-        return '<button type="' . $type . '" class="btn btn-primary btn-sm save ' . $class . '" ' . $this->GetButtonAttributes($params) . '><i class="bi bi-check2-circle"></i> ' . Resources::GetInstance()
+        return '<button type="' . $type . '" class="btn-solid theme-primary btn-sm save ' . $class . '" ' . $this->GetButtonAttributes($params) . '><i class="bi bi-check2-circle"></i> ' . Resources::GetInstance()
             ->GetString($key) . '</button>';
     }
 
@@ -1092,7 +1092,7 @@ class SmartyPage extends Smarty
         if ($submit) {
             $type = 'submit';
         }
-        return '<button type="' . $type . '" class="btn btn-danger btn-sm save ' . $class . '" ' . $this->GetButtonAttributes($params) . '><i class="bi bi-trash3-fill"></i> ' . Resources::GetInstance()
+        return '<button type="' . $type . '" class="btn-solid theme-danger btn-sm save ' . $class . '" ' . $this->GetButtonAttributes($params) . '><i class="bi bi-trash3-fill"></i> ' . Resources::GetInstance()
             ->GetString($key) . '</button>';
     }
 
@@ -1100,7 +1100,7 @@ class SmartyPage extends Smarty
     {
         $key = $params['key'] ?? 'Reset';
         $class = $params['class'] ?? '';
-        return '<button type="reset" class="btn btn-outline-secondary btn-sm ' . $class . '" ' . $this->GetButtonAttributes($params) . '><i class="bi bi-arrow-counterclockwise me-1"></i>' . Resources::GetInstance()
+        return '<button type="reset" class="btn-outline theme-secondary btn-sm w-8 ' . $class . '" ' . $this->GetButtonAttributes($params) . '><i class="bi bi-arrow-counterclockwise me-1"></i>' . Resources::GetInstance()
             ->GetString($key) . '</button>';
     }
 
@@ -1108,7 +1108,7 @@ class SmartyPage extends Smarty
     {
         $key = $params['key'] ?? 'Filter';
         $class = $params['class'] ?? '';
-        return '<button type="submit" class="btn btn-primary btn-sm ' . $class . '" ' . $this->GetButtonAttributes($params) . '><i class="bi bi-search"></i> ' . Resources::GetInstance()
+        return '<button type="submit" class="btn-solid theme-primary btn-sm w-8 ' . $class . '" ' . $this->GetButtonAttributes($params) . '><i class="bi bi-search"></i> ' . Resources::GetInstance()
             ->GetString($key) . '</button>';
     }
 
@@ -1116,7 +1116,7 @@ class SmartyPage extends Smarty
     {
         $key = $params['key'] ?? 'OK';
         $class = $params['class'] ?? '';
-        return '<button type="button" class="btn btn-primary btn-sm ' . $class . '" ' . $this->GetButtonAttributes($params) . '><i class="bi bi-check2-circle"></i> ' . Resources::GetInstance()
+        return '<button type="button" class="btn-solid theme-primary btn-sm ' . $class . '" ' . $this->GetButtonAttributes($params) . '><i class="bi bi-check2-circle"></i> ' . Resources::GetInstance()
             ->GetString($key) . '</button>';
     }
 

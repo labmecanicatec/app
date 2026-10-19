@@ -123,27 +123,18 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function initializeAccordions() {
-  document.querySelectorAll('.accordion-item').forEach((item) => {
-    const id = item.id;
-    const collapse = item.querySelector('.accordion-collapse');
-    const button = item.querySelector('.accordion-button');
-    if (!id || !collapse) return;
+  document.querySelectorAll('details.accordion-item').forEach((item) => {
+    const id = item.id || item.dataset.accordionId || item.getAttribute('name');
+    if (!id) return;
 
-    // Restore saved state
+    // Restaurar el estado guardado
     const state = localStorage.getItem(id);
-    const expanded = state !== 'collapsed';
-    collapse.classList.toggle('show', expanded);
-    if (button) {
-      button.classList.toggle('collapsed', !expanded);
-      button.setAttribute('aria-expanded', expanded);
-    }
+    if (state === 'collapsed') item.open = false;
+    else if (state === 'expanded') item.open = true;
 
-    // Save the state when it finishes opening or closing
-    collapse.addEventListener('shown.bs.collapse', (e) => {
-      if (e.target === collapse) localStorage.setItem(id, 'expanded');
-    });
-    collapse.addEventListener('hidden.bs.collapse', (e) => {
-      if (e.target === collapse) localStorage.setItem(id, 'collapsed');
+    // Guardar el estado cada vez que el usuario abre o cierra
+    item.addEventListener('toggle', () => {
+      localStorage.setItem(id, item.open ? 'expanded' : 'collapsed');
     });
   });
 }

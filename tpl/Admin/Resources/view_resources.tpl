@@ -1,29 +1,26 @@
 {include file='globalheader.tpl' DataTable=true}
 
 <div id="page-manage-resources" class="admin-page">
-    <div class="clearfix border-bottom mb-3">
-        <h1 class="float-start">{translate key='ManageResources'}</h1>
+    <div class="border-bottom mb-3">
+        <h1>{translate key='ManageResources'}</h1>
     </div>
 
     <div class="accordion">
-        <div class="accordion-item shadow mb-3 panel-default filterTable" id="filter-resources-panel">
-            <h2 class="accordion-header">
-                <button class="accordion-button collapsed link-primary fw-bold" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#filter-resources-content" aria-expanded="false"
-                    aria-controls="filter-resources-content">
+        <details class="accordion-item shadow mb-3 panel-default filterTable" name="filter-resources-panel">
+            <summary  class="accordion-header">
                     <i class="bi bi-funnel-fill me-1"></i>{translate key="Filter"}
-                </button>
-            </h2>
-            <div id="filter-resources-content" class="accordion-collapse collapse">
+                     <svg class="accordion-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m2 5 6 6 6-6"/></svg>
+            </summary >
+            <div id="filter-resources-content" class="accordion-body">
                 <form id="filterForm" class="horizontal-list" role="form" method="get">
                     <div class="accordion-body">
                         <div class="row gy-2 mb-2">
-                            {assign var=groupClass value="col-12 col-sm-4 col-md-3"}
+                            {assign var=groupClass value="col-12 sm:col-4 md:col-3"}
 
                             <div class="form-group {$groupClass}">
                                 <label for="filterResourceName" class="fw-bold">{translate key=Resource}</label>
                                 <div class="position-relative">
-                                    <input type="text" id="filterResourceName" class="form-control"
+                                    <input type="text" id="filterResourceName" class="form-control form-control-sm"
                                         {formname key=RESOURCE_NAME} value="{$ResourceNameFilter}"
                                         placeholder="{translate key=Name}" />
                                     <span class="searchclear searchclear-label bi bi-x-circle-fill"
@@ -32,7 +29,7 @@
                             </div>
                             <div class="form-group {$groupClass}">
                                 <label for="filterScheduleId" class="fw-bold">{translate key=Schedule}</label>
-                                <select id="filterScheduleId" {formname key=SCHEDULE_ID} class="form-select">
+                                <select id="filterScheduleId" {formname key=SCHEDULE_ID} class="form-control form-control-sm">
                                     <option value="">{translate key=AllSchedules}</option>
                                     {object_html_options options=$AllSchedules key='GetId' label="GetName" selected=$ScheduleIdFilter}
                                 </select>
@@ -40,7 +37,7 @@
 
                             <div class="form-group {$groupClass}">
                                 <label for="filterResourceType" class="fw-bold">{translate key=ResourceType}</label>
-                                <select id="filterResourceType" class="form-select" {formname key=RESOURCE_TYPE_ID}>
+                                <select id="filterResourceType" class="form-control form-control-sm" {formname key=RESOURCE_TYPE_ID}>
                                     <option value="">{translate key=AllResourceTypes}</option>
                                     {object_html_options options=$ResourceTypes key='Id' label="Name" selected=$ResourceTypeFilter}
                                 </select>
@@ -49,7 +46,7 @@
                                 <label for="resourceStatusIdFilter"
                                     class="fw-bold">{translate key=ResourceStatus}</label>
                                 <div class="d-flex flex-wrap">
-                                    <select id="resourceStatusIdFilter" class="form-select inline w-auto"
+                                    <select id="resourceStatusIdFilter" class="form-control form-control-sm inline w-75"
                                         {formname key=RESOURCE_STATUS_ID}>
                                         <option value="">{translate key=AllResourceStatuses}</option>
                                         <option value="{ResourceStatus::AVAILABLE}">{translate key=Available}</option>
@@ -59,7 +56,7 @@
                                     </select>
                                     <label for="resourceReasonIdFilter"
                                         class="visually-hidden">{translate key=Reason}</label>
-                                    <select id="resourceReasonIdFilter" class="form-select w-auto inline"
+                                    <select id="resourceReasonIdFilter" class="form-control form-control-sm w-25 inline"
                                         {formname key=RESOURCE_STATUS_REASON_ID}>
                                         <option value="">-</option>
                                     </select>
@@ -67,14 +64,14 @@
                             </div>
                             <div class="form-group {$groupClass}">
                                 <label for="filterCapacity" class="fw-bold">{translate key=MinimumCapacity}</label>
-                                <input type="number" min="0" id="filterCapacity" class="form-control"
+                                <input type="number" min="0" id="filterCapacity" class="form-control form-control-sm"
                                     {formname key=MAX_PARTICIPANTS} value="{$CapacityFilter}"
                                     placeholder="{translate key=MinimumCapacity}" />
                             </div>
                             <div class="form-group {$groupClass}">
                                 <label for="filterRequiresApproval"
                                     class="fw-bold">{translate key=ResourceRequiresApproval}</label>
-                                <select id="filterRequiresApproval" class="form-select" {formname key=REQUIRES_APPROVAL}
+                                <select id="filterRequiresApproval" class="form-control form-control-sm" {formname key=REQUIRES_APPROVAL}
                                     title="{translate key='ResourceRequiresApproval'}">
                                     <option value="">{translate key='ResourceRequiresApproval'}</option>
                                     {html_options options=$YesNoOptions selected=$RequiresApprovalFilter}
@@ -83,7 +80,7 @@
                             <div class="form-group {$groupClass}">
                                 <label for="filterAutoAssign"
                                     class="fw-bold">{translate key=ResourcePermissionAutoGranted}</label>
-                                <select id="filterAutoAssign" class="form-select" {formname key=AUTO_ASSIGN}
+                                <select id="filterAutoAssign" class="form-control form-control-sm" {formname key=AUTO_ASSIGN}
                                     title="{translate key='ResourcePermissionAutoGranted'}">
                                     <option value="">{translate key='ResourcePermissionAutoGranted'}</option>
                                     {html_options options=$YesNoOptions selected=$AutoPermissionFilter}
@@ -92,7 +89,7 @@
                             <div class="form-group {$groupClass}">
                                 <label for="filterAllowMultiDay"
                                     class="fw-bold">{translate key=ResourceAllowMultiDay}</label>
-                                <select id="filterAllowMultiDay" class="form-select" {formname key=ALLOW_MULTIDAY}
+                                <select id="filterAllowMultiDay" class="form-control form-control-sm" {formname key=ALLOW_MULTIDAY}
                                     title="{translate key=ResourceAllowMultiDay}">
                                     <option value="">{translate key=ResourceAllowMultiDay}</option>
                                     {html_options options=$YesNoOptions selected=$AllowMultiDayFilter}
@@ -113,7 +110,7 @@
                     </div>
                 </form>
             </div>
-        </div>
+        </detail>
     </div>
 
     <div id="globalError" class="error d-none"></div>
@@ -133,20 +130,16 @@
                             {assign var=id value=$resource->GetResourceId()}
                             <tr>
                                 <td>
-                                    <div class="accordion-item shadow mb-2">
-                                        <h2 class="accordion-header">
-                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                                data-bs-target="#id{$resource->GetResourceId()}" aria-expanded="false"
-                                                aria-controls="id{$resource->GetResourceId()}">
-                                                {$resource->GetName()}
-                                            </button>
-                                        </h2>
-                                        <div id="id{$id}" class="accordion-collapse collapse">
+                                    <details  class="accordion-item shadow mb-2">
+                                        <summary   class="accordion-header">
+                                            {$resource->GetName()}
+                                            <svg class="accordion-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m2 5 6 6 6-6"/></svg>
+                                        </summary  >
+                                        <div id="id{$id}" class="accordion-body">
                                             <div class="accordion-body resourceDetails row" data-resourceId="{$id}">
-                                                <div class="col-12 col-sm-5">
-                                                    <input type="hidden" class="id" value="{$id}" />
+                                                <div class="col-12 sm:col-5">
                                                     <div class="row gy-2">
-                                                        <div class="col-sm-3 col-6 resourceImage">
+                                                        <div class="sm:col-3 col-6 resourceImage">
                                                             <div class="">
                                                                 {if $resource->HasImage()}
 
@@ -192,14 +185,14 @@
                                                             </div>
                                                             <div class="text-center mt-4">
                                                                 {translate key=ResourceColor}
-                                                                <div class="border rounded-1 mx-auto w-100"
+                                                                <div class="border rounded-pill mx-auto w-100"
                                                                     style="height: 23px;background-color:{if $resource->HasColor()}{$resource->GetColor()}{else}#ffffff{/if}">
                                                                 </div>
                                                             </div>
                                                         </div>
 
-                                                        <div class="col-sm-9 col-6">
-                                                            <div class="title resourceNameField fs-5 fw-bold">
+                                                        <div class="sm:col-9 col-6">
+                                                            <div class="title resourceNameField fw-bold">
                                                                 {$resource->GetName()}</div>
                                                             <div>
                                                                 <label class="inline fw-bold">ResourceId:</label>
@@ -209,13 +202,13 @@
                                                                 <label class="inline fw-bold">{translate key='Status'}</label>
                                                                 {if $resource->IsAvailable()}
                                                                     <span>{translate key='Available'}<i
-                                                                            class="bi bi-check-circle-fill text-success ms-1"></i></span>
+                                                                            class="bi bi-check-circle-fill fg-success ms-1"></i></span>
                                                                 {elseif $resource->IsUnavailable()}
                                                                     <span>{translate key='Unavailable'}<i
-                                                                            class="bi bi-exclamation-circle-fill text-warning ms-1"></i></span>
+                                                                            class="bi bi-exclamation-circle-fill fg-warning ms-1"></i></span>
                                                                 {else}
                                                                     <span>{translate key='Hidden'}<i
-                                                                            class="bi bi-x-circle-fill text-danger ms-1"></i></span>
+                                                                            class="bi bi-x-circle-fill fg-danger ms-1"></i></span>
                                                                 {/if}
                                                                 {if array_key_exists($resource->GetStatusReasonId(),$StatusReasons)}
                                                                     <span
@@ -308,9 +301,9 @@
                                                 </div>
 
 
-                                                <div class="col-12 col-sm-7">
+                                                <div class="col-12 sm:col-7">
                                                     <div class="row">
-                                                        <div class="col-sm-6 col-12">
+                                                        <div class="sm:col-6 col-12">
                                                             <div class="mb-4">
                                                                 <span class="fs-6 fw-bold">{translate key=Duration}</span>
                                                                 <div class="durationPlaceHolder">
@@ -336,7 +329,7 @@
 
                                                         </div>
 
-                                                        <div class="col-sm-6 col-12">
+                                                        <div class="sm:col-6 col-12">
                                                             <div style="mb-4">
                                                                 <span class="fs-6 fw-bold">{translate key=Access}</span>
                                                                 <div class="accessPlaceHolder">
@@ -345,7 +338,7 @@
                                                             </div>
                                                         </div>
 
-                                                        <div class="col-sm-6 col-12 mt-4">
+                                                        <div class="sm:col-6 col-12 mt-4">
                                                             <span class="fs-6 fw-bold">{translate key='PermissionType'}</span>
                                                             <div class="resourcePermissionTypePlaceHolder">
                                                                 {if $ResourcePermissionTypes[$resource->GetId()] == 0}
@@ -356,7 +349,7 @@
                                                             </div>
                                                         </div>
 
-                                                        <div class="col-sm-6 col-12 mt-4">
+                                                        <div class="sm:col-6 col-12 mt-4">
                                                             <span class="fs-6 fw-bold">{translate key='ResourceGroups'}</span>
                                                             <div class="resourceGroupsPlaceHolder">
                                                                 {if $resource->GetResourceGroupIds()|default:array()|count == 0}
@@ -389,7 +382,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </details >
                                 </td>
                             </tr>
                         {/foreach}
