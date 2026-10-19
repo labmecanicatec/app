@@ -1,87 +1,144 @@
+/**
+ * Shared cache keyed by reservation ID.
+ * Reused across elements and preserved across DOM re-renders.
+ */
+const reservationPopupCache = new Map();
+
+/**
+ * Tracks active popup bindings per element to prevent duplicate listeners.
+ */
+const reservationPopupBindings = new WeakMap();
+
+/**
+ * Attaches a reservation details popup to a DOM element.
+ *
+ * The popup is displayed after a short hover delay. Reservation details
+ * are fetched on demand and cached for subsequent interactions.
+ *
+ * @param {HTMLElement} el - Element that triggers the reservation popup.
+ * @param {string|number} refNum - Reservation ID.
+ * @param {string} [detailsUrl] - URL used to retrieve reservation details.
+ * @returns {void}
+ */
+function attachReservationPopup(el, refNum, detailsUrl) {
+  const HOVER_DELAY_MS = 700;
+
+  // Clean up any previous binding on this element.
+  reservationPopupBindings.get(el)?.cleanup();
+
+  const listeners = new AbortController();
+
+  let tooltip = null;
+  let isTooltipVisible = false;
+  let isHovering = false;
+  let hoverTimer = null;
+  let request = null;
+
+  function cleanup() {
+    clearTimeout(hoverTimer);
+    request?.abort();
+    tooltip?.dispose();
+    listeners.abort();
+  }
+
+  reservationPopupBindings.set(el, { cleanup });
+
+  // Recreate the tooltip whenever its content changes.
+  // Disable animation when replacing visible content to prevent flickering.
+  function show(content) {
+    tooltip?.dispose();
+
+    tooltip = new bootstrap.Tooltip(el, {
+      trigger: 'manual',
+      html: true,
+      customClass: 'respopup-tooltip',
+      animation: !isTooltipVisible,
+      title: content,
+    });
+
+    tooltip.show();
+    isTooltipVisible = true;
+  }
+
+  async function load() {
+    if (reservationPopupCache.has(refNum)) {
+      show(reservationPopupCache.get(refNum));
+      return;
+    }
+
+    show('Loading...');
+
+    const controller = new AbortController();
+    request = controller;
+
+    try {
+      const url = new URL(detailsUrl ?? 'ajax/respopup.php', window.location.href);
+
+      url.searchParams.set('id', refNum);
+
+      const response = await fetch(url, {
+        signal: controller.signal,
+      });
+
+      if (!response.ok) {
+        throw new Error(response.status + ' ' + response.statusText);
+      }
+
+      const html = await response.text();
+
+      reservationPopupCache.set(refNum, html);
+
+      if (isHovering) {
+        show(html);
+      }
+    } catch (error) {
+      if (error.name !== 'AbortError' && isHovering) {
+        show(error.message);
+      }
+    } finally {
+      if (request === controller) {
+        request = null;
+      }
+    }
+  }
+
+  el.addEventListener(
+    'mouseenter',
+    () => {
+      isHovering = true;
+      clearTimeout(hoverTimer);
+
+      hoverTimer = setTimeout(() => {
+        if (isHovering) {
+          load();
+        }
+      }, HOVER_DELAY_MS);
+    },
+    { signal: listeners.signal }
+  );
+
+  el.addEventListener(
+    'mouseleave',
+    () => {
+      isHovering = false;
+      clearTimeout(hoverTimer);
+
+      request?.abort();
+
+      tooltip?.hide();
+      isTooltipVisible = false;
+    },
+    { signal: listeners.signal }
+  );
+}
+
+// Expose the function for native JavaScript callers.
+window.attachReservationPopup = attachReservationPopup;
+
+// Temporary jQuery compatibility layer.
+// Remove once all jQuery callers have been migrated.
 $.fn.attachReservationPopup = function (refNum, detailsUrl) {
-  var me = $(this);
-  var hoverTimer = null;
-  var ajaxRequest = null;
-  var isHovering = false;
-  var hoverDelayMs = 700;
-  var cacheKey = 'reservationPopup' + refNum;
-
-  if (detailsUrl == null) {
-    detailsUrl = 'ajax/respopup.php';
-  }
-
-  function showTooltip(content) {
-    // Recreate tooltip from current attributes so content always reflects latest state.
-    me.tooltip('dispose');
-    me.attr('data-bs-toggle', 'tooltip')
-      .attr('data-bs-html', 'true')
-      .attr('data-bs-custom-class', 'respopup-tooltip')
-      .attr('data-bs-title', content)
-      .tooltip({
-        trigger: 'manual',
-        html: true,
-        customClass: 'respopup-tooltip',
-      })
-      .tooltip('show');
-  }
-
-  me.on('mouseenter', function () {
-    isHovering = true;
-
-    if (hoverTimer) {
-      clearTimeout(hoverTimer);
-      hoverTimer = null;
-    }
-
-    hoverTimer = setTimeout(function () {
-      if (!isHovering) {
-        return;
-      }
-
-      var cachedData = me.data(cacheKey);
-      if (cachedData != null) {
-        showTooltip(cachedData);
-        return;
-      }
-
-      showTooltip('Loading...');
-
-      ajaxRequest = $.ajax({ url: detailsUrl, data: { id: refNum } })
-        .done(function (html) {
-          me.data(cacheKey, html);
-          if (!isHovering) {
-            return;
-          }
-          showTooltip(html);
-        })
-        .fail(function (xhr, status, error) {
-          if (status === 'abort' || !isHovering) {
-            return;
-          }
-          showTooltip(status + ': ' + error);
-        })
-        .always(function () {
-          ajaxRequest = null;
-        });
-    }, hoverDelayMs);
-  });
-
-  me.on('mouseleave', function () {
-    isHovering = false;
-
-    if (hoverTimer) {
-      clearTimeout(hoverTimer);
-      hoverTimer = null;
-    }
-
-    if (ajaxRequest) {
-      ajaxRequest.abort();
-      ajaxRequest = null;
-    }
-
-    var tooltipInstance = bootstrap.Tooltip.getInstance(me[0]);
-    if (tooltipInstance) {
-      tooltipInstance.hide();
-    }
+  return this.each(function () {
+    attachReservationPopup(this, refNum, detailsUrl);
   });
 };

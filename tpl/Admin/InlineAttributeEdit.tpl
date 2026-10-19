@@ -23,7 +23,7 @@
 	<div class="updateCustomAttribute mb-0 d-inline-block">
 		<label class="inline fw-bold">{$attribute->Label()}</label>
 
-		<a class="update {if $type == CustomAttributeTypes::DATETIME}changeAttributeDateTime{else}changeAttribute{/if} link-primary"
+		<a class="update {if $type == CustomAttributeTypes::DATETIME}changeAttributeDateTime{else}changeAttribute{/if} theme-primary"
 			title="{translate key='Edit'}" href="#">
 			<span class="bi bi-pencil-square"></span>
 			<span class="visually-hidden">{translate key=Edit}</span>

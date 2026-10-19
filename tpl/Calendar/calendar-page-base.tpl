@@ -10,15 +10,15 @@
 
     <div id="calendar" class="mt-4"></div>
 
-    <div id="dayDialog" class="card shadow bg-secondary-subtle position-absolute d-none p-0" style="z-index: 2000;">
+    <div id="dayDialog" class="card shadow bg-secondary-subtle position-absolute d-none p-0">
         <div class="card-body">
             {if !isset($HideCreate)  || !$HideCreate}
-                <a href=" #" id="dayDialogCreate" class="link-success me-2"><i
+                <a href=" #" id="dayDialogCreate" class="theme-success me-2"><i
                         class="bi bi-check-lg me-1"></i>{translate key=CreateReservation}</a>
             {/if}
-            <a href="#" id="dayDialogView" class="link-secondary me-2"><i
+            <a href="#" id="dayDialogView" class="theme-secondary me-2"><i
                     class="bi bi-search me-1"></i>{translate key=ViewDay}</a>
-            <a href="#" id="dayDialogCancel" class="link-danger"><i
+            <a href="#" id="dayDialogCancel" class="theme-danger"><i
                     class="bi bi-dash-circle me-1"></i>{translate key=Cancel}</a>
         </div>
     </div>

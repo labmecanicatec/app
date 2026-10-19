@@ -3,7 +3,7 @@ function ReservationColorManagement(opts) {
     reservationColorTable: $('#reservationColorTable'),
 
     deleteRuleId: $('#deleteRuleId'),
-    attributeOption: $('#attributeOption'),
+    attributeOption: document.getElementById('attributeOption'),
 
     colorDialog: $('#colorDialog'),
     colorValue: $('#reservationColor'),
@@ -29,10 +29,15 @@ function ReservationColorManagement(opts) {
       $(this).closest('form').submit();
     });
 
-    $('#addRuleButton').click(function (e) {
-      var attrId = '#attribute' + elements.attributeOption.val();
-      $('#attributeFillIn').empty();
-      $('#attributeFillIn').append($(attrId).clone().removeClass('d-none'));
+    document.getElementById('addRuleButton').addEventListener('click', () => {
+      const template = document.getElementById(`attribute${elements.attributeOption.value}`);
+      if (!template) return;
+
+      const fillIn = document.getElementById('attributeFillIn');
+      const copy = template.cloneNode(true);
+      copy.classList.remove('d-none');
+      fillIn.replaceChildren(copy);
+
       setDialogVisible(elements.addDialog, true);
     });
 

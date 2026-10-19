@@ -3,18 +3,18 @@
 <div id="page-manage-reservation-colors" class="admin-page">
 
     <h1 class="border-bottom mb-3">{translate key=ReservationColors}</h1>
-    <div class="card shadow mb-2 default-box">
+    <div class="card shadow mb-2">
         <div class="card-body">
             <form class="form-inline" role="form">
                 <div class="d-flex align-items-center">
                     <label class="fw-bold" for="attributeOption">{translate key=Attribute}</label>
-                    <select class="form-select form-select-sm w-auto mx-2" id="attributeOption">
+                    <select class="form-control form-control-sm w-auto mx-2" id="attributeOption">
                         {foreach from=$Attributes item=attribute}
                             <option value="{$attribute->Id()}">{$attribute->Label()}</option>
                         {/foreach}
                     </select>
 
-                    <button type="button" class="btn btn-primary btn-sm" id="addRuleButton">
+                    <button type="button" class="btn-solid btn-sm theme-primary" id="addRuleButton">
                         <i class="bi bi-plus-lg"></i> {translate key='AddRule'}
                     </button>
                 </div>
@@ -42,7 +42,7 @@
                             <td style="background-color:{$rule->Color}">&nbsp;</td>
                             <td class="action">
                                 <a href="#" class="update delete" ruleId="{$rule->Id}" aria-label="{translate key=Delete}">
-                                    <span class="bi bi-trash3-fill icon text-danger remove"></span>
+                                    <span class="bi bi-trash3-fill icon fg-danger fs-md remove"></span>
                                 </a>
                             </td>
                         </tr>
@@ -53,59 +53,51 @@
     </div>
 </div>
 
-<div class="modal fade" id="addDialog" tabindex="-1" role="dialog" aria-labelledby="addDialogLabel" aria-hidden="true">
-    <div class="modal-dialog">
+<dialog class="dialog" id="addDialog" aria-labelledby="addDialogLabel">
         <form id="addForm" method="post" action="{$smarty.server.SCRIPT_NAME}?action=add" method="post">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addDialogLabel">{translate key=AddReservationColorRule}</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+                <div class="dialog-header">
+                    <h2 class="dialog-title" id="addDialogLabel">{translate key=AddReservationColorRule}</h2>
+                    <button type="button" class="btn-close" commandfor="addDialog" command="close" aria-label="{translate key=Close}"></button>
                 </div>
-                <div class="modal-body">
-                    {translate key=ReservationCustomRuleAdd}
-                    <div class="d-flex align-items-end">
-                        <div id="attributeFillIn"></div>
-                        <div id="color">
-                            <label for="reservationColor" class="visually-hidden">Reservation Color</label>
-                            <input type="color" {formname key="RESERVATION_COLOR"}
-                                class="form-control form-control-color required" id="reservationColor" maxlength="6" />
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
+                <div class="dialog-body">
+    <p class="mb-5">{translate key=ReservationCustomRuleAdd}</p>
+
+    <div class="d-flex flex-wrap align-items-end gap-5">
+        <div id="attributeFillIn" class="flex-grow-1"></div>
+
+        <div id="color" class="form-field">
+            <input type="color" {formname key="RESERVATION_COLOR"}
+                class="form-control form-control-color required" id="reservationColor" />
+        </div>
+    </div>
+</div>
+                <div class="dialog-footer">
                     {cancel_button}
                     {add_button}
                     {indicator}
                 </div>
-            </div>
         </form>
-    </div>
-</div>
+</dialog>
 
-<div class="modal fade" id="deleteDialog" tabindex="-1" role="dialog" aria-labelledby="deleteDialogLabel"
-    aria-hidden="true">
-    <div class="modal-dialog">
+<dialog class="dialog" id="deleteDialog" aria-labelledby="deleteDialogLabel">
         <form id="deleteForm" action="{$smarty.server.SCRIPT_NAME}?action=delete" method="post">
-            <div class="modal-content">
-                <div class="modal-header">
+                <div class="dialog-header">
                     <h5 class="modal-title" id="deleteDialogLabel">{translate key=Delete}</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+                    <button type="button" class="btn-close" commandfor="deleteDialog" command="close" aria-label="{translate key=Close}"></button>
                 </div>
-                <div class="modal-body">
-                    <div class="alert alert-warning">
+                <div class="dialog-body">
+                    <div class="alert theme-warning">
                         {translate key=DeleteWarning}
                     </div>
                     <input type="hidden" id="deleteRuleId" {formname key=RESERVATION_COLOR_RULE_ID} />
                 </div>
-                <div class="modal-footer">
+                <div class="dialog-footer">
                     {cancel_button}
                     {delete_button}
                     {indicator}
                 </div>
-            </div>
         </form>
-    </div>
-</div>
+</dialog>
 
 {foreach from=$Attributes item=attribute}
     <div id="attribute{$attribute->Id()}" class="d-none">

@@ -3,116 +3,105 @@
 	<h1 class="border-bottom mb-3">{translate key=ManageBlackouts}</h1>
 	<div class="accordion">
 		<form id="addBlackoutForm" role="form" method="post">
-			<div class="accordion-item shadow mb-2 panel-default" id="add-blackout-panel">
-				<h2 class="accordion-header">
-					<button class="accordion-button collapsed link-primary" type="button" data-bs-toggle="collapse"
-						data-bs-target="#add-blackout-content" aria-expanded="false"
-						aria-controls="add-blackout-content">
-						<i class="bi bi-plus-circle-fill me-1"></i>{translate key="AddBlackout"}
-					</button>
-				</h2>
-				<div id="add-blackout-content" class="accordion-collapse collapse">
-					<div class="accordion-body add-contents">
-						<div class="form-group d-flex align-items-center flex-wrap gap-1 mb-2">
-							<div class="d-flex align-items-center flex-wrap gap-1 me-sm-4">
-								<label class="fw-bold" for="addStartDate">{translate key=BeginDate}</label>
-								<input type="text" id="addStartDate" {formname key=BEGIN_DATE}
-									class="form-control form-control-sm w-auto" />
-								<select {formname key=BEGIN_TIME} id="addStartTime"
-									class="form-select form-select-sm w-auto timepicker" data-format="{$TimeFormat}"
-									data-step="30" data-default="{format_date format='H:00' date=now}">
-								</select>
-								<label for="addStartTime" class="visually-hidden">{translate key=StartTime}</label>
-							</div>
-							<div class="d-flex align-items-center flex-wrap gap-1">
-								<label class="fw-bold" for="addEndDate">{translate key=EndDate}</label>
-								<input type="text" id="addEndDate" {formname key=END_DATE}
-									class="form-control form-control-sm w-auto" />
-								<select {formname key=END_TIME} id="addEndTime"
-									class="form-select form-select-sm w-auto timepicker" data-format="{$TimeFormat}"
-									data-step="30"
-									data-default="{format_date format='H:00' date=Date::Now()->AddHours(1)}">
-								</select>
-								<label for="addEndTime" class="visually-hidden">{translate key=EndTime}</label>
-							</div>
-						</div>
-						<div class="form-group d-flex align-items-center flex-wrap gap-1 mb-2">
-							<label class="fw-bold" for="addResourceId">{translate key=Resource}</label>
-							<select {formname key=RESOURCE_ID} class="form-select form-select-sm w-auto"
-								id="addResourceId">
-								{object_html_options options=$Resources key='GetId' label="GetName" selected=$ResourceId}
+			<details class="accordion-item shadow mb-2 panel-default" id="add-blackout-panel">
+				<summary class="accordion-header">
+					<i class="bi bi-plus-circle-fill me-1"></i>{translate key="AddBlackout"}
+					<svg class="accordion-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none"
+						stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+						<path d="m2 5 6 6 6-6" />
+					</svg>
+				</summary>
+				<div class="accordion-body add-contents">
+					<div class="form-group d-flex align-items-center flex-wrap gap-1 mb-2">
+						<div class="d-flex align-items-center flex-wrap gap-1 me-sm-4">
+							<label class="fw-bold" for="addStartDate">{translate key=BeginDate}</label>
+							<input type="text" id="addStartDate" {formname key=BEGIN_DATE}
+								class="form-control form-control-sm w-auto" />
+							<select {formname key=BEGIN_TIME} id="addStartTime"
+								class="form-control form-control-sm w-auto timepicker" data-format="{$TimeFormat}"
+								data-step="30" data-default="{format_date format='H:00' date=now}">
 							</select>
-							{if $Schedules|default:array()|count > 0}
-								<div class="vr mx-2"></div>
-								<div class="form-check me-2">
-									<input class="form-check-input" {formname key=BLACKOUT_APPLY_TO_SCHEDULE}
-										type="checkbox" id="allResources" />
-									<label class="form-check-label" for="allResources"
-										style="">{translate key=AllResourcesOn}
-									</label>
-								</div>
-								<label for="addScheduleId" class="visually-hidden">{translate key=Schedule} </label>
-								<select {formname key=SCHEDULE_ID} id="addScheduleId"
-									class="form-select form-select-sm w-auto" disabled="disabled"
-									title="{translate key=Schedule}">
-									{object_html_options options=$Schedules key='GetId' label="GetName" selected=$ScheduleId}
-								</select>
-							{/if}
+							<label for="addStartTime" class="visually-hidden">{translate key=StartTime}</label>
 						</div>
-						<div class="form-group d-flex align-items-center gap-1 mb-2">
-							<label class="fw-bold" for="blackoutReason">{translate key=Reason}<i
-									class="bi bi-asterisk text-danger align-top" style="font-size: 0.5rem;"></i>
-							</label>
-							<input {formname key=SUMMARY} type="text" id="blackoutReason" required
-								class="form-control form-control-sm w-auto required has-feedback" />
-						</div>
-						<div class="form-group mb-2">
-							{control type="RecurrenceControl"}
-						</div>
-						<div class="form-group">
-							<div class="form-check form-check-inline">
-								<input class="form-check-input" {formname key=CONFLICT_ACTION} type="radio"
-									id="bookAround" name="existingReservations" checked="checked"
-									value="{ReservationConflictResolution::BookAround}" />
-								<label class="form-check-label"
-									for="bookAround">{translate key=BlackoutAroundConflicts}</label>
-							</div>
-							<div class="form-check form-check-inline">
-								<input class="form-check-input" {formname key=CONFLICT_ACTION} type="radio"
-									id="notifyExisting" name="existingReservations"
-									value="{ReservationConflictResolution::Notify}" />
-								<label class="form-check-label"
-									for="notifyExisting">{translate key=BlackoutShowMe}</label>
-							</div>
-							<div class="form-check form-check-inline">
-								<input class="form-check-input" {formname key=CONFLICT_ACTION} type="radio"
-									id="deleteExisting" name="existingReservations"
-									value="{ReservationConflictResolution::Delete}" />
-								<label class="form-check-label"
-									for="deleteExisting">{translate key=BlackoutDeleteConflicts}</label>
-							</div>
-						</div>
-
-						<div class="accordion-footer border-top pt-3">
-							{add_button}
-							{reset_button}
+						<div class="d-flex align-items-center flex-wrap gap-1">
+							<label class="fw-bold" for="addEndDate">{translate key=EndDate}</label>
+							<input type="text" id="addEndDate" {formname key=END_DATE}
+								class="form-control form-control-sm w-auto" />
+							<select {formname key=END_TIME} id="addEndTime"
+								class="form-control form-control-sm w-auto timepicker" data-format="{$TimeFormat}"
+								data-step="30" data-default="{format_date format='H:00' date=Date::Now()->AddHours(1)}">
+							</select>
+							<label for="addEndTime" class="visually-hidden">{translate key=EndTime}</label>
 						</div>
 					</div>
+					<div class="form-group d-flex align-items-center flex-wrap gap-1 mb-2">
+						<label class="fw-bold" for="addResourceId">{translate key=Resource}</label>
+						<select {formname key=RESOURCE_ID} class="form-control form-control-sm w-auto"
+							id="addResourceId">
+							{object_html_options options=$Resources key='GetId' label="GetName" selected=$ResourceId}
+						</select>
+						{if $Schedules|default:array()|count > 0}
+							<div class="vr mx-2"></div>
+							<div class="form-field me-2">
+								<input class="check theme-primary" {formname key=BLACKOUT_APPLY_TO_SCHEDULE} type="checkbox"
+									id="allResources" />
+								<label for="allResources">{translate key=AllResourcesOn}</label>
+							</div>
+							<label for="addScheduleId" class="visually-hidden">{translate key=Schedule} </label>
+							<select {formname key=SCHEDULE_ID} id="addScheduleId" class="form-control form-control-sm w-auto"
+								disabled="disabled" title="{translate key=Schedule}">
+								{object_html_options options=$Schedules key='GetId' label="GetName" selected=$ScheduleId}
+							</select>
+						{/if}
+					</div>
+					<div class="form-group d-flex align-items-center gap-1 mb-2">
+						<label class="fw-bold" for="blackoutReason">{translate key=Reason}<i
+								class="bi bi-asterisk fg-danger align-top" style="font-size: 0.5rem;"></i>
+						</label>
+						<input {formname key=SUMMARY} type="text" id="blackoutReason" required
+							class="form-control form-control-sm w-auto required has-feedback" />
+					</div>
+					<div class="form-group mb-2">
+						{control type="RecurrenceControl"}
+					</div>
+					<div class="form-group">
+    <div class="d-flex flex-wrap gap-5">
+        <div class="form-field">
+            <input class="radio theme-primary" {formname key=CONFLICT_ACTION} type="radio" id="bookAround"
+                name="existingReservations" checked value="{ReservationConflictResolution::BookAround}" />
+            <label for="bookAround">{translate key=BlackoutAroundConflicts}</label>
+        </div>
+        <div class="form-field">
+            <input class="radio theme-primary" {formname key=CONFLICT_ACTION} type="radio" id="notifyExisting"
+                name="existingReservations"
+                value="{ReservationConflictResolution::Notify}" />
+            <label for="notifyExisting">{translate key=BlackoutShowMe}</label>
+        </div>
+        <div class="form-field">
+            <input class="radio theme-primary" {formname key=CONFLICT_ACTION} type="radio" id="deleteExisting"
+                name="existingReservations"
+                value="{ReservationConflictResolution::Delete}" />
+            <label for="deleteExisting">{translate key=BlackoutDeleteConflicts}</label>
+        </div>
+    </div>
+</div>
+
+					<div class="accordion-footer border-top pt-3">
+						{add_button}
+						{reset_button}
+					</div>
 				</div>
-			</div>
+			</details>
 		</form>
 
 		<form role="form">
-			<div class="accordion-item shadow mb-2 panel panel-default" id="filter-panel">
-				<h2 class="accordion-header">
-					<button class="accordion-button collapsed link-primary" type="button" data-bs-toggle="collapse"
-						data-bs-target="#filter-content" aria-expanded="false" aria-controls="filter-content">
+			<details  class="accordion-item shadow mb-2 panel panel-default" id="filter-panel">
+				<summary  class="accordion-header">
 						<i class="bi bi-funnel-fill me-1"></i>{translate key="Filter"}
-					</button>
-				</h2>
-				<div id="filter-content" class="accordion-collapse collapse">
+						<svg class="accordion-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m2 5 6 6 6-6"/></svg>
+				</summary >
 					<div class="accordion-body row gy-2">
-						<div class="form-group col-12 col-sm-4">
+						<div class="form-group col-12 sm:col-4">
 							<div class="d-flex align-items-center justify-content-between flex-wrap">
 								<div class="d-flex flex-column">
 									<label for="startDate" class="fw-bold">{translate key=BeginDate}</label>
@@ -126,18 +115,18 @@
 								</div>
 							</div>
 						</div>
-						<div class="form-group col-12 col-sm-4">
+						<div class="form-group col-12 sm:col-4">
 							<label for="scheduleId" class="fw-bold">{translate key=Schedule} </label>
 
-							<select id="scheduleId" class="form-select form-select-sm col-12 col-sm-4">
+							<select id="scheduleId" class="form-control form-control-sm">
 								<option value="">{translate key=AllSchedules}</option>
 								{object_html_options options=$Schedules key='GetId' label="GetName" selected=$ScheduleId}
 							</select>
 						</div>
-						<div class="form-group col-12 col-sm-4 mb-2">
+						<div class="form-group col-12 sm:col-4">
 							<label for="resourceId" class="fw-bold">{translate key=Resource} </label>
 
-							<select id="resourceId" class="form-select form-select-sm col-12 col-sm-4">
+							<select id="resourceId" class="form-control form-control-sm">
 								<option value="">{translate key=AllResources}</option>
 								{object_html_options options=$Resources key='GetId' label="GetName" selected=$ResourceId}
 							</select>
@@ -148,8 +137,7 @@
 									class="bi bi-list-task me-1"></i>{translate key=ViewAll}</button>
 						</div>
 					</div>
-				</div>
-			</div>
+			</details >
 		</form>
 	</div>
 
@@ -169,13 +157,14 @@
 							<th>{translate key=Delete}</th>
 							<th class="action-delete">
 								<div class="checkbox checkbox-single form-check">
-									<input class="form-check-input" type="checkbox" id="delete-all"
+									<input class="check theme-primary" type="checkbox" id="delete-all"
 										aria-label="{translate key=All}" />
 									<label class="visually-hidden">{translate key=Delete}</label>
-									<a href="#" id="delete-selected" class="link-danger d-none"
-										title="{translate key=Delete}"><i
-											class="bi bi-trash3-fill text-danger icon remove"></i>
+
 								</div>
+								<a href="#" id="delete-selected" class="theme-danger d-none"
+										title="{translate key=Delete}"><i
+											class="bi bi-trash3-fill fg-danger icon remove"></i>
 							</th>
 						</tr>
 					</thead>
@@ -189,26 +178,26 @@
 								<td class="date">{formatdate date=$blackout->EndDate timezone=$Timezone key=res_popup}</td>
 								<td>{$blackout->Title}</td>
 								<td>{fullname first=$blackout->FirstName last=$blackout->LastName}</td>
-								<td class="update edit"><a href="#" class="link-primary"
+								<td class="update edit"><a href="#" class="theme-primary"
 										aria-label="{translate key=Edit}"><i class="bi bi-pencil-square"></i></a>
 								</td>
 								{if $blackout->IsRecurring}
 									<td class="update">
 										<a href="#" class="update delete-recurring" aria-label="{translate key=Delete}"><i
-												class="bi bi-trash3-fill text-danger icon remove" aria-hidden="true"></i></a>
+												class="bi bi-trash3-fill fg-danger icon remove" aria-hidden="true"></i></a>
 									</td>
 								{else}
 									<td class="update">
 										<a href="#" class="update delete" aria-label="{translate key=Delete}"><i
-												class="bi bi-trash3-fill text-danger icon remove" aria-hidden="true"></i></a>
+												class="bi bi-trash3-fill fg-danger icon remove" aria-hidden="true"></i></a>
 									</td>
 								{/if}
 								<td class="action-delete">
 									<div class="checkbox checkbox-single">
 										<input {formname key=BLACKOUT_INSTANCE_ID multi=true}
-											class="delete-multiple form-check-input" type="checkbox" id="delete{$id}"
+											class="delete-multiple check theme-primary" type="checkbox" id="delete{$id}"
 											value="{$id}" aria-label="{translate key=Delete}" />
-										<label for="delete{$id}" class="visually-hidden">Delete</label>
+										<label for="delete{$id}" class="visually-hidden">{translate key=Delete}"</label>
 									</div>
 								</td>
 							</tr>
@@ -220,6 +209,7 @@
 		</div>
 	</div>
 
+	{*Parece que no se usa*}
 	<div class="modal fade" id="deleteDialog" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
 		aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered">
@@ -244,36 +234,31 @@
 		</div>
 	</div>
 
-	<div class="modal fade" id="deleteRecurringDialog" tabindex="-1" role="dialog"
-		aria-labelledby="deleteRecurringModalLabel" aria-hidden="true">
-		<div class="modal-dialog modal-dialog-centered">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h4 class="modal-title" id="deleteRecurringModalLabel">{translate key=Delete}</h4>
-					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+	<dialog class="dialog" id="deleteRecurringDialog" aria-labelledby="deleteRecurringModalLabel">
+				<div class="dialog-header">
+					<h2 class="dialog-title" id="deleteRecurringModalLabel">{translate key=Delete}</h2>
+					 <button type="button" class="btn-close" data-bs-dismiss="dialog" aria-label="{translate key=Close}"></button>
 				</div>
-				<div class="modal-body">
-					<div class="alert alert-warning">
+				<div class="dialog-body">
+					<div class="alert theme-warning">
 						{translate key=DeleteWarning}
 					</div>
 				</div>
-				<div class="modal-footer">
+				<div class="dialog-footer">
 					<form id="deleteRecurringForm" method="post" class="gap-2 d-md-flex justify-content-md-end">
 						{cancel_button}
 
-						<button type="button" class="btn btn-danger save btnUpdateThisInstance">
+						<button type="button" class="btn-solid btn-sm theme-danger save btnUpdateThisInstance">
 							<i class="bi bi-x-lg"></i> {translate key='ThisInstance'}</button>
 
-						<button type="button" class="btn btn-danger save btnUpdateAllInstances">
+						<button type="button" class="btn-solid btn-sm theme-danger save btnUpdateAllInstances">
 							<i class="bi bi-x-circle"></i> {translate key='AllInstances'}</button>
 
 						<input type="hidden" {formname key=SERIES_UPDATE_SCOPE} class="hdnSeriesUpdateScope"
 							value="{SeriesUpdateScope::FullSeries}" />
 					</form>
-				</div>
-			</div>
 		</div>
-	</div>
+	</dialog>
 
 	<div id="deleteMultipleDialog" class="modal fade" tabindex="-1" role="dialog"
 		aria-labelledby="deleteMultipleModalLabel" aria-hidden="true">
@@ -364,31 +349,21 @@
 	{control type="DatePickerSetupControl" ControlId="RepeatDate" Multiple=false}
 
 
-	<div id="wait-box" class="modal fade" aria-labelledby="update-boxLabel" data-bs-backdrop="static"
-		aria-hidden="true">
-		<div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-			<div class="modal-content">
-				<div class="modal-body">
+	<dialog id="wait-box" class="dialog" aria-labelledby="update-boxLabel">
+				<div class="dialog-body">
 					<div id="creatingNotification">
 						{include file='wait-box.tpl' translateKey='Working'}
 					</div>
 					<div id="result" class="text-center"></div>
-				</div>
-			</div>
 		</div>
-	</div>
+	</dialog>
 
-	<div class="modal fade" id="update-box" tabindex="-1" aria-labelledby="update-boxLabel" data-bs-backdrop="static"
-		aria-hidden="true">
-		<div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-			<div class="modal-content">
-				<div class="modal-body">
+	<dialog class="dialog dialog-2xl" id="update-box" aria-labelledby="update-boxLabel">
+				<div class="dialog-body">
 					{indicator id="update-spinner"}
 					<div id="update-contents"></div>
-				</div>
-			</div>
 		</div>
-	</div>
+	</dialog>
 
 </div>
 {include file='globalfooter.tpl'}

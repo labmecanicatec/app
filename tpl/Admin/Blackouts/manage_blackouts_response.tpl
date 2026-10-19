@@ -1,10 +1,10 @@
 <div>
 	{if $Successful}
 		<h2>{translate key=$SuccessKey}</h2>
-		<button class="reload btn btn-primary">{translate key="OK"}</button>
+		<button class="reload btn-solid theme-primary">{translate key="OK"}</button>
 	{else}
 		<h2>{translate key=$FailKey}</h2>
-		<button class="unblock btn btn-primary">{translate key="OK"}</button>
+		<button class="unblock btn-solid theme-primary">{translate key="OK"}</button>
 	{/if}
 
 	{if !empty($Message)}

@@ -5,18 +5,14 @@
 	<div class="accordion">
 		<form id="addQuotaForm" method="post" role="form" class="form-inline">
 
-			<div class="accordion-item shadow mb-2 panel-default" id="add-quota-panel">
-				<h2 class="accordion-header">
-					<button class="accordion-button collapsed link-primary fw-bold" type="button"
-						data-bs-toggle="collapse" data-bs-target="#add-quota-content" aria-expanded="false"
-						aria-controls="add-quota-content">
-						<i class="bi bi-plus-circle-fill me-1"></i>{translate key="AddQuota"}
-					</button>
-				</h2>
-				<div class="accordion-collapse collapse" id="add-quota-content">
+			<details class="accordion-item shadow mb-2" id="add-quota-panel">
+				<summary class="accordion-header">
+				<i class="bi bi-plus-circle-fill theme-primary me-1"></i>{translate key="AddQuota"}
+					<svg class="accordion-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m2 5 6 6 6-6"/></svg>
+				</summary>
 					<div class="accordion-body" id="addQuota">
 						{capture name="schedules" assign="schedules"}
-							<select class='form-select form-select-sm w-auto' {formname key=SCHEDULE_ID}
+							<select class='form-control form-control-sm w-auto' {formname key=SCHEDULE_ID}
 								title='Select Schedule'>
 								<option selected='selected' value=''>{translate key=AllSchedules}</option>
 								{foreach from=$Schedules item=schedule}
@@ -26,7 +22,7 @@
 						{/capture}
 
 						{capture name="resources" assign="resources"}
-							<select class='form-select form-select-sm w-auto' {formname key=RESOURCE_ID}
+							<select class='form-control form-control-sm w-auto' {formname key=RESOURCE_ID}
 								title='Select Resource'>
 								<option selected='selected' value=''>{translate key=AllResources}</option>
 								{foreach from=$Resources item=resource}
@@ -36,7 +32,7 @@
 						{/capture}
 
 						{capture name="groups" assign="groups"}
-							<select class='form-select form-select-sm w-auto' {formname key=GROUP} title='Select Group'>
+							<select class='form-control form-control-sm w-auto' {formname key=GROUP} title='Select Group'>
 								<option selected='selected' value=''>{translate key=AllGroups}</option>
 								{foreach from=$Groups item=group}
 									<option value='{$group->Id}'>{$group->Name|replace:',':' '}</option>
@@ -50,14 +46,14 @@
 						{/capture}
 
 						{capture name="unit" assign="unit"}
-							<select class='form-select form-select-sm w-auto' {formname key=UNIT} title='Quota unit'>
+							<select class='form-control form-control-sm w-auto' {formname key=UNIT} title='Quota unit'>
 								<option value='{QuotaUnit::Hours}'>{translate key=hours}</option>
 								<option value='{QuotaUnit::Reservations}'>{translate key=reservations}</option>
 							</select>
 						{/capture}
 
 						{capture name="duration" assign="duration"}
-							<select class='form-select form-select-sm w-auto' {formname key=DURATION}
+							<select class='form-control form-control-sm w-auto' {formname key=DURATION}
 								title='Quota frequency'>
 								<option value='{QuotaDuration::Day}'>{translate key=day}</option>
 								<option value='{QuotaDuration::Week}'>{translate key=week}</option>
@@ -67,10 +63,10 @@
 						{/capture}
 
 						{capture name="enforceHours" assign="enforceHours"}
-							<div class='form-check form-check-inline ms-2'>
-								<input class='form-check-input' type='checkbox' id='enforce-all-day' checked='checked'
+							<div class='form-field form-field-inline ms-2'>
+								<input class='check theme-primary' type='checkbox' id='enforce-all-day' checked
 									value='1' {formname key=ENFORCE_ALL_DAY} />
-								<label class='form-check-label' for='enforce-all-day'>{translate key=AllDay}</label>
+								<label for='enforce-all-day'>{translate key=AllDay}</label>
 							</div>
 							<div id='enforce-hours-times' class='collapse collapse-horizontal'>
 								<div class='form-group form-group-sm d-flex align-items-center'>
@@ -79,12 +75,12 @@
 										class='visually-hidden'>{translate key=StartTime}</label>
 									<label for='enforce-time-end' class='visually-hidden'>{translate key=EndTime}</label>
 									<select {formname key=BEGIN_TIME} id='enforce-time-start'
-										class='form-select form-select-sm w-auto timepicker' data-format='{$TimeFormat}'
+										class='form-control form-control-sm w-auto timepicker' data-format='{$TimeFormat}'
 										data-step='30' data-default='{Date::Now()->format('H:00')}'>
 									</select>
 									<div class='mx-1'>-</div>
 									<select {formname key=END_TIME} id='enforce-time-end'
-										class='form-select form-select-sm w-auto timepicker' data-format='{$TimeFormat}'
+										class='form-control form-control-sm w-auto timepicker' data-format='{$TimeFormat}'
 										data-step='30' data-default='{Date::Now()->AddHours(1)->format('H:00')}'>
 									</select>
 								</div>
@@ -92,58 +88,50 @@
 						{/capture}
 
 						{capture name="enforceDays" assign="enforceDays"}
-							<div class='form-check form-check-inline ms-2'>
-								<input class='form-check-input' type='checkbox' id='enforce-every-day' checked='checked'
+							<div class='form-field form-field-inline ms-2'>
+								<input class='check theme-primary' type='checkbox' id='enforce-every-day' checked
 									value='1' {formname key=ENFORCE_EVERY_DAY} />
-								<label class='form-check-label' for='enforce-every-day'>{translate key=Everyday}</label>
+								<label for='enforce-every-day'>{translate key=Everyday}</label>
 							</div>
 							<div class='enforce-days-inner'>
-								<div id='enforce-days' class='collapse collapse-horizontal'>
-									<div class='btn-group-sm' data-bs-toggle='buttons'>
-										<input type='checkbox' class='btn-check' id='enforce-sun' value='0'
-											{formname key=DAY multi=true} />
-										<label class='btn btn-outline-primary'
-											for='enforce-sun'>{translate key="DaySundayAbbr"}</label>
-
-										<input type='checkbox' class='btn-check' id='enforce-mon' value='1'
-											{formname key=DAY multi=true} />
-										<label class='btn btn-outline-primary'
-											for='enforce-mon'>{translate key="DayMondayAbbr"}</label>
-
-										<input type='checkbox' class='btn-check' id='enforce-tue' value='2'
-											{formname key=DAY multi=true} />
-										<label class='btn btn-outline-primary'
-											for='enforce-tue'>{translate key="DayTuesdayAbbr"}</label>
-
-										<input type='checkbox' class='btn-check' id='enforce-wed' value='3'
-											{formname key=DAY multi=true} />
-										<label class='btn btn-outline-primary'
-											for='enforce-wed'>{translate key="DayWednesdayAbbr"}</label>
-
-										<input type='checkbox' class='btn-check' id='enforce-thu' value='4'
-											{formname key=DAY multi=true} />
-										<label class='btn btn-outline-primary'
-											for='enforce-thu'>{translate key="DayThursdayAbbr"}</label>
-
-										<input type='checkbox' class='btn-check' id='enforce-fri' value='5'
-											{formname key=DAY multi=true} />
-										<label class='btn btn-outline-primary'
-											for='enforce-fri'>{translate key="DayFridayAbbr"}</label>
-
-										<input type='checkbox' class='btn-check' id='enforce-sat' value='6'
-											{formname key=DAY multi=true} />
-										<label class='btn btn-outline-primary'
-											for='enforce-sat'>{translate key="DaySaturdayAbbr"}</label>
-									</div>
-								</div>
-							</div>
+    <div id='enforce-days' class='collapse collapse-horizontal'>
+            <label class='btn-check btn-outline theme-primary btn-sm'>
+                <input type='checkbox' id='enforce-sun' value='0' {formname key=DAY multi=true} />
+                {translate key="DaySundayAbbr"}
+            </label>
+            <label class='btn-check btn-outline theme-primary btn-sm'>
+                <input type='checkbox' id='enforce-mon' value='1' {formname key=DAY multi=true} />
+                {translate key="DayMondayAbbr"}
+            </label>
+            <label class='btn-check btn-outline theme-primary btn-sm'>
+                <input type='checkbox' id='enforce-tue' value='2' {formname key=DAY multi=true} />
+                {translate key="DayTuesdayAbbr"}
+            </label>
+            <label class='btn-check btn-outline theme-primary btn-sm'>
+                <input type='checkbox' id='enforce-wed' value='3' {formname key=DAY multi=true} />
+                {translate key="DayWednesdayAbbr"}
+            </label>
+            <label class='btn-check btn-outline theme-primary btn-sm'>
+                <input type='checkbox' id='enforce-thu' value='4' {formname key=DAY multi=true} />
+                {translate key="DayThursdayAbbr"}
+            </label>
+            <label class='btn-check btn-outline theme-primary btn-sm'>
+                <input type='checkbox' id='enforce-fri' value='5' {formname key=DAY multi=true} />
+                {translate key="DayFridayAbbr"}
+            </label>
+            <label class='btn-check btn-outline theme-primary btn-sm'>
+                <input type='checkbox' id='enforce-sat' value='6' {formname key=DAY multi=true} />
+                {translate key="DaySaturdayAbbr"}
+            </label>
+    </div>
+</div>
 						{/capture}
 
 						{capture name="scope" assign="scope"}
 							<div class='form-group'>
 								<label for="quoteScope"
 									class='visually-hidden'>{translate key=IncludingCompletedReservations}</label>
-								<select class='form-select form-select-sm' {formname key=QUOTA_SCOPE} id="quoteScope">
+								<select class='form-control form-control-sm' {formname key=QUOTA_SCOPE} id="quoteScope">
 									<option value='{QuotaScope::IncludeCompleted}'>
 										{translate key=IncludingCompletedReservations}
 									</option>
@@ -157,11 +145,10 @@
 						<div class="add-quota-line d-flex align-items-center flex-wrap gap-1 mb-2">
 							{translate key=QuotaConfiguration args="$schedules,$resources,$groups,$amount,$unit,$duration"}
 							{$scope}</div>
-						<div class="add-quota-line d-flex align-items-center flex-wrap gap-1 mb-2">
+						<div class="add-quota-line d-flex align-items-center flex-wrap gap-1 mb-2"   style="min-height: 45px;">
 							{translate key=QuotaEnforcement args="$enforceHours,$enforceDays"}</div>
 
 						<div class="fw-semibold fst-italic">{translate key=QuotaReminder}</div>
-
 
 						<div class="accordion-footer border-top pt-3">
 							{add_button}
@@ -169,18 +156,14 @@
 							{indicator}
 						</div>
 					</div>
-				</div>
-			</div>
+			</details>
 		</form>
 
-		<div class="accordion-item shadow panel-default" id="list-quotas-panel">
-			<h2 class="accordion-header">
-				<button class="accordion-button collapsed link-primary fw-bold" type="button" data-bs-toggle="collapse"
-					data-bs-target="#quotaList-content" aria-expanded="false" aria-controls="quotaList-content">
-					{translate key="AllQuotas"}
-				</button>
-			</h2>
-			<div id="quotaList-content" class="accordion-collapse collapse">
+		<details class="accordion-item shadow" id="list-quotas-panel">
+			<summary class="accordion-header">
+			{translate key="AllQuotas"}
+				<svg class="accordion-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m2 5 6 6 6-6"/></svg>
+			</summary>
 				<div class="accordion-body no-padding" id="quotaList">
 					{assign var=tableId value=blackoutTable}
 					<table class="table table-striped table-hover border-top w-100" id="{$tableId}">
@@ -261,7 +244,7 @@
 									</div>
 									<a href="#" quotaId="{$quota->Id}" class="delete float-end"
 										aria-label="{translate key=Delete}">
-										<span class="bi bi-trash3-fill text-danger icon remove"
+										<span class="bi bi-trash3-fill fg-danger icon remove"
 											aria-hidden="true"></span></a>
 								</td>
 							</tr>
@@ -269,35 +252,29 @@
 							{translate key=None}
 						{/foreach}
 					</table>
-				</div>
 			</div>
-		</div>
+		</details>
 	</div>
 
 
-	<div class="modal fade" id="deleteDialog" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
-		aria-hidden="true">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h4 class="modal-title" id="deleteModalLabel">{translate key=Delete}</h4>
-					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+	<dialog  class="dialog" id="deleteDialog" aria-labelledby="deleteModalLabel">
+				<div class="dialog-header">
+					<h2 class="dialog-title" id="deleteModalLabel">{translate key=Delete}</h2>
+					    <button type="button" class="btn-close" data-bs-dismiss="dialog" aria-label="{translate key=Close}"></button>
 				</div>
-				<div class="modal-body">
-					<div class="alert alert-warning">
+				<div class="dialog-body">
+					<div class="alert theme-warning">
 						{translate key=DeleteWarning}
 					</div>
 				</div>
-				<div class="modal-footer">
+				<div class="dialog-footer">
 					<form id="deleteQuotaForm" method="post">
 						{cancel_button}
 						{delete_button}
 						{indicator}
 					</form>
-				</div>
-			</div>
 		</div>
-	</div>
+	</dialog >
 
 	{csrf_token}
 	{include file="javascript-includes.tpl" DataTable=true}

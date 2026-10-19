@@ -39,8 +39,8 @@ function ReservationManagement(opts, approval) {
     attributeUpdateForm: $('#attributeUpdateForm'),
 
     referenceNumberList: $(':hidden.referenceNumber'),
-    inlineUpdateErrors: $('#inlineUpdateErrors'),
-    inlineUpdateErrorDialog: $('#inlineUpdateErrorDialog'),
+    inlineUpdateErrors: $('#inlineUpdateErrors'), //Al parecer sin uso, pero lo dejo por si acaso
+    inlineUpdateErrorDialog: $('#inlineUpdateErrorDialog'), //Al parecer sin uso, pero lo dejo por si acaso
 
     importReservationsForm: $('#importReservationsForm'),
     importReservationsDialog: document.getElementById('importReservationsDialog'),
