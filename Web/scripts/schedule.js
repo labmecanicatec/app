@@ -726,19 +726,22 @@ function Schedule(opts, resourceGroups) {
   };
 
   this.initNavigation = function () {
-    //var datePicker = $("#datepicker");
+    const CALENDAR_PANELS = ['datepicker', 'individualDates'];
+    const datepicker = document.getElementById(CALENDAR_PANELS[0]);
     var expandCalendar = readCookie('schedule_calendar_toggle');
 
     function collapse() {
       createCookie('schedule_calendar_toggle', false, 30, opts.scriptUrl);
-      $('#datepicker').collapse('hide');
-      $('#individualDates').collapse('hide');
+      CALENDAR_PANELS.forEach((id) => {
+        bootstrap.Collapse.getOrCreateInstance(document.getElementById(id)).hide();
+      });
     }
 
     function expand() {
       createCookie('schedule_calendar_toggle', true, 30, opts.scriptUrl);
-      $('#datepicker').collapse('show');
-      $('#individualDates').collapse('show');
+      CALENDAR_PANELS.forEach((id) => {
+        bootstrap.Collapse.getOrCreateInstance(document.getElementById(id)).show();
+      });
     }
 
     if (expandCalendar == 'true') {
@@ -750,8 +753,7 @@ function Schedule(opts, resourceGroups) {
     $('#calendar_toggle').click(function (event) {
       event.preventDefault();
 
-      if ($('#datepicker').css('display') == 'none') {
-        //Change verification method
+      if (!datepicker.classList.contains('show')) {
         expand();
       } else {
         collapse();

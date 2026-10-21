@@ -6,9 +6,9 @@ function QuotaManagement(opts) {
     deleteForm: $('#deleteQuotaForm'),
     deleteDialog: $('#deleteDialog'),
     enforceAllDayToggle: $('#enforce-all-day'),
-    enforceHoursTimes: $('#enforce-hours-times'),
+    enforceHoursTimes: new bootstrap.Collapse('#enforce-hours-times', { toggle: false }),
     enforceEveryDayToggle: $('#enforce-every-day'),
-    enforceDays: $('#enforce-days'),
+    enforceDays: new bootstrap.Collapse('#enforce-days', { toggle: false }),
     enforceStartTime: $('#enforce-time-start'),
     enforceEndTime: $('#enforce-time-end'),
   };
@@ -60,17 +60,17 @@ function QuotaManagement(opts) {
 
   var handleEnforceAllDayToggle = function () {
     if (elements.enforceAllDayToggle.is(':checked')) {
-      elements.enforceHoursTimes.collapse('hide');
+      elements.enforceHoursTimes.hide();
     } else {
-      elements.enforceHoursTimes.collapse('show');
+      elements.enforceHoursTimes.show();
     }
   };
 
   var handleEnforceEveryDayToggle = function () {
     if (elements.enforceEveryDayToggle.is(':checked')) {
-      elements.enforceDays.collapse('hide');
+      elements.enforceDays.hide();
     } else {
-      elements.enforceDays.collapse('show');
+      elements.enforceDays.show();
     }
   };
 

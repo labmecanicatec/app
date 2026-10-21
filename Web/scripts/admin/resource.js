@@ -978,29 +978,48 @@ function ResourceManagement(opts) {
 
   function showHideConfiguration(attributeValue, attributeDisplayElement, attributeCheckbox) {
     attributeDisplayElement.val(attributeValue);
-    var selector = attributeCheckbox.attr('data-related-inputs');
-    var container = attributeCheckbox.closest('form');
-    var span = container.find(selector);
 
-    if (attributeValue == '' || attributeValue == undefined) {
-      attributeCheckbox.prop('checked', true);
-      span.collapse('hide');
+    const selector = attributeCheckbox.attr('data-related-inputs');
+    const container = attributeCheckbox.closest('form');
+    const isEmpty = attributeValue === '' || attributeValue === undefined;
+    const collapseElement = container.find(selector)[0];
+
+    const collapse = bootstrap.Collapse.getOrCreateInstance(collapseElement, {
+      toggle: false,
+    });
+
+    attributeCheckbox.prop('checked', isEmpty);
+
+    if (isEmpty) {
+      collapse.hide();
     } else {
-      attributeCheckbox.prop('checked', false);
-      span.collapse('show');
+      collapse.show();
     }
   }
 
   function wireUpCheckboxToggle(container) {
     container.find(':checkbox').change(function () {
-      var selector = $(this).attr('data-related-inputs');
-      var span = container.find(selector);
+      const selector = this.getAttribute('data-related-inputs');
+      if (!selector) {
+        return;
+      }
 
-      if ($(this).is(':checked')) {
-        span.find('input[type=text],input[type=number]').val('');
-        span.collapse('hide');
+      const collapseElement = container.find(selector)[0];
+      if (!collapseElement) {
+        return;
+      }
+
+      const collapse = bootstrap.Collapse.getOrCreateInstance(collapseElement, {
+        toggle: false,
+      });
+
+      if (this.checked) {
+        collapseElement.querySelectorAll('input[type="text"], input[type="number"]').forEach(function (input) {
+          input.value = '';
+        });
+        collapse.hide();
       } else {
-        span.collapse('show');
+        collapse.show();
       }
     });
   }

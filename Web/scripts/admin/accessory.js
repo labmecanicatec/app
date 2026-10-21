@@ -119,11 +119,11 @@ function AccessoryManagement(opts) {
         var checkbox = div.find(':checkbox');
         checkbox.prop('checked', true);
 
-        var collapseTarget = div.find('#quantitiesaccessoryResource' + resource.ResourceId);
+        const collapseTarget = new bootstrap.Collapse(div.find('#quantitiesaccessoryResource' + resource.ResourceId));
         if (checkbox.is(':checked')) {
-          collapseTarget.collapse('show');
+          collapseTarget.show();
         } else {
-          collapseTarget.collapse('hide');
+          collapseTarget.hide();
         }
 
         handleAccessoryResourceClick(checkbox);
