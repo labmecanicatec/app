@@ -34,7 +34,7 @@ function UserManagement(opts) {
     addUserForm: $('#addUserForm'),
 
     importUsersForm: $('#importUsersForm'),
-    importUsersDialog: $('#importUsersDialog'),
+    importUsersDialog: document.getElementById('importUsersDialog'),
 
     deleteDialog: $('#deleteDialog'),
     deleteUserForm: $('#deleteUserForm'),
@@ -89,13 +89,13 @@ function UserManagement(opts) {
 
     elements.userList.on('click', '.resetPassword', function (e) {
       elements.passwordDialog.find(':password').val('');
-      elements.passwordDialog.modal('show');
+      setDialogVisible(elements.passwordDialog, true);
     });
 
     elements.userList.on('click', '.changeColor', 'click', function (e) {
       var user = getActiveUser();
       elements.colorValue.val(user.reservationColor);
-      elements.colorDialog.modal('show');
+      setDialogVisible(elements.colorDialog, true);
     });
 
     elements.userList.on('click', '.edit', function () {
@@ -103,7 +103,7 @@ function UserManagement(opts) {
     });
 
     elements.userList.on('click', '.delete', function (e) {
-      deleteUser();
+      setDialogVisible(elements.deleteDialog, true);
     });
 
     elements.userList.on('click', '.viewReservations', function (e) {
@@ -192,21 +192,22 @@ function UserManagement(opts) {
       $(this).closest('form')[0].reset();
     });
 
+    // TODO: Remove this when the "Add User" button convoques the modal.
     $('#add-user').click(function (e) {
       e.preventDefault();
-      elements.addDialog.modal('show');
+      setDialogVisible(elements.addDialog, true);
     });
 
+    // TODO: Remove this when the "Invite Users" button convoques the modal.
     $('#invite-users').click(function (e) {
       e.preventDefault();
-      elements.invitationDialog.modal('show');
+      setDialogVisible(elements.invitationDialog, true);
     });
 
+    // TODO: Remove this when the "Import Users" button convoques the modal.
     $('#import-users').click(function (e) {
       e.preventDefault();
-      $('#importErrors').empty().addClass('d-none');
-      $('#importResults').addClass('d-none');
-      elements.importUsersDialog.modal('show');
+      setDialogVisible(elements.importUsersDialog, true);
     });
 
     elements.deleteMultiplePrompt.click(function (e) {
@@ -215,7 +216,7 @@ function UserManagement(opts) {
       elements.deleteMultipleCount.text(checked.length);
       elements.deleteMultiplePlaceHolder.empty();
       elements.deleteMultiplePlaceHolder.append(checked.clone());
-      elements.deleteMultipleDialog.modal('show');
+      setDialogVisible(elements.deleteMultipleDialog, true);
     });
 
     elements.deleteMultipleSelectAll.click(function (e) {
@@ -242,7 +243,7 @@ function UserManagement(opts) {
       hideDialog(elements.permissionsDialog);
     };
 
-    elements.permissionsDialog.on('hidden.bs.modal', cleanupPermissionsForm);
+    elements.permissionsDialog[0].addEventListener('hidden.bs.modal', cleanupPermissionsForm);
 
     elements.permissionsForm.on('change', 'select.resourceId', function () {
       var rid = $(this).attr('id').replace('permission_', '');
@@ -258,7 +259,7 @@ function UserManagement(opts) {
     };
 
     var hideDialog = function (dialogElement) {
-      dialogElement.modal('hide');
+      setDialogVisible(dialogElement, false);
     };
 
     var hideDialogCallback = function (dialogElement) {
@@ -291,7 +292,7 @@ function UserManagement(opts) {
 
     var inviteHandler = function (responseText, form) {
       elements.inviteEmails.val('');
-      elements.invitationDialog.modal('hide');
+      setDialogVisible(elements.invitationDialog, false);
     };
 
     $('#addOrganization').orgAutoComplete(options.orgAutoCompleteUrl);
@@ -435,7 +436,7 @@ function UserManagement(opts) {
       elements.groupCount.text(count);
     });
 
-    elements.groupsDialog.modal('show');
+    setDialogVisible(elements.groupsDialog, true);
   };
 
   // Update visible <select> dropdowns on the current DataTable page to match permissionState.
@@ -479,7 +480,7 @@ function UserManagement(opts) {
       });
 
       syncSelectsFromState();
-      elements.permissionsDialog.modal('show');
+      setDialogVisible(elements.permissionsDialog, true);
     });
   };
 
@@ -489,10 +490,10 @@ function UserManagement(opts) {
     $.get(opts.submitUrl, data, (response) => {
       $('#update-user-placeholder').html(response);
     });
-    elements.userDialog.modal('show');
+    setDialogVisible(elements.userDialog, true);
   };
 
   var deleteUser = function () {
-    elements.deleteDialog.modal('show');
+    setDialogVisible(elements.deleteDialog, true);
   };
 }

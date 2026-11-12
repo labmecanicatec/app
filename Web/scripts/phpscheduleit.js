@@ -1,4 +1,4 @@
-/* exported eraseCookie, getQueryStringValue, init, validateEmail, cookies */
+/* exported eraseCookie, getQueryStringValue, init, validateEmail, cookies, setDialogVisible */
 // Cookie functions from http://www.quirksmode.org/js/cookies.html //
 
 function startsWith(haystack, needle) {
@@ -278,3 +278,51 @@ window.syncCollapse = (element, getShouldShow) => {
 
   sync();
 };
+
+const pendingShow = new WeakMap();
+
+/**
+ * Shows or hides a Bootstrap 5 modal.
+ *
+ * @param {string|HTMLElement|jQuery} target The modal to act on. Accepts:
+ *   - A CSS selector string, including the "#" for ids (e.g. '#wait-box').
+ *     If several elements match, only the first one is used.
+ *   - A DOM element (e.g. document.getElementById('wait-box')).
+ *   - A jQuery object (e.g. $('#wait-box')). Only its first element is used.
+ *     Supported only to ease the migration away from jQuery.
+ *   If nothing is found (or the value is null/undefined) a warning is logged
+ *   and nothing else happens. An invalid selector (e.g. '#my modal') throws a SyntaxError.
+ * @param {boolean} [visible=true] true to show the modal, false to hide it.
+ * @param {Object} [options] Options for the Bootstrap Modal constructor
+ *   (backdrop, keyboard, focus). They only apply the first time the modal
+ *   is created; later calls ignore them.
+ * @returns {Promise<HTMLElement|null>} Resolves when the show/hide transition
+ *   has finished, or immediately with null if the modal was not found.
+ */
+function setDialogVisible(target, visible = true, options) {
+  console.log('setDialogVisible', target, visible, options);
+  const el = typeof target === 'string' ? document.querySelector(target) : target?.jquery ? target[0] : target;
+  if (!el) {
+    console.warn('setDialogVisible: Modal not found', target);
+    return Promise.resolve(null);
+  }
+
+  const waitFor = (type) => new Promise((resolve) => el.addEventListener(type, () => resolve(el), { once: true }));
+
+  if (visible) {
+    if (el.classList.contains('show')) return pendingShow.get(el) ?? Promise.resolve(el);
+    const shown = waitFor('shown.bs.modal');
+    pendingShow.set(el, shown);
+    bootstrap.Modal.getOrCreateInstance(el, options).show();
+    return shown;
+  }
+
+  // Ocultar: esperar a que termine un show() en curso
+  return (pendingShow.get(el) ?? Promise.resolve()).then(() => {
+    pendingShow.delete(el);
+    if (!el.classList.contains('show')) return el;
+    const hidden = waitFor('hidden.bs.modal');
+    bootstrap.Modal.getOrCreateInstance(el).hide();
+    return hidden;
+  });
+}
