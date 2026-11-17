@@ -579,6 +579,7 @@
 	{jsfile src="autocomplete.js"}
 	{jsfile src="reservationPopup.js"}
 	{jsfile src="approval.js"}
+	{jsfile src="popover-edit.js"}
 	{vendor_js src="dropzone/1.0.0/js/dropzone.js"}
 
 	<script type="text/javascript">
@@ -600,27 +601,10 @@
 			});
 		}
 
-		function setUpEditables() {
-			$.fn.editable.defaults.mode = 'popup';
-			$.fn.editable.defaults.toggle = 'manual';
-			$.fn.editable.defaults.emptyclass = '';
-			$.fn.editable.defaults.params = function(params) {
-				params.CSRF_TOKEN = $('#csrf_token').val();
-				return params;
-			};
-
-			var updateUrl = '{$smarty.server.SCRIPT_NAME}?action=';
-
-			$('.inlineAttribute').editable({
-				url: updateUrl + '{ManageReservationsActions::UpdateAttribute}', emptytext: '-'
-			});
-		}
-
 		$(document).ready(function() {
 
 			setUpPopovers();
 			//hidePopoversWhenClickAway();
-			setUpEditables();
 			dropzone($("#termsOfServiceUpload"));
 
 			var updateScope = {};

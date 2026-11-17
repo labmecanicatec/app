@@ -138,9 +138,18 @@
                                 {if $CreditsEnabled}
                                     <td class="text-end">
                                         {if $CanChangeCredits}
-                                            <span class="propertyValue inlineUpdate changeCredits fw-bold text-decoration-underline"
-                                                data-type="number" data-pk="{$id}" data-value="{$user->CurrentCreditCount}"
-                                                data-name="{FormKeys::CREDITS}">{$user->CurrentCreditCount}</span>
+                                            {control type="PopoverEditControl"
+                                                FieldId="userCredits_{$id}"
+                                                FieldType='number'
+                                                Step='any'
+                                                FieldValue=$user->CurrentCreditCount
+                                                DisplayValue=$user->CurrentCreditCount|default:'-'
+                                                EmptyText='-'
+                                                PrimaryKey=$id
+                                                ParameterName=FormKeys::CREDITS
+                                                SubmitUrl=$smarty.server.SCRIPT_NAME|cat:'?action='|cat:ManageUsersActions::ChangeCredits
+                                                CssClass='fw-bold'
+                                                }
                                         {else}
                                             <span class="fw-bold">{$user->CurrentCreditCount}</span>
                                         {/if}
@@ -716,27 +725,9 @@
     {jsfile src="ajax-helpers.js"}
     {jsfile src="autocomplete.js"}
     {jsfile src="admin/user.js"}
+    {jsfile src="popover-edit.js"}
 
     <script type="text/javascript">
-        function setUpEditables() {
-            $.fn.editable.defaults.mode = 'popup';
-            $.fn.editable.defaults.toggle = 'manual';
-            $.fn.editable.defaults.emptyclass = '';
-            $.fn.editable.defaults.params = function(params) {
-                params.CSRF_TOKEN = $('#csrf_token').val();
-                return params;
-            };
-
-            var updateUrl = '{$smarty.server.SCRIPT_NAME}?action=';
-            $('.inlineAttribute').editable({
-                url: updateUrl + '{ManageUsersActions::ChangeAttribute}', emptytext: '-'
-            });
-
-            $('.changeCredits').editable({
-                url: updateUrl + '{ManageUsersActions::ChangeCredits}', emptytext: '-'
-            });
-        }
-
         $(document).ready(function() {
             var actions = {
                 activate: '{ManageUsersActions::Activate}', deactivate: '{ManageUsersActions::Deactivate}'
@@ -777,7 +768,6 @@
             {/foreach}
 
 
-            setUpEditables();
         });
     </script>
 </div>

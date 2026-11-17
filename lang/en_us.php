@@ -462,6 +462,12 @@ class en_us extends Language
         $strings['FlipSchedule'] = 'Flip the schedule layout';
         $strings['Next'] = 'Next';
         $strings['Success'] = 'Success';
+        $strings['PopoverRequiredError'] = 'This field is required';
+        $strings['PopoverInvalidIntegerError'] = 'Enter a valid whole number';
+        $strings['PopoverInvalidNumberError'] = 'Enter a valid number';
+        $strings['PopoverSaved'] = 'Change saved';
+        $strings['PopoverSaveError'] = 'Error while saving';
+        $strings['PopoverConnectionError'] = 'Connection error';
         $strings['Participant'] = 'Participant';
         $strings['ResourceFilter'] = 'Resource Filter';
         $strings['ResourceGroups'] = 'Resource Groups';

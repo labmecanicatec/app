@@ -18,11 +18,6 @@ function ResourceTypeManagement(opts) {
   var types = {};
 
   ResourceTypeManagement.prototype.init = function () {
-    $('.changeAttribute').click(function (e) {
-      e.stopPropagation();
-      $(e.target).closest('.updateCustomAttribute').find('.inlineAttribute').editable('toggle');
-    });
-
     elements.resourceTypes.on('click', 'a.update', function (e) {
       var id = $(this).siblings(':hidden.id').val();
       setActiveId(id);
