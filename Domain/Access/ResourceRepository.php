@@ -830,26 +830,49 @@ class AccessoryDto
     public $AssociatedResources;
 
     /**
+     * @var int[]
+     */
+    public $AssociatedResourceIds;
+
+    /**
+     * @var string
+     */
+    public $AssociatedResourceNames = '';
+
+    /**
      * @param int $id
      * @param string $name
      * @param int $quantityAvailable
      * @param int $associatedResourceCount
+     * @param int[] $associatedResourceIds
      */
-    public function __construct($id, $name, $quantityAvailable, $associatedResourceCount)
+    public function __construct($id, $name, $quantityAvailable, $associatedResourceCount, $associatedResourceIds = [])
     {
         $this->Id = $id;
         $this->Name = $name;
         $this->QuantityAvailable = $quantityAvailable;
         $this->AssociatedResources = (int)$associatedResourceCount;
+        $this->AssociatedResourceIds = $associatedResourceIds;
     }
 
     public static function Create($row)
     {
+        $resourceIds = [];
+        $resourceList = $row[ColumnNames::RESOURCE_ACCESSORY_LIST] ?? '';
+
+        if (!empty($resourceList)) {
+            foreach (explode('!sep!', $resourceList) as $resourceAccessory) {
+                [$resourceId] = explode(',', $resourceAccessory, 2);
+                $resourceIds[] = (int)$resourceId;
+            }
+        }
+
         return new AccessoryDto(
             $row[ColumnNames::ACCESSORY_ID],
             $row[ColumnNames::ACCESSORY_NAME],
             $row[ColumnNames::ACCESSORY_QUANTITY],
-            $row[ColumnNames::ACCESSORY_RESOURCE_COUNT]
+            $row[ColumnNames::ACCESSORY_RESOURCE_COUNT],
+            $resourceIds
         );
     }
 }

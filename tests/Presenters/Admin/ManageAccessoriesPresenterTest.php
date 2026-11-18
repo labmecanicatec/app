@@ -70,6 +70,34 @@ class ManageAccessoriesPresenterTest extends TestBase
         $this->presenter->PageLoad();
     }
 
+    public function testWhenInitializingIncludesAssociatedResourceNames()
+    {
+        $accessories = [
+            AccessoryDto::Create([
+                ColumnNames::ACCESSORY_ID => 1,
+                ColumnNames::ACCESSORY_NAME => 'Projector',
+                ColumnNames::ACCESSORY_QUANTITY => 2,
+                ColumnNames::ACCESSORY_RESOURCE_COUNT => 2,
+                ColumnNames::RESOURCE_ACCESSORY_LIST => '10,1,2!sep!20,1,2',
+            ]),
+        ];
+
+        $resourceOne = $this->createMock('IResource');
+        $resourceOne->method('GetId')->willReturn(10);
+        $resourceOne->method('GetName')->willReturn('Room A');
+        $resourceTwo = $this->createMock('IResource');
+        $resourceTwo->method('GetId')->willReturn(20);
+        $resourceTwo->method('GetName')->willReturn('Room B');
+        $resources = [$resourceOne, $resourceTwo];
+
+        $this->resourceRepository->method('GetAccessoryList')->willReturn($accessories);
+        $this->resourceRepository->method('GetResourceList')->willReturn($resources);
+
+        $this->presenter->PageLoad();
+
+        $this->assertSame('Room A, Room B', $accessories[0]->AssociatedResourceNames);
+    }
+
     public function testWhenAdding()
     {
         $name = 'accessory';

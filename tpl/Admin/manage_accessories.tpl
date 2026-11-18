@@ -70,8 +70,14 @@
 							<td>
 								<a href="#"
 									class="update resources link-primary">{if $accessory->AssociatedResources == 0}{translate key=All}{else}{$accessory->AssociatedResources}{/if}</a>
+								{if $accessory->AssociatedResourceNames}
+									<div class="small text-body-secondary wrap">
+										{$accessory->AssociatedResourceNames|escape:'html'|truncate:200:'...'}
+									</div>
+								{/if}
+
 							</td>
-							<td class="action d-flex align-items-center gap-2">
+							<td class="action">
 								<a href="#" class="update edit link-primary">
 									<span class="visually-hidden">{translate key=Edit}</span>
 									<span class="bi bi-pencil-square icon"></a>

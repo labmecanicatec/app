@@ -52,6 +52,21 @@ class ManageAccessoriesPresenter extends ActionPresenter
         $accessories = $this->resourceRepository->GetAccessoryList($this->page->GetSortField(), $this->page->GetSortDirection());
         $resources = $this->resourceRepository->GetResourceList();
 
+        $resourceNamesById = [];
+        foreach ($resources as $resource) {
+            $resourceNamesById[$resource->GetId()] = $resource->GetName();
+        }
+
+        foreach ($accessories as $accessory) {
+            $associatedResourceNames = [];
+            foreach ($accessory->AssociatedResourceIds as $resourceId) {
+                if (isset($resourceNamesById[$resourceId])) {
+                    $associatedResourceNames[] = $resourceNamesById[$resourceId];
+                }
+            }
+            $accessory->AssociatedResourceNames = implode(', ', $associatedResourceNames);
+        }
+
         $this->page->BindAccessories($accessories);
         $this->page->BindResources($resources);
     }
