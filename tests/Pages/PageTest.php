@@ -10,6 +10,111 @@ class PageTest extends TestBase
 {
     private string $tempDir = '';
 
+    #[DataProvider('fontProvider')]
+    public function testConfiguredFontRendersLocalStylesheet(string $font, string $stylesheet, bool $useLocalAssets): void
+    {
+        $this->fakeConfig->SetKey(ConfigKeys::CSS_FONT, $font);
+        $this->fakeConfig->SetKey(ConfigKeys::USE_LOCAL_JS_LIBS, $useLocalAssets);
+
+        $output = $this->renderHeader();
+
+        $this->assertStringContainsString("data-font='{$font}'", $output);
+        $this->assertStringContainsString("../../{$stylesheet}?v=", $output);
+        $this->assertSame(1, substr_count($output, 'assets/fonts/'));
+        $this->assertStringNotContainsString('fonts.googleapis.com', $output);
+        $this->assertStringNotContainsString('fonts.gstatic.com', $output);
+        $this->assertFileExists(ROOT_DIR . 'Web/' . $stylesheet);
+
+        $css = file_get_contents(ROOT_DIR . 'Web/' . $stylesheet);
+        $this->assertNotFalse($css);
+        $this->assertGreaterThan(0, preg_match_all('/url\([\'"]?\.\/([^\'")]+\.woff2)[\'"]?\)/', $css, $matches));
+        foreach (array_unique($matches[1]) as $fontFile) {
+            $this->assertFileExists(dirname(ROOT_DIR . 'Web/' . $stylesheet) . '/' . $fontFile);
+        }
+    }
+
+    public static function fontProvider(): array
+    {
+        $fonts = [
+            'inter' => 'assets/fonts/inter/v20/inter.css',
+            'montserrat' => 'assets/fonts/montserrat/v31/montserrat.css',
+            'nunito' => 'assets/fonts/nunito/v32/nunito.css',
+            'merriweather' => 'assets/fonts/merriweather/v33/merriweather.css',
+            'atkinson-hyperlegible' => 'assets/fonts/atkinson-hyperlegible/v12/atkinson-hyperlegible.css',
+        ];
+        $cases = [];
+        foreach ($fonts as $font => $stylesheet) {
+            $cases[$font . ' local'] = [$font, $stylesheet, true];
+            $cases[$font . ' CDN'] = [$font, $stylesheet, false];
+        }
+        return $cases;
+    }
+
+    public function testMissingFontUsesDefault(): void
+    {
+        $output = $this->renderHeader();
+
+        $this->assertStringContainsString("data-font='inter'", $output);
+        $this->assertStringContainsString('../../assets/fonts/inter/v20/inter.css?v=', $output);
+    }
+
+    #[DataProvider('localAssetsProvider')]
+    public function testBootstrapFontDoesNotLoadBundledFonts(bool $useLocalAssets): void
+    {
+        $this->fakeConfig->SetKey(ConfigKeys::CSS_FONT, 'none');
+        $this->fakeConfig->SetKey(ConfigKeys::USE_LOCAL_JS_LIBS, $useLocalAssets);
+
+        $output = $this->renderHeader();
+
+        $this->assertStringContainsString("data-font='none'", $output);
+        $this->assertStringNotContainsString('assets/fonts/', $output);
+        $this->assertStringNotContainsString('fonts.googleapis.com', $output);
+        $this->assertStringNotContainsString('fonts.gstatic.com', $output);
+    }
+
+    public static function localAssetsProvider(): array
+    {
+        return [
+            'local' => [true],
+            'CDN' => [false],
+        ];
+    }
+
+    public function testInvalidFontUsesDefaultAndIsLogged(): void
+    {
+        $this->fakeConfig->SetKey(ConfigKeys::CSS_FONT, '../../invalid');
+
+        $logs = $this->captureErrorLog(function () {
+            $output = $this->renderHeader();
+            $this->assertStringContainsString("data-font='inter'", $output);
+            $this->assertStringContainsString('../../assets/fonts/inter/v20/inter.css?v=', $output);
+            $this->assertStringNotContainsString('../../invalid', $output);
+        });
+
+        $this->assertLogMessage($logs, 'Invalid css.font or LB_CSS_FONT value', 'invalid font configuration');
+    }
+
+    private function renderHeader(): string
+    {
+        $page = new class () extends Page {
+            public function __construct()
+            {
+                parent::__construct(pageDepth: 2);
+            }
+
+            public function PageLoad()
+            {
+            }
+
+            public function renderHeader(): string
+            {
+                return $this->smarty->fetch('globalheader.tpl');
+            }
+        };
+
+        return $page->renderHeader();
+    }
+
     public function setUp(): void
     {
         parent::setUp();

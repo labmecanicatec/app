@@ -28,6 +28,53 @@ class ConfigTest extends TestBase
         $this->assertEquals('ActiveDirectory', $config->GetKey(ConfigKeys::PLUGIN_AUTHENTICATION));
     }
 
+    public function testFontConfigurationDefaultsAndAcceptsASelection(): void
+    {
+        $defaultConfig = $this->createConfigurationFileFromContents(
+            <<<'PHP'
+<?php
+return ['settings' => []];
+PHP
+        );
+        $selectedConfig = $this->createConfigurationFileFromContents(
+            <<<'PHP'
+<?php
+return ['settings' => ['css.font' => 'nunito']];
+PHP
+        );
+
+        $this->assertSame('inter', $defaultConfig->GetKey(ConfigKeys::CSS_FONT));
+        $this->assertSame('nunito', $selectedConfig->GetKey(ConfigKeys::CSS_FONT));
+    }
+
+    public function testInvalidFontConfigurationIsLoggedAndUsesDefault(): void
+    {
+        $errorLogs = $this->captureErrorLog(function () {
+            $config = $this->createConfigurationFileFromContents(
+                <<<'PHP'
+<?php
+return ['settings' => ['css.font' => 'invalid-font']];
+PHP
+            );
+
+            $this->assertSame('inter', $config->GetKey(ConfigKeys::CSS_FONT));
+        });
+
+        $this->assertLogMessage($errorLogs, "Invalid value 'invalid-font' for 'css.font'", 'invalid font configuration');
+    }
+
+    public function testFontConfigurationAcceptsBootstrapDefault(): void
+    {
+        $config = $this->createConfigurationFileFromContents(
+            <<<'PHP'
+<?php
+return ['settings' => ['css.font' => 'none']];
+PHP
+        );
+
+        $this->assertSame('none', $config->GetKey(ConfigKeys::CSS_FONT));
+    }
+
     public function testLegacyConfigLoadsAllValues()
     {
         $errorLogs = $this->captureErrorLog(function () {
