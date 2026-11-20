@@ -1,0 +1,8 @@
+{
+  "name": "merriweather",
+  "version": "v33",
+  "description": "Merriweather is an open source typeface.",
+  "homepage": "https://fonts.google.com/specimen/Merriweather",
+  "source": "https://github.com/google/fonts/tree/main/ofl/merriweather",
+  "license": "OFL-1.1"
+}

@@ -1,0 +1,8 @@
+{
+  "name": "inter",
+  "version": "v20",
+  "description": "Inter is an open source sans-serif typeface.",
+  "homepage": "https://fonts.google.com/specimen/Inter",
+  "source": "https://github.com/google/fonts/tree/main/ofl/inter",
+  "license": "OFL-1.1"
+}

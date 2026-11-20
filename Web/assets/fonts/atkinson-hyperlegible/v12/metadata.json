@@ -1,0 +1,8 @@
+{
+  "name": "atkinson-hyperlegible",
+  "version": "v12",
+  "description": "Atkinson Hyperlegible is an open source typeface.",
+  "homepage": "https://fonts.google.com/specimen/Atkinson+Hyperlegible",
+  "source": "https://github.com/google/fonts/tree/main/ofl/atkinsonhyperlegible",
+  "license": "OFL-1.1"
+}

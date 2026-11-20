@@ -1,0 +1,8 @@
+{
+  "name": "montserrat",
+  "version": "v31",
+  "description": "Montserrat is an open source sans-serif typeface.",
+  "homepage": "https://fonts.google.com/specimen/Montserrat",
+  "source": "https://github.com/google/fonts/tree/main/ofl/montserrat",
+  "license": "OFL-1.1"
+}

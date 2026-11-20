@@ -1,0 +1,8 @@
+{
+  "name": "nunito",
+  "version": "v32",
+  "description": "Nunito is an open source typeface.",
+  "homepage": "https://fonts.google.com/specimen/Nunito",
+  "source": "https://github.com/google/fonts/tree/main/ofl/nunito",
+  "license": "OFL-1.1"
+}
