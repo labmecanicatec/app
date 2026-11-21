@@ -293,6 +293,7 @@ Frontend Settings
 
    'script.url' => 'https://example.com/librebooking/Web',
    'css.theme' => 'default',
+   'css.font' => 'inter',
    'cache.templates' => true,
    'default.homepage' => 1,
 
@@ -317,6 +318,14 @@ Frontend Settings
 **css.theme**
   Theme to use for the application. Options: default, dimgray, dark_red,
   dark_green, french_blue, cake_blue, orange.
+
+**css.font**
+  Font used for the application interface. Options: inter, montserrat, nunito,
+  merriweather, atkinson-hyperlegible, none. The default is inter. Set it to
+  ``none`` to use Bootstrap's default font stack without loading a bundled
+  font. Otherwise, the chosen font is served locally regardless of
+  ``use.local.js.libs``. The bundled files cover Latin characters; other scripts
+  and unsupported characters use browser fallback fonts.
 
 **cache.templates**
   Enable or disable template caching.
