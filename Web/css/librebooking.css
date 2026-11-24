@@ -502,7 +502,6 @@ ul.jqtree-tree .group-resource .jqtree-title {
   cursor: pointer;
 }
 
-#userDetailsDiv,
 #resourceDetailsDiv {
   max-width: 50%;
   display: none;

@@ -1360,7 +1360,7 @@ function Reservation(opts) {
     }
 
     elements.inviteeList.append(buildUserItem(name, userId, 'invitationList[]'));
-    $('.bindableUser').bindUserDetails();
+    window.bindUserDetails(document.querySelectorAll('.bindableUser'));
     participation.addedUsers.push(userId);
     updateInviteeCount();
   };
@@ -1382,7 +1382,7 @@ function Reservation(opts) {
     }
 
     elements.participantList.append(buildUserItem(name, userId, 'participantList[]'));
-    $('.bindableUser').bindUserDetails();
+    window.bindUserDetails(document.querySelectorAll('.bindableUser'));
     participation.addedUsers.push(userId);
     updateParticipantCount();
   };

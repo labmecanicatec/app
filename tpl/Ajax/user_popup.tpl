@@ -1,35 +1,35 @@
 {if $CanViewUser}
-	<div id="userDetailsPopup">
-		<div class="card-header fw-bold">
+	<div class="user-details-popup">
+		<div class="user-details-popup-heading fw-bold border-bottom pb-2 mb-2">
 			{fullname first=$User->FirstName()|default:''|unescape:'html' last=$User->LastName()|default:''|unescape:'html' ignorePrivacy=true}
 		</div>
-		<div id="userDetailsName" class="card-body">
+		<div class="user-details-popup-body d-grid gap-1">
 			{if $User->EmailAddress()}
-				<div id="userDetailsEmail" class="fw-bold">
+				<div class="user-details-field fw-bold">
 					<span class="label">{translate key=Email}</span>
 					<a href="mailto:{$User->EmailAddress()|escape:'html':'UTF-8':false}" class="link-primary">{$User->EmailAddress()|escape:'html':'UTF-8':false}</a>
 				</div>
 			{/if}
 			{if $User->GetAttribute(UserAttribute::Phone)}
-				<div id="userDetailsPhone" class="fw-bold">
+				<div class="user-details-field fw-bold">
 					<span class="label">{translate key=Phone}</span>
 					<a href="tel:{$User->GetAttribute(UserAttribute::Phone)|escape:'html':'UTF-8':false}"
 						class="link-primary">{$User->GetAttribute(UserAttribute::Phone)|escape:'html':'UTF-8':false}</a>
 				</div>
 			{/if}
 			{if $User->GetAttribute(UserAttribute::Organization)}
-				<div id="userDetailsOrganization" class="fw-bold">
+				<div class="user-details-field fw-bold">
 					<span class="label">{translate key=Organization}</span>
 					{$User->GetAttribute(UserAttribute::Organization)|escape:'html':'UTF-8':false}
 				</div>
 			{/if}
 			{if $User->GetAttribute(UserAttribute::Position)}
-				<div id="userDetailsPosition" class="fw-bold">
+				<div class="user-details-field fw-bold">
 					<span class="label">{translate key=Position}</span>
 					{$User->GetAttribute(UserAttribute::Position)|escape:'html':'UTF-8':false}
 				</div>
 			{/if}
-			<div id="userDetailsAttributes" class="fw-bold">
+			<div class="user-details-attributes fw-bold">
 				{foreach from=$Attributes item=attribute}
 					<div class="customAttribute">
 						<span class="label">{$attribute->Label()}</span>

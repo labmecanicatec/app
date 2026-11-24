@@ -1,99 +1,146 @@
-$.fn.bindUserDetails = function (userId, options) {
-  return $(this).each(function (index, value) {
-    var self = $(value);
-    var opts = $.extend({ preventClick: true }, options);
+var userDetailsCache = new Map();
+var activeUserDetailsPopover = null;
 
-    bind(self);
+document.addEventListener('click', function (event) {
+  if (!activeUserDetailsPopover) {
+    return;
+  }
 
-    function getDiv() {
-      if ($('#userDetailsDiv').length <= 0) {
-        return $('<div id="userDetailsDiv" class="card shadow-sm"/>').appendTo('body');
-      } else {
-        return $('#userDetailsDiv');
-      }
+  var activeElement = activeUserDetailsPopover.element;
+  var popoverId = activeElement.getAttribute('aria-describedby');
+  var popoverElement = popoverId && document.getElementById(popoverId);
+  if (!activeElement.contains(event.target) && !(popoverElement && popoverElement.contains(event.target))) {
+    activeUserDetailsPopover.close();
+  }
+});
+
+document.addEventListener('keydown', function (event) {
+  if (event.key === 'Escape' && activeUserDetailsPopover) {
+    activeUserDetailsPopover.close();
+  }
+});
+
+window.bindUserDetails = function (elements, options) {
+  var targets;
+  if (typeof elements === 'string') {
+    targets = document.querySelectorAll(elements);
+  } else if (elements instanceof Element) {
+    targets = [elements];
+  } else {
+    targets = Array.from(elements || []);
+  }
+
+  var settings = Object.assign({ preventClick: true }, options || {});
+  targets.forEach(function (element) {
+    if (!element || element.getAttribute('user-details-bound') === '1') {
+      return;
     }
 
-    function hideDiv() {
-      var tag = getDiv();
-      var timeoutId = setTimeout(function () {
-        tag.hide();
-      }, 500);
-      tag.data('timeoutId', timeoutId);
+    var requestController = null;
+    var isOpen = false;
+    var popover = new bootstrap.Popover(element, {
+      trigger: 'manual',
+      placement: 'right',
+      container: 'body',
+      html: true,
+      customClass: 'user-details-popover',
+      content: 'Loading...',
+    });
+
+    function showContent(content) {
+      popover.setContent({ '.popover-body': content });
+      popover.show();
     }
 
-    function bind(userElement) {
-      if (userElement.attr('user-details-bound') === '1') {
+    function closePopover() {
+      if (!isOpen) {
         return;
       }
 
-      if (opts.preventClick) {
-        userElement.click(function (e) {
-          e.preventDefault();
-        });
+      isOpen = false;
+      element.setAttribute('aria-expanded', 'false');
+      if (activeUserDetailsPopover === popoverState) {
+        activeUserDetailsPopover = null;
+      }
+      if (requestController) {
+        requestController.abort();
+        requestController = null;
+      }
+      popover.hide();
+    }
+
+    var popoverState = {
+      element: element,
+      close: closePopover,
+    };
+
+    function openPopover() {
+      var userId = element.getAttribute('data-userid');
+      if (!userId) {
+        return;
       }
 
-      var tag = getDiv();
+      if (activeUserDetailsPopover && activeUserDetailsPopover !== popoverState) {
+        activeUserDetailsPopover.close();
+      }
 
-      tag
-        .mouseenter(function () {
-          clearTimeout(tag.data('timeoutId'));
-        })
-        .mouseleave(function () {
-          hideDiv();
-        });
+      isOpen = true;
+      element.setAttribute('aria-expanded', 'true');
+      activeUserDetailsPopover = popoverState;
 
-      var hoverTimer;
+      var cacheKey = String(userId);
+      if (userDetailsCache.has(cacheKey)) {
+        showContent(userDetailsCache.get(cacheKey));
+        return;
+      }
 
-      userElement
-        .mouseenter(function () {
-          if (hoverTimer) {
-            clearTimeout(hoverTimer);
-            hoverTimer = null;
+      showContent('Loading...');
+      requestController = new AbortController();
+      var controller = requestController;
+      fetch('ajax/user_details.php?uid=' + encodeURIComponent(userId), {
+        method: 'GET',
+        credentials: 'same-origin',
+        signal: controller.signal,
+      })
+        .then(function (response) {
+          if (!response.ok) {
+            throw new Error('Unable to load user details: ' + response.status);
           }
-
-          hoverTimer = setTimeout(function () {
-            var idToLoad = userId;
-            if (!idToLoad) {
-              idToLoad = userElement.attr('data-userid');
-            }
-            var tag = getDiv();
-            clearTimeout(tag.data('timeoutId'));
-
-            var data = tag.data('userPopup' + idToLoad);
-            if (data != null) {
-              showData(data);
-            } else {
-              $.ajax({
-                url: 'ajax/user_details.php?uid=' + idToLoad,
-                type: 'GET',
-                cache: true,
-                beforeSend: function () {
-                  tag.html('Loading...').show();
-                  tag.position({ my: 'left bottom', at: 'right top', of: userElement });
-                },
-                error: tag.html('Error loading user data!').show(),
-                success: function (data, textStatus, jqXHR) {
-                  tag.data('userPopup' + idToLoad, data);
-                  showData(data);
-                },
-              });
-            }
-
-            function showData(data) {
-              tag.html(data).show();
-              tag.position({ my: 'left bottom', at: 'right top', of: userElement });
-            }
-          }, 500);
+          return response.text();
         })
-        .mouseleave(function () {
-          if (hoverTimer) {
-            clearTimeout(hoverTimer);
-            hoverTimer = null;
+        .then(function (content) {
+          userDetailsCache.set(cacheKey, content);
+          if (isOpen) {
+            showContent(content);
           }
-          hideDiv();
+        })
+        .catch(function (error) {
+          if (error.name !== 'AbortError' && isOpen) {
+            showContent('Error loading user data!');
+          }
+        })
+        .finally(function () {
+          if (requestController === controller) {
+            requestController = null;
+          }
         });
-
-      userElement.attr('user-details-bound', '1');
     }
+
+    element.addEventListener('click', function (event) {
+      if (settings.preventClick) {
+        event.preventDefault();
+      }
+
+      if (isOpen) {
+        closePopover();
+      } else {
+        openPopover();
+      }
+    });
+
+    element.setAttribute('aria-expanded', 'false');
+    element.setAttribute('user-details-bound', '1');
   });
 };
+
+window.bindUserDetails(document.querySelectorAll('#userName, .bindableUser'));

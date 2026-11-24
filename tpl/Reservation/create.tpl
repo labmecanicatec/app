@@ -637,8 +637,6 @@
             return false;
         });
 
-        $('#userName').bindUserDetails();
-
         translateTooltips();
 
     });
