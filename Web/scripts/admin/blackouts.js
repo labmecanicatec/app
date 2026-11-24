@@ -198,12 +198,13 @@ function BlackoutManagement(opts) {
     $('#creatingNotification').hide();
     $('#result').show();
 
-    $('#reservationTable')
-      .find('.editable')
-      .each(function () {
-        var refNum = $(this).attr('data-refnum');
-        $(this).find('.reservationTitle').attachReservationPopup(refNum, options.popupUrl);
-      });
+    document.querySelectorAll('#reservationTable tr.editable').forEach(function (row) {
+      window.attachReservationPopup(
+        row.querySelector('.reservationTitle'),
+        row.getAttribute('data-refnum'),
+        options.popupUrl
+      );
+    });
 
     $('#reservationTable').on('click', '.editable', function () {
       $(this).addClass('clicked');

@@ -117,7 +117,7 @@ function Schedule(opts, resourceGroups) {
         }
       );
 
-      div.attachReservationPopup(resid, options.summaryPopupUrl);
+      window.attachReservationPopup(div[0], resid, options.summaryPopupUrl);
     }
 
     function findClosestStart(tds, reservation, startAttribute) {
@@ -356,10 +356,6 @@ function Schedule(opts, resourceGroups) {
                           'dragstart',
                           { referenceNumber: reservation.ReferenceNumber, resourceId: reservation.ResourceId },
                           function (event) {
-                            const tooltipInstance = bootstrap.Tooltip.getInstance(div[0]);
-                            if (tooltipInstance) {
-                              tooltipInstance.hide();
-                            }
                             $(event.target).removeClass('clicked');
                             const data = JSON.stringify({
                               referenceNumber: event.data.referenceNumber,
@@ -708,10 +704,6 @@ function Schedule(opts, resourceGroups) {
 
             if (isDraggable) {
               div.on('dragstart', function (event) {
-                const tooltipInstance = bootstrap.Tooltip.getInstance(div[0]);
-                if (tooltipInstance) {
-                  tooltipInstance.hide();
-                }
                 $(event.target).removeClass('clicked');
                 const data = JSON.stringify({
                   referenceNumber: res.ReferenceNumber,

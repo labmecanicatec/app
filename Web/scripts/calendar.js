@@ -98,8 +98,8 @@ function Calendar(opts) {
         },
       },
       eventDidMount: function (info) {
-        if (!_.isEmpty(info.event.id) && !$(info.el).hasClass('unreservable')) {
-          $(info.el).attachReservationPopup(info.event.id);
+        if (info.event.id && !info.isMirror && !info.el.classList.contains('unreservable')) {
+          window.attachReservationPopup(info.el, info.event.id);
         }
 
         var eventBackgroundColor = info.event.backgroundColor;
@@ -181,6 +181,12 @@ function Calendar(opts) {
           hideLoadingIndicator();
         }
       },
+      eventWillUnmount: function (info) {
+        window.detachReservationPopup(info.el);
+      },
+      eventDragStart: function (info) {
+        window.hideReservationPopup(info.el);
+      },
       eventDrop: function (info) {
         var handleMoveResponse = function (result) {
           hideLoadingIndicator();
@@ -201,13 +207,6 @@ function Calendar(opts) {
     });
 
     _fullCalendar.render();
-
-    $('.reservation').each(function (index, value) {
-      var refNum = $(this).attr('refNum');
-      if (!$(value).hasClass('unreservable')) {
-        value.attachReservationPopup(refNum);
-      }
-    });
 
     $('#calendarFilter').on('change', function () {
       var sid = '';

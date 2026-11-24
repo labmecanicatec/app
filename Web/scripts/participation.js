@@ -28,9 +28,8 @@ function Participation(opts) {
       RespondToInvitation($(this).val(), referenceNumber, $(this));
     });
 
-    $('.reservationTitle').each(function () {
-      var refNum = $(this).attr('data-reference-number');
-      $(this).attachReservationPopup(refNum);
+    document.querySelectorAll('.reservationTitle').forEach(function (title) {
+      window.attachReservationPopup(title, title.getAttribute('data-reference-number'));
     });
   };
 

@@ -60,11 +60,17 @@ function ReservationSearch(options) {
   }
 
   var showSearchResults = function (data) {
-    elements.reservationResults.empty().html(data);
+    var results = elements.reservationResults[0];
 
-    elements.reservationResults.find('tr.editable').each(function () {
-      var refNum = $(this).attr('data-refnum');
-      $(this).find('.reservationTitle').attachReservationPopup(refNum, options.popupUrl);
+    results.innerHTML = data;
+
+    results.querySelectorAll('tr.editable').forEach(function (row) {
+      var refNum = row.getAttribute('data-refnum');
+      var title = row.querySelector('.reservationTitle');
+
+      if (title) {
+        window.attachReservationPopup(title, refNum, options.popupUrl);
+      }
     });
   };
 

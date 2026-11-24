@@ -16,16 +16,22 @@ function Dashboard(opts) {
 
     var reservations = $('.reservation');
 
-    $(document).ready(function () {
-      var reservationTitles = $('.reservationTitle');
-
-      reservationTitles.each(function () {
-        var refNum = $(this).closest('.reservation').attr('id');
-        $(this).attachReservationPopup(refNum, options.summaryPopupUrl);
+    function initializeReservationPopups() {
+      document.querySelectorAll('.reservationTitle').forEach(function (title) {
+        var refNum = title.closest('.reservation')?.getAttribute('id');
+        window.attachReservationPopup(title, refNum, options.summaryPopupUrl);
       });
 
-      $('[data-bs-toggle="tooltip"]').tooltip();
-    });
+      document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function (element) {
+        bootstrap.Tooltip.getOrCreateInstance(element);
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initializeReservationPopups);
+    } else {
+      initializeReservationPopups();
+    }
 
     reservations.hover(
       function () {

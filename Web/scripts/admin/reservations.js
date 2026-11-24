@@ -136,14 +136,8 @@ function ReservationManagement(opts, approval) {
     });
 
     elements.reservationTable.find('tr.editable').each(function () {
-      var refNum = $(this).attr('data-refnum');
-      $(this).find('.reservationTitle').attachReservationPopup(refNum, options.popupUrl);
-
-      /*$(this).hover(function (e) {
-                $(this).find('td').addClass('highlight');
-            }, function (e) {
-                $(this).find('td').removeClass('highlight');
-            });*/
+      var refNum = this.getAttribute('data-refnum');
+      window.attachReservationPopup(this.querySelector('.reservationTitle'), refNum, options.popupUrl);
     });
 
     elements.statusOptions.change(function (e) {
