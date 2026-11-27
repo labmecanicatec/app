@@ -31,6 +31,16 @@
 					aria-label="{translate key=Close}"></button>
 			</div>
 		</div>
+		<div id="inlineEditSavedToast" class="toast align-items-center bg-primary text-white border-0 d-none" role="alert"
+			aria-live="assertive" aria-atomic="true">
+			<div class="d-flex">
+				<div class="toast-body">
+					<i class="bi bi-check-circle-fill me-2"></i>{translate key=PopoverSaved}
+				</div>
+				<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+					aria-label="{translate key=Close}"></button>
+			</div>
+		</div>
 	</div>
 
 	<script type="text/javascript">

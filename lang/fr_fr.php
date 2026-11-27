@@ -428,6 +428,13 @@ class fr_fr extends en_gb
         $strings['FlipSchedule'] = 'Changer la disposition du planning';
         $strings['Next'] = 'Suivant';
         $strings['Success'] = 'Réussi';
+        $strings['PopoverRequiredError'] = 'Ce champ est obligatoire';
+        $strings['PopoverInvalidIntegerError'] = 'Saisissez un nombre entier valide';
+        $strings['PopoverInvalidNumberError'] = 'Saisissez un nombre valide';
+        $strings['PopoverSaved'] = 'Modification enregistrée';
+        $strings['PopoverSaveError'] = 'Erreur lors de l\'enregistrement';
+        $strings['PopoverConnectionError'] = 'Erreur de connexion';
+        $strings['PopoverClear'] = 'Effacer';
         $strings['Participant'] = 'Participant';
         $strings['ResourceFilter'] = 'Filtre de ressources';
         $strings['ResourceGroups'] = 'Groupes de la ressource';

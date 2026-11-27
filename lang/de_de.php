@@ -464,6 +464,13 @@ class de_de extends en_gb
         $strings['FlipSchedule'] = 'Terminplan-Layout umstellen';
         $strings['Next'] = 'Nächste';
         $strings['Success'] = 'Erfolgreich';
+        $strings['PopoverRequiredError'] = 'Dieses Feld ist erforderlich';
+        $strings['PopoverInvalidIntegerError'] = 'Geben Sie eine gültige ganze Zahl ein';
+        $strings['PopoverInvalidNumberError'] = 'Geben Sie eine gültige Zahl ein';
+        $strings['PopoverSaved'] = 'Änderung gespeichert';
+        $strings['PopoverSaveError'] = 'Fehler beim Speichern';
+        $strings['PopoverConnectionError'] = 'Verbindungsfehler';
+        $strings['PopoverClear'] = 'Leeren';
         $strings['Participant'] = 'Teilnehmer';
         $strings['ResourceFilter'] = 'Ressourcen Filter';
         $strings['ResourceGroups'] = 'Ressource Gruppe';

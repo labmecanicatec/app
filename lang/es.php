@@ -426,6 +426,13 @@ class es extends en_gb
         $strings['FlipSchedule'] = 'Girar la distribución del horario';
         $strings['Next'] = 'Siguiente';
         $strings['Success'] = 'Éxito';
+        $strings['PopoverRequiredError'] = 'Este campo es requerido';
+        $strings['PopoverInvalidIntegerError'] = 'Ingrese un número entero válido';
+        $strings['PopoverInvalidNumberError'] = 'Ingrese un número válido';
+        $strings['PopoverSaved'] = 'Cambio guardado';
+        $strings['PopoverSaveError'] = 'Error al guardar';
+        $strings['PopoverConnectionError'] = 'Error de conexión';
+        $strings['PopoverClear'] = 'Limpiar';
         $strings['Participant'] = 'Participante';
         $strings['ResourceFilter'] = 'Filtro de recursos';
         $strings['ResourceGroups'] = 'Grupos de recursos';
