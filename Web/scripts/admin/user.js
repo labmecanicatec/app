@@ -113,11 +113,6 @@ function UserManagement(opts) {
       window.location.href = url;
     });
 
-    elements.userList.find('.changeCredits').click(function (e) {
-      e.stopPropagation();
-      $(this).editable('toggle');
-    });
-
     elements.userAutocomplete.userAutoComplete(options.userAutocompleteUrl, function (ui) {
       elements.userAutocomplete.val(ui.item.label);
       window.location.href = options.selectUserUrl + ui.item.value;
