@@ -158,3 +158,70 @@ test('stored values are decoded once for the editor', () => {
   assert.equal(new TestEditor({ fieldType: 'richtext', fieldValue: null }).fieldValue, null);
   assert.equal(new TestEditor({ fieldType: 'number', fieldValue: 5 }).fieldValue, 5);
 });
+
+function autocompleteEditor({ fieldType = 'text', menuVisible = false } = {}) {
+  const calls = { autocomplete: [], tipListeners: [] };
+  const $input = {
+    userAutoComplete(url, callback) {
+      calls.url = url;
+      calls.select = callback;
+    },
+    autocomplete(...args) {
+      calls.autocomplete.push(args);
+      return { is: (selector) => selector === ':visible' && menuVisible };
+    },
+  };
+  window.jQuery = () => $input;
+
+  const editor = new TestEditor({ fieldType, autocompleteUrl: 'autocomplete.php?type=user' });
+  editor.input = { value: '' };
+  editor.clearError = () => {};
+  editor.popoverInstance = {
+    tip: {
+      addEventListener(type, listener, capture) {
+        calls.tipListeners.push({ type, listener, capture });
+      },
+    },
+  };
+  return { editor, calls };
+}
+
+test('choosing a suggested user fills the field with name and email', () => {
+  const { editor, calls } = autocompleteEditor();
+  editor.setupUserAutocomplete();
+
+  assert.equal(calls.url, 'autocomplete.php?type=user');
+  assert.deepEqual(calls.autocomplete[0], ['option', 'minLength', Editor.AUTOCOMPLETE_MIN_LENGTH]);
+
+  calls.select({ item: { data: { Name: 'Ana Pérez', Email: 'ana@example.com' } } });
+  assert.equal(editor.input.value, 'Ana Pérez <ana@example.com>');
+
+  delete window.jQuery;
+});
+
+test('keys pressed while the suggestions menu is open are left to the menu', () => {
+  const { editor, calls } = autocompleteEditor({ menuVisible: true });
+  editor.setupUserAutocomplete();
+
+  const [{ type, listener, capture }] = calls.tipListeners;
+  assert.equal(type, 'keydown');
+  assert.equal(capture, true);
+
+  listener();
+  assert.equal(editor.autocompleteMenuOpen, true);
+
+  delete window.jQuery;
+});
+
+test('user suggestions are only set up for text fields with an autocomplete URL', () => {
+  const { editor, calls } = autocompleteEditor({ fieldType: 'select' });
+  editor.setupUserAutocomplete();
+  assert.equal(calls.url, undefined);
+
+  editor.fieldType = 'text';
+  editor.autocompleteUrl = '';
+  editor.setupUserAutocomplete();
+  assert.equal(calls.url, undefined);
+
+  delete window.jQuery;
+});

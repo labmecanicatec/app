@@ -22,6 +22,8 @@
  *     Options (array [value => text], 'select' and 'checkbox' only),
  *     OptionsUrl ('select' only: URL returning [{value, text}], fetched
  *     when the popover opens),
+ *     AutocompleteUrl ('text' only: user autocomplete URL; suggestions fill
+ *     the field with "Name <email>" and free text is still allowed),
  *     EmptyText (text shown when the value is empty),
  *     Min, Max, Step ('number' only; integers by default, 'any' allows decimals)
  */
@@ -53,6 +55,7 @@ class PopoverEditControl extends Control
         $min = $this->Get('Min');
         $max = $this->Get('Max');
         $optionsUrl = $this->Get('OptionsUrl') ?? '';
+        $autocompleteUrl = $this->Get('AutocompleteUrl') ?? '';
         $step = $this->Get('Step') ?? '1';
         $emptyText = $this->Get('EmptyText') ?? '';
 
@@ -82,6 +85,7 @@ class PopoverEditControl extends Control
             'step' => $step,
             'emptyText' => $emptyText,
             'optionsUrl' => $optionsUrl,
+            'autocompleteUrl' => $autocompleteUrl,
             'messages' => [
                 'required' => $resources->GetString('PopoverRequiredError'),
                 'invalidInteger' => $resources->GetString('PopoverInvalidIntegerError'),

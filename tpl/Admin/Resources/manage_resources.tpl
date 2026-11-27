@@ -1,11 +1,9 @@
 {include file='globalheader.tpl' InlineEdit=true DataTable=true Trumbowyg=true}
 
 {if $ResourceContactIsUser}
-	{assign var=ContactFieldType value='select'}
-	{assign var=ContactOptionsUrl value="../ajax/autocomplete.php?type="|cat:AutoCompleteType::XUser}
+	{assign var=ContactAutocompleteUrl value="../ajax/autocomplete.php?type="|cat:AutoCompleteType::User}
 {else}
-	{assign var=ContactFieldType value='text'}
-	{assign var=ContactOptionsUrl value=''}
+	{assign var=ContactAutocompleteUrl value=''}
 {/if}
 {capture name=noneText assign=noneText}{translate key=None}{/capture}
 {assign var=ResourceTypeOptions value=[0 => $noneText]}
@@ -409,8 +407,7 @@
 																	FieldValue=$resource->GetContact()
 																	DisplayValue=$resource->GetContact()|default:$noContact
 																	EmptyText=$noContact
-																	FieldType=$ContactFieldType
-																	OptionsUrl=$ContactOptionsUrl
+																	AutocompleteUrl=$ContactAutocompleteUrl
 																	PrimaryKey=$id
 																	ParameterName=FormKeys::RESOURCE_CONTACT
 																	SubmitUrl=$smarty.server.SCRIPT_NAME|cat:'?action='|cat:ManageResourcesActions::ActionChangeContact

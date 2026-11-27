@@ -35,6 +35,7 @@ class BootstrapPopoverEditor {
     this.step = config.step || '1';
     this.emptyText = config.emptyText || '';
     this.optionsUrl = config.optionsUrl || '';
+    this.autocompleteUrl = config.autocompleteUrl || '';
     this.messages = config.messages || {};
 
     this.popoverInstance = null;
@@ -43,6 +44,7 @@ class BootstrapPopoverEditor {
     this.input = null;
     this.richTextInput = null;
     this.isPopoverOpen = false;
+    this.autocompleteMenuOpen = false;
 
     this.init();
   }
@@ -195,6 +197,35 @@ class BootstrapPopoverEditor {
     }
   }
 
+  /**
+   * Suggests users while typing in a text field (autocomplete.js, jQuery UI).
+   * The value stays free text, so a contact that is not a user can still be typed.
+   */
+  setupUserAutocomplete() {
+    const $input = window.jQuery ? window.jQuery(this.input) : null;
+    if (!this.autocompleteUrl || this.fieldType !== 'text' || !$input || !$input.userAutoComplete) {
+      return;
+    }
+
+    $input.userAutoComplete(this.autocompleteUrl, (ui) => {
+      const user = ui.item.data;
+      this.input.value = user.Email ? `${user.Name} <${user.Email}>` : user.Name;
+      this.clearError();
+    });
+    $input.autocomplete('option', 'minLength', BootstrapPopoverEditor.AUTOCOMPLETE_MIN_LENGTH);
+
+    // Enter and Escape belong to the suggestions menu while it is open. jQuery UI
+    // closes the menu before the input's own listeners run, so record the state
+    // in the capture phase, before the key reaches the input.
+    this.getPopoverTip()?.addEventListener(
+      'keydown',
+      () => {
+        this.autocompleteMenuOpen = $input.autocomplete('widget').is(':visible');
+      },
+      true
+    );
+  }
+
   getInputValue() {
     if (this.isRichText()) {
       const html = this.richTextInput ? this.richTextInput.trumbowyg('html') : this.input.value;
@@ -234,7 +265,7 @@ class BootstrapPopoverEditor {
       if (
         this.isPopoverOpen &&
         !this.triggerButton.contains(e.target) &&
-        !e.target.closest('.popover, .trumbowyg-modal, .trumbowyg-modal-box')
+        !e.target.closest('.popover, .trumbowyg-modal, .trumbowyg-modal-box, .ui-autocomplete')
       ) {
         this.closePopover();
       }
@@ -316,7 +347,7 @@ class BootstrapPopoverEditor {
 
       // Enter saves
       this.input.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter' && !this.isRichText() && this.fieldType !== 'textarea') {
+        if (e.key === 'Enter' && !this.isRichText() && this.fieldType !== 'textarea' && !this.autocompleteMenuOpen) {
           e.preventDefault();
           this.submit();
         }
@@ -324,7 +355,7 @@ class BootstrapPopoverEditor {
 
       // Escape cancels
       this.input.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
+        if (e.key === 'Escape' && !this.autocompleteMenuOpen) {
           e.preventDefault();
           this.closePopover();
         }
@@ -333,6 +364,8 @@ class BootstrapPopoverEditor {
       if (this.optionsUrl && this.fieldType === 'select') {
         this.loadRemoteOptions();
       }
+
+      this.setupUserAutocomplete();
 
       // Focus the input
       if (!this.isRichText()) {
@@ -375,6 +408,7 @@ class BootstrapPopoverEditor {
   onPopoverHidden() {
     // Clear references
     this.input = null;
+    this.autocompleteMenuOpen = false;
     this.isPopoverOpen = false;
     if (BootstrapPopoverEditor.openEditor === this) {
       BootstrapPopoverEditor.openEditor = null;
@@ -590,3 +624,8 @@ class BootstrapPopoverEditor {
  * Editor whose popover is currently open; only one may be open at a time
  */
 BootstrapPopoverEditor.openEditor = null;
+
+/**
+ * Characters typed before user suggestions are requested
+ */
+BootstrapPopoverEditor.AUTOCOMPLETE_MIN_LENGTH = 2;
