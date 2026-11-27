@@ -13,6 +13,15 @@
 		<div class="card-body no-padding" id="scheduleList">
 			<div class="accordion" id="scheduleAccordion">
 				{assign var=tableIdFilter value=schedulesTable}
+				{assign var=DayOptions value=[Schedule::Today => $Today]}
+				{foreach from=$DayNames item=dayLabel key=dayIndex}
+					{$DayOptions[$dayIndex] = $dayLabel}
+				{/foreach}
+				{capture name=noneText assign=noneText}{translate key=None}{/capture}
+				{assign var=AdminGroupOptions value=[0 => $noneText]}
+				{foreach from=$AdminGroups|default:array() item=group}
+					{$AdminGroupOptions[$group->Id()] = $group->Name()}
+				{/foreach}
 				<table class="table table-borderless w-100" id="{$tableIdFilter}">
 					<thead class="d-none">
 						<tr>
@@ -29,11 +38,7 @@
 											data-type='number' data-pk='{$id}' data-name='{FormKeys::SCHEDULE_DAYS_VISIBLE}'
 										data-min='0'>{$schedule->GetDaysVisible()}</span>{/capture}
 									{assign var=dayOfWeek value=$schedule->GetWeekdayStart()}
-									{capture name=dayName}<span
-											class='propertyValue dayName inlineUpdate fw-bold text-decoration-underline pe-auto'
-											data-type='select' data-pk='{$id}' data-name='{FormKeys::SCHEDULE_WEEKDAY_START}'
-											data-value='{$dayOfWeek}'>{if $dayOfWeek == Schedule::Today}{$Today}{else}{$DayNames[$dayOfWeek]}{/if}</span>
-									{/capture}
+									{assign var=dayNameText value=$DayOptions[$dayOfWeek]}
 									<div class="accordion-item">
 										<h2 class="accordion-header">
 											<button class="accordion-button" type="button" data-bs-toggle="collapse"
@@ -50,39 +55,68 @@
 														<input type="hidden" class="daysVisible" value="{$daysVisible}" />
 														<input type="hidden" class="dayOfWeek" value="{$dayOfWeek}" />
 
-														<div>
-															<span class="title scheduleName fw-bold" data-type="text"
-																data-pk="{$id}"
-																data-name="{FormKeys::SCHEDULE_NAME}">{$schedule->GetName()}</span>
-															<a class="update renameButton link-primary" href="#"><span
-																	class="visually-hidden">{translate key=Rename}</span><span
-																	class="bi bi-pencil-square"></span></a>
+														<div class="scheduleNameContainer">
+															{control type="PopoverEditControl" FieldId="scheduleName_{$id}"
+															FieldValue=$schedule->GetName()
+															DisplayValue=$schedule->GetName()
+															Required=true
+															PrimaryKey=$id
+															ParameterName=FormKeys::SCHEDULE_NAME
+															SubmitUrl=$smarty.server.SCRIPT_NAME|cat:'?action='|cat:ManageSchedules::ActionRename
+															CssClass='fw-bold'
+															}
+														</div>
+
+														<div class="scheduleStartContainer">
+															{translate key=StartsOn}
+															{control type="PopoverEditControl" FieldId="scheduleStart_{$id}"
+															FieldValue=$dayOfWeek
+															DisplayValue=$dayNameText
+															FieldType='select'
+															Options=$DayOptions
+															PrimaryKey=$id
+															ParameterName=FormKeys::SCHEDULE_WEEKDAY_START
+															SubmitUrl=$smarty.server.SCRIPT_NAME|cat:'?action='|cat:ManageSchedules::ActionChangeStartDay
+															CssClass='fw-bold'
+															}
+
+															{translate key=NumberOfDaysVisible}
+															{control type="PopoverEditControl" FieldId="scheduleDaysVisible_{$id}"
+															FieldValue=$schedule->GetDaysVisible()
+															DisplayValue=$schedule->GetDaysVisible()
+															FieldType='number'
+															Min=0
+															PrimaryKey=$id
+															ParameterName=FormKeys::SCHEDULE_DAYS_VISIBLE
+															SubmitUrl=$smarty.server.SCRIPT_NAME|cat:'?action='|cat:ManageSchedules::ActionChangeDaysVisible
+															CssClass='fw-bold'
+															}
 														</div>
 
 														<div>
-															{translate key="LayoutDescription" args="{$smarty.capture.dayName},
-														{$smarty.capture.daysVisible}" class="fw-bold"}</div>
-
-														<div>
 															{translate key='ScheduleAdministrator'}
-															<span class="propertyValue scheduleAdmin fw-bold"
-																data-type="select" data-pk="{$id}"
-																data-value="{$schedule->GetAdminGroupId()}"
-																data-name="{FormKeys::SCHEDULE_ADMIN_GROUP_ID}">
-																{assign var=adminGroupId value=$schedule->GetAdminGroupId()}
-																{if $adminGroupId !== null && isset($GroupLookup[$adminGroupId])}
-																	{$GroupLookup[$adminGroupId]->Name|escape:'html'}
-																{else}
-																	{translate key='None'}
-																{/if}
-															</span>
+															{assign var=adminGroupId value=$schedule->GetAdminGroupId()}
+															{assign var=adminGroupKey value=$adminGroupId|default:0}
 															{if $AdminGroups|default:array()|count > 0}
-																<a class="link-primary update changeScheduleAdmin"><span
-																		class="visually-hidden">{translate key='ScheduleAdministrator'}</span><span
-																		class="bi bi-pencil-square"></span>
-																</a>
+																{control type="PopoverEditControl" FieldId="scheduleAdmin_{$id}"
+																FieldValue=$adminGroupKey
+																DisplayValue=$AdminGroupOptions[$adminGroupKey]
+																FieldType='select'
+																Options=$AdminGroupOptions
+																PrimaryKey=$id
+																ParameterName=FormKeys::SCHEDULE_ADMIN_GROUP_ID
+																SubmitUrl=$smarty.server.SCRIPT_NAME|cat:'?action='|cat:ManageSchedules::ChangeAdminGroup
+																CssClass='fw-bold'
+																}
+															{else}
+																<span class="fw-bold">
+																	{if $adminGroupId !== null && isset($GroupLookup[$adminGroupId])}
+																		{$GroupLookup[$adminGroupId]->Name|escape:'html'}
+																	{else}
+																		{translate key='None'}
+																	{/if}
+																</span>
 															{/if}
-
 														</div>
 
 														<div class="availabilityPlaceHolder d-flex align-items-center">
@@ -129,11 +163,16 @@
 
 														<div>
 															{translate key=DefaultStyle}
-															<span
-																class="propertyValue defaultScheduleStyle inlineUpdate fw-bold text-decoration-underline"
-																data-type="select" data-pk="{$id}"
-																data-name="{FormKeys::SCHEDULE_DEFAULT_STYLE}"
-																data-value="{$schedule->GetDefaultStyle()->value}">{$StyleNames[$schedule->GetDefaultStyle()->value]}</span>
+															{control type="PopoverEditControl" FieldId="scheduleStyle_{$id}"
+															FieldValue=$schedule->GetDefaultStyle()->value
+															DisplayValue=$StyleNames[$schedule->GetDefaultStyle()->value]
+															FieldType='select'
+															Options=$StyleNames
+															PrimaryKey=$id
+															ParameterName=FormKeys::SCHEDULE_DEFAULT_STYLE
+															SubmitUrl=$smarty.server.SCRIPT_NAME|cat:'?action='|cat:ManageSchedules::ActionChangeDefaultStyle
+															CssClass='fw-bold'
+															}
 														</div>
 
 														{if $CreditsEnabled}
@@ -858,79 +897,10 @@
 	{jsfile src="ajax-helpers.js"}
 	{jsfile src="date-helper.js"}
 	{jsfile src="admin/schedule.js"}
+	{jsfile src="popover-edit.js"}
 
 	<script type="text/javascript">
-		function setUpEditables() {
-			$.fn.editable.defaults.mode = 'popup';
-			$.fn.editable.defaults.toggle = 'manual';
-			$.fn.editable.defaults.emptyclass = '';
-			$.fn.editable.defaults.params = function(params) {
-				params.CSRF_TOKEN = $('#csrf_token').val();
-				return params;
-			};
-
-			var updateUrl = '{$smarty.server.SCRIPT_NAME}?action=';
-
-			$('.scheduleName').editable({
-				url: updateUrl + '{ManageSchedules::ActionRename}',
-				validate: function(value) {
-					if ($.trim(value) === '') {
-						return "{{translate key=RequiredValue}|escape:'javascript'}";
-					}
-				}
-			});
-
-			$('.daysVisible').editable({
-				url: updateUrl + '{ManageSchedules::ActionChangeDaysVisible}'
-			});
-
-			$('.dayName').editable({
-				url: updateUrl + '{ManageSchedules::ActionChangeStartDay}',
-				source: [{
-						value: '{Schedule::Today}',
-						text: "{$Today|escape:'javascript'}"
-					}
-					{foreach from=$DayNames item="dayName" key="dayIndex"}
-						, {
-							value: {$dayIndex},
-							text: "{$dayName|escape:'javascript'}"
-						}
-					{/foreach}
-				]
-			});
-
-			$('.defaultScheduleStyle').editable({
-				url: updateUrl + '{ManageSchedules::ActionChangeDefaultStyle}',
-				source: [
-					{foreach from=$StyleNames item="styleName" key="styleIndex"}
-						{
-							value: '{$styleIndex}',
-							text: "{$styleName|escape:'javascript'}"
-						},
-					{/foreach}
-				]
-			});
-
-			$('.scheduleAdmin').editable({
-				url: updateUrl + '{ManageSchedules::ChangeAdminGroup}',
-				emptytext: "{{translate key=None}|escape:'javascript'}",
-				source: [{
-						value: '0',
-						text: "{{translate key=None}|escape:'javascript'}",
-					}
-					{foreach from=$AdminGroups item=group}
-						, {
-							value: {$group->Id()},
-							text: "{$group->Name()|escape:'javascript'}"
-						}
-					{/foreach}
-				]
-			});
-		}
-
 		$(document).ready(function() {
-			setUpEditables();
-
 			var opts = {
 				submitUrl: '{$smarty.server.SCRIPT_NAME}',
 				saveRedirect: '{$smarty.server.SCRIPT_NAME}',

@@ -85,26 +85,6 @@ function ScheduleManagement(opts) {
       setActiveScheduleId(id);
     });
 
-    elements.scheduleList.on('click', '.renameButton', function (e) {
-      e.stopPropagation();
-      $(this).closest('.scheduleDetails').find('.scheduleName').editable('toggle');
-    });
-
-    elements.scheduleList.on('click', '.dayName', function (e) {
-      e.stopPropagation();
-      $(this).editable('toggle');
-    });
-
-    elements.scheduleList.on('click', '.daysVisible', function (e) {
-      e.stopPropagation();
-      $(this).editable('toggle');
-    });
-
-    elements.scheduleList.on('click', '.changeScheduleAdmin', function (e) {
-      e.stopPropagation();
-      $(this).closest('.scheduleDetails').find('.scheduleAdmin').editable('toggle');
-    });
-
     elements.scheduleList.on('click', '.changeLayoutButton', function (e) {
       var id = getActiveScheduleId();
       var reservable = $(this).closest('.scheduleDetails').find('.reservableSlots');
@@ -162,11 +142,6 @@ function ScheduleManagement(opts) {
       var toggle = $(e.target);
       var container = toggle.parent('.concurrentContainer');
       toggleConcurrentReservations(getActiveScheduleId(), toggle, container);
-    });
-
-    elements.scheduleList.on('click', '.defaultScheduleStyle', function (e) {
-      e.stopPropagation();
-      $(this).editable('toggle');
     });
 
     elements.scheduleList.on('click', '.switchLayout', function (e) {
