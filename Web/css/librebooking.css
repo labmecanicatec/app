@@ -680,14 +680,6 @@ input.mid-number {
   color: var(--primary);
 }
 
-.editable-container.editable-popup {
-  max-width: 50% !important;
-}
-
-.editable-input {
-  max-width: 90%;
-}
-
 #entityChoices,
 #editEntityChoices {
   display: none;

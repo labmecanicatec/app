@@ -168,8 +168,6 @@ function ResourceManagement(opts) {
       elements.colorForm.submit();
     });
 
-    this.BindXEditableListeners();
-
     //modals
     elements.resourcesList.on('click', '.adminButton', function (e) {
       showResourceAdmin(e);
@@ -432,53 +430,6 @@ function ResourceManagement(opts) {
       } else {
         elements.sendStatusChangeMessageContent.addClass('d-none');
       }
-    });
-  };
-
-  ResourceManagement.prototype.BindXEditableListeners = function () {
-    elements.resourcesList.on('click', '.renameButton', function (e) {
-      e.stopPropagation();
-      $(this).closest('.resourceDetails').find('.resourceNameField').editable('toggle');
-    });
-
-    elements.resourcesList.on('click', '.changeScheduleButton', function (e) {
-      e.stopPropagation();
-      $(this).closest('.resourceDetails').find('.scheduleName').editable('toggle');
-    });
-
-    elements.resourcesList.on('click', '.changeResourceType', function (e) {
-      e.stopPropagation();
-      $(this).closest('.resourceDetails').find('.resourceTypeName').editable('toggle');
-    });
-
-    elements.resourcesList.on('click', '.changeSortOrder', function (e) {
-      e.stopPropagation();
-      $(this).closest('.resourceDetails').find('.sortOrderValue').editable('toggle');
-    });
-
-    elements.resourcesList.on('click', '.changeLocation', function (e) {
-      e.stopPropagation();
-      $(this).closest('.resourceDetails').find('.locationValue').editable('toggle');
-    });
-
-    elements.resourcesList.on('click', '.changeContact', function (e) {
-      e.stopPropagation();
-      $(this).closest('.resourceDetails').find('.contactValue').editable('toggle');
-    });
-
-    elements.resourcesList.on('click', '.changeDescription', function (e) {
-      e.stopPropagation();
-      $(this).closest('.resourceDetails').find('.descriptionValue').editable('toggle');
-    });
-
-    elements.resourcesList.on('click', '.changeNotes', function (e) {
-      e.stopPropagation();
-      $(this).closest('.resourceDetails').find('.notesValue').editable('toggle');
-    });
-
-    elements.resourcesList.on('click', '.changeResourceAdmin', function (e) {
-      e.stopPropagation();
-      $(this).closest('.resourceDetails').find('.resourceAdminValue').editable('toggle');
     });
   };
 

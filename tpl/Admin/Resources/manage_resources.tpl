@@ -1,5 +1,22 @@
 {include file='globalheader.tpl' InlineEdit=true DataTable=true Trumbowyg=true}
 
+{if $ResourceContactIsUser}
+	{assign var=ContactFieldType value='select'}
+	{assign var=ContactOptionsUrl value="../ajax/autocomplete.php?type="|cat:AutoCompleteType::XUser}
+{else}
+	{assign var=ContactFieldType value='text'}
+	{assign var=ContactOptionsUrl value=''}
+{/if}
+{capture name=noneText assign=noneText}{translate key=None}{/capture}
+{assign var=ResourceTypeOptions value=[0 => $noneText]}
+{assign var=AdminGroupOptions value=[0 => $noneText]}
+{foreach from=$AdminGroups|default:array() item=group}
+	{$AdminGroupOptions[$group->Id()] = $group->Name()}
+{/foreach}
+{foreach from=$ResourceTypes item=resourceType key=resourceTypeKey}
+	{$ResourceTypeOptions[$resourceTypeKey] = $resourceType->Name()}
+{/foreach}
+
 <div id="page-manage-resources" class="admin-page">
 	<div class="clearfix border-bottom mb-3">
 		<div class="dropdown admin-header-more float-end">
@@ -278,30 +295,28 @@
 													<div class="row row-cols-auto row-cols-sm-3 ">
 														<div class="col d-block">
 															<div>
-																<div class="resourceNameField title fs-5 fw-bold me-1"
-																	data-type="text" data-pk="{$id}"
-																	data-name="{FormKeys::RESOURCE_NAME}">
-																	{$resource->GetName()}</div>
-																<div>
-																	<a class="update renameButton link-primary me-1"
-																		href="#" title="{translate key='Rename'}">
-																		<span
-																			class="visually-hidden">{translate key=Rename}</span>
-																		<i class="bi bi-pencil-square me-1"></i></a>
-																	<div class="vr me-1"></div>
-																	<a class="update copyButton link-primary me-1" href="#"
-																		title="{translate key='Copy'}">
-																		<span
-																			class="visually-hidden">{translate key=Copy}</span>
-																		<i class="bi bi-copy"></i></a>
-																	<div class="vr me-1"></div>
-																	<a class="update deleteButton link-danger me-1" href="#"
-																		title="{translate key='Delete'}">
-																		<span
-																			class="visually-hidden">{translate key=Delete}</span>
-																		<i class="bi bi-trash3-fill icon delete"></i>
-																	</a>
-																</div>
+																<label class="inline fw-bold">{translate key='Name'}</label>
+																{control type="PopoverEditControl" FieldId="resourceName_{$id}"
+																	FieldValue=$resource->GetName()
+																	Required=true
+																	PrimaryKey=$id
+																	ParameterName=FormKeys::RESOURCE_NAME
+																	SubmitUrl=$smarty.server.SCRIPT_NAME|cat:'?action='|cat:ManageResourcesActions::ActionRename
+																	CssClass='title me-1'
+																	}
+
+																<a class="update copyButton link-primary me-1" href="#"
+																	title="{translate key='Copy'}">
+																	<span
+																		class="visually-hidden">{translate key=Copy}</span>
+																	<i class="bi bi-copy"></i></a>
+																<div class="vr me-1"></div>
+																<a class="update deleteButton link-danger me-1" href="#"
+																	title="{translate key='Delete'}">
+																	<span
+																		class="visually-hidden">{translate key=Delete}</span>
+																	<i class="bi bi-trash3-fill icon delete"></i>
+																</a>
 															</div>
 															<div>
 																<label class="inline fw-bold">ResourceId:</label>
@@ -331,139 +346,115 @@
 															<div>
 																<label
 																	class="inline fw-bold">{translate key='Schedule'}</label>
-																<span class="propertyValue scheduleName" data-type="select"
-																	data-pk="{$id}"
-																	data-value="{$resource->GetScheduleId()}"
-																	data-name="{FormKeys::SCHEDULE_ID}">{$Schedules[$resource->GetScheduleId()]}</span>
-																<a class="update changeScheduleButton link-primary"
-																	title="{translate key='Edit'}" href="#"><span
-																		class="bi bi-pencil-square"></span></a>
+																{control type="PopoverEditControl" FieldId="resourceSchedule_{$id}"
+																	FieldValue=$resource->GetScheduleId()
+																	DisplayValue=$Schedules[$resource->GetScheduleId()]
+																	FieldType='select'
+																	Options=$Schedules
+																	PrimaryKey=$id
+																	ParameterName=FormKeys::SCHEDULE_ID
+																	SubmitUrl=$smarty.server.SCRIPT_NAME|cat:'?action='|cat:ManageResourcesActions::ActionChangeSchedule
+																	}
 															</div>
 															<div>
 																<label
 																	class="inline fw-bold">{translate key='ResourceType'}</label>
-																<span class="propertyValue resourceTypeName"
-																	data-type="select" data-pk="{$id}"
-																	data-value="{$resource->GetResourceTypeId()}"
-																	data-name="{FormKeys::RESOURCE_TYPE_ID}">
-																	{if $resource->HasResourceType()}
-																		{$ResourceTypes[$resource->GetResourceTypeId()]->Name()}
-																	{else}
-																		{translate key='NoResourceTypeLabel'}
-																	{/if}
-																</span>
-																<a class="update changeResourceType link-primary"
-																	title="{translate key='Edit'}" href="#">
-																	<span
-																		class="visually-hidden">{translate key=ResourceType}</span>
-																	<span class="bi bi-pencil-square"></span>
-																</a>
+																{if $resource->HasResourceType()}
+																	{assign var=resourceTypeKey value=$resource->GetResourceTypeId()}
+																{else}
+																	{assign var=resourceTypeKey value=0}
+																{/if}
+																{control type="PopoverEditControl" FieldId="resourceType_{$id}"
+																	FieldValue=$resourceTypeKey
+																	DisplayValue=$ResourceTypeOptions[$resourceTypeKey]
+																	FieldType='select'
+																	Options=$ResourceTypeOptions
+																	PrimaryKey=$id
+																	ParameterName=FormKeys::RESOURCE_TYPE_ID
+																	SubmitUrl=$smarty.server.SCRIPT_NAME|cat:'?action='|cat:ManageResourcesActions::ActionChangeResourceType
+																	}
 															</div>
 															<div>
 																<label
 																	class="inline fw-bold">{translate key=SortOrder}</label>
-																<span class="propertyValue sortOrderValue"
-																	data-type="number" data-pk="{$id}"
-																	data-name="{FormKeys::RESOURCE_SORT_ORDER}">
-																	{$resource->GetSortOrder()|default:"0"}
-																</span>
-																<a class="update changeSortOrder link-primary"
-																	title="{translate key='Edit'}" href="#">
-																	<span
-																		class="visually-hidden">{translate key=SortOrder}</span>
-																	<span class="bi bi-pencil-square"></span>
-																</a>
+																{control type="PopoverEditControl" FieldId="resourceSortOrder_{$id}"
+																	FieldValue=$resource->GetSortOrder()|default:0
+																	FieldType='number'
+																	Min=0
+																	Max=999
+																	Required=true
+																	PrimaryKey=$id
+																	ParameterName=FormKeys::RESOURCE_SORT_ORDER
+																	SubmitUrl=$smarty.server.SCRIPT_NAME|cat:'?action='|cat:ManageResourcesActions::ActionChangeSort
+																	}
 															</div>
 															<div class="mt-2">
 																<label
 																	class="inline fw-bold">{translate key='Location'}</label>
-																<span class="propertyValue locationValue" data-type="text"
-																	data-pk="{$id}" data-value="{$resource->GetLocation()}"
-																	data-name="{FormKeys::RESOURCE_LOCATION}">
-																	{if $resource->HasLocation()}
-																		{$resource->GetLocation()}
-																	{else}
-																		{translate key='NoLocationLabel'}
-																	{/if}
-																</span>
-																<a class="update changeLocation link-primary"
-																	title="{translate key='Edit'}" href="#">
-																	<span
-																		class="visually-hidden">{translate key=Location}</span>
-																	<span class="bi bi-pencil-square"></span>
-																</a>
+																{capture name=noLocation assign=noLocation}{translate key='NoLocationLabel'}{/capture}
+																{control type="PopoverEditControl" FieldId="resourceLocation_{$id}"
+																	FieldValue=$resource->GetLocation()
+																	DisplayValue=$resource->GetLocation()|default:$noLocation
+																	EmptyText=$noLocation
+																	PrimaryKey=$id
+																	ParameterName=FormKeys::RESOURCE_LOCATION
+																	SubmitUrl=$smarty.server.SCRIPT_NAME|cat:'?action='|cat:ManageResourcesActions::ActionChangeLocation
+																	}
 															</div>
 															<div>
 																<label
 																	class="inline fw-bold">{translate key='Contact'}</label>
-																{if $ResourceContactIsUser}
-																	<span class="propertyValue contactValue" data-type="select"
-																	{else} <span class="propertyValue contactValue"
-																	data-type="text" {/if} data-pk="{$id}"
-																	data-value="{$resource->GetContact()}"
-																	data-name="{FormKeys::RESOURCE_CONTACT}">
-																	{if $resource->HasContact()}
-																		{$resource->GetContact()}
-																	{else}
-																		{translate key='NoContactLabel'}
-																	{/if}
-																</span>
-																<a class="update changeContact link-primary"
-																	title="{translate key='Edit'}" href="#">
-																	<span
-																		class="visually-hidden">{translate key=Contact}</span>
-																	<span class="bi bi-pencil-square"></span></a>
+																{capture name=noContact assign=noContact}{translate key='NoContactLabel'}{/capture}
+																{control type="PopoverEditControl" FieldId="resourceContact_{$id}"
+																	FieldValue=$resource->GetContact()
+																	DisplayValue=$resource->GetContact()|default:$noContact
+																	EmptyText=$noContact
+																	FieldType=$ContactFieldType
+																	OptionsUrl=$ContactOptionsUrl
+																	PrimaryKey=$id
+																	ParameterName=FormKeys::RESOURCE_CONTACT
+																	SubmitUrl=$smarty.server.SCRIPT_NAME|cat:'?action='|cat:ManageResourcesActions::ActionChangeContact
+																	}
 															</div>
 															<div>
 																<label
 																	class="inline fw-bold">{translate key='Description'}</label>
-																<a class="update changeDescription link-primary"
-																	title="{translate key='Edit'}" href="#">
-																	<span
-																		class="visually-hidden">{translate key=Description}</span>
-																	<span class="bi bi-pencil-square"></span></a>
 																{if $resource->HasDescription()}
-																	{assign var=description value=$resource->GetDescription()}
+																	{capture name=descriptionHtml assign=descriptionHtml}{$resource->GetDescription()|sanitize_rich_text}{/capture}
 																{else}
-																	{assign var=description value=''}
+																	{capture name=descriptionHtml assign=descriptionHtml}{translate key='NoDescriptionLabel'}{/capture}
 																{/if}
-																{strip}
-																	<div class="descriptionValue" data-type="trumbowyg"
-																		data-pk="{$id}" data-value="{$description}"
-																		data-name="{FormKeys::RESOURCE_DESCRIPTION}">
-																		{if $resource->HasDescription()}
-																			{$description|sanitize_rich_text}
-																		{else}
-																			{translate key='NoDescriptionLabel'}
-																		{/if}
-																	</div>
-																{/strip}
+																{capture name=noDescription assign=noDescription}{translate key='NoDescriptionLabel'}{/capture}
+																{control type="PopoverEditControl" FieldId="resourceDescription_{$id}"
+																	FieldType='richtext'
+																	FieldValue=$resource->GetDescription()
+																	DisplayValue=$descriptionHtml
+																	DisplayHtml=true
+																	EmptyText=$noDescription
+																	PrimaryKey=$id
+																	ParameterName=FormKeys::RESOURCE_DESCRIPTION
+																	SubmitUrl=$smarty.server.SCRIPT_NAME|cat:'?action='|cat:ManageResourcesActions::ActionChangeDescription
+																	}
 															</div>
 															<div>
 																<label
 																	class="inline fw-bold">{translate key='Notes'}</label>
-																<a class="update changeNotes link-primary"
-																	title="{translate key='Edit'}" href="#">
-																	<span
-																		class="visually-hidden">{translate key=Notes}</span>
-																	<span class="bi bi-pencil-square"></span>
-																</a>
 																{if $resource->HasNotes()}
-																	{assign var=notes value=$resource->GetNotes()}
+																	{capture name=notesHtml assign=notesHtml}{$resource->GetNotes()|sanitize_rich_text}{/capture}
 																{else}
-																	{assign var=notes value=''}
+																	{capture name=notesHtml assign=notesHtml}{translate key='NoNotesLabel'}{/capture}
 																{/if}
-																{strip}
-																	<div class="notesValue" data-type="trumbowyg"
-																		data-pk="{$id}" data-value="{$notes}"
-																		data-name="{FormKeys::RESOURCE_NOTES}">
-																		{if $resource->HasNotes()}
-																			{$notes|sanitize_rich_text}
-																		{else}
-																			{translate key='NoNotesLabel'}
-																		{/if}
-																	</div>
-																{/strip}
+																{capture name=noNotes assign=noNotes}{translate key='NoNotesLabel'}{/capture}
+																{control type="PopoverEditControl" FieldId="resourceNotes_{$id}"
+																	FieldType='richtext'
+																	FieldValue=$resource->GetNotes()
+																	DisplayValue=$notesHtml
+																	DisplayHtml=true
+																	EmptyText=$noNotes
+																	PrimaryKey=$id
+																	ParameterName=FormKeys::RESOURCE_NOTES
+																	SubmitUrl=$smarty.server.SCRIPT_NAME|cat:'?action='|cat:ManageResourcesActions::ActionChangeNotes
+																	}
 															</div>
 														</div>
 														<div class="col">
@@ -483,26 +474,28 @@
 															<div class="mt-2">
 																<span
 																	class="fs-6 fw-bold">{translate key='ResourceAdministrator'}</span>
-																{if $AdminGroups|default:array()|count > 0}
-																	<a class="update changeResourceAdmin link-primary"
-																		title="{translate key='Edit'}" href="#">
-																		<span
-																			class="visually-hidden">{translate key=ResourceAdministrator}</span>
-																		<span class="bi bi-pencil-square"></span></a>
+																{assign var=adminGroupId value=$resource->GetAdminGroupId()}
+																{if $adminGroupId !== null && isset($GroupLookup[$adminGroupId])}
+																	{assign var=adminGroupName value=$GroupLookup[$adminGroupId]->Name}
+																{else}
+																	{assign var=adminGroupName value=$noneText}
 																{/if}
-																<div>
-																	<span class="propertyValue resourceAdminValue"
-																		data-type="select" data-pk="{$id}"
-																		data-value="{$resource->GetAdminGroupId()}"
-																		 data-name="{FormKeys::RESOURCE_ADMIN_GROUP_ID}">
-																			{assign var=adminGroupId value=$resource->GetAdminGroupId()}
-																			{if $adminGroupId !== null && isset($GroupLookup[$adminGroupId])}
-																				{$GroupLookup[$adminGroupId]->Name|escape:'html'}
-																			{else}
-																				{translate key='None'}
-																			{/if}
-																		</span>
-																</div>
+																{if $AdminGroups|default:array()|count > 0}
+																	{if $adminGroupId === null}{assign var=adminGroupId value=0}{/if}
+																	<div>
+																		{control type="PopoverEditControl" FieldId="resourceAdmin_{$id}"
+																			FieldType='select'
+																			FieldValue=$adminGroupId
+																			DisplayValue=$adminGroupName
+																			Options=$AdminGroupOptions
+																			PrimaryKey=$id
+																			ParameterName=FormKeys::RESOURCE_ADMIN_GROUP_ID
+																			SubmitUrl=$smarty.server.SCRIPT_NAME|cat:'?action='|cat:ManageResourcesActions::ActionChangeAdmin
+																			}
+																	</div>
+																{else}
+																	<div>{$adminGroupName|escape:'html'}</div>
+																{/if}
 															</div>
 															<div class="mt-2">
 																<span
@@ -2086,61 +2079,6 @@
 {jsfile src="search-clear.js"}
 
 <script type="text/javascript">
-	function addTrumbowygType() {
-		var Trumbowyg = function(options) {
-			this.init('trumbowyg', options, Trumbowyg.defaults);
-		};
-		$.fn.editableutils.inherit(Trumbowyg, $.fn.editabletypes.abstractinput);
-		$.extend(Trumbowyg.prototype, {
-			render: function() {
-				// Set any provided classes or attributes
-				this.setClass();
-				this.setAttr('placeholder');
-
-				this.$input.trumbowyg({
-					tagsToRemove: ['script', 'link'],
-					removeformatPasted: true,
-					urlProtocol: true,
-					btns: [
-						['bold', 'italic', 'underline'],
-						['link'],
-						['unorderedList', 'orderedList']
-					]
-				});
-			},
-
-			value2html: function(value, element) {
-				const sanitizedHtml = DOMPurify.sanitize(value || '');
-				$(element).html(sanitizedHtml);
-			},
-
-			html2value: function(html) {
-				return html || '';
-			},
-
-			activate: function() {
-				if (this.$input.data('trumbowyg')) {
-					this.$input.trumbowyg('open');
-				}
-			},
-			value2input: function(value) {
-				this.$input.trumbowyg('html', value);
-			},
-			input2value: function() {
-				const sanitizedHtml = DOMPurify.sanitize(this.$input.trumbowyg('html'));
-				return sanitizedHtml;
-			}
-		});
-
-		Trumbowyg.defaults = $.extend({}, $.fn.editabletypes.abstractinput.defaults, {
-			tpl: '<textarea></textarea>',
-			inputclass: 'input-large',
-			placeholder: null,
-			rows: 7
-		});
-		$.fn.editabletypes.trumbowyg = Trumbowyg;
-	}
-
 	function setUpPopovers() {
 		$('[rel="popover"]').popover({
 			container: 'body',
@@ -2163,14 +2101,6 @@
 			// Toggle the clicked one
 			$(this).popover('toggle');
 		});
-
-		$('.descriptionValue').on('shown', function(e, editable) {
-			$(document).off('click.editable');
-		});
-
-		$('.notesValue').on('shown', function(e, editable) {
-			$(document).off('click.editable');
-		});
 	}
 
 	function setupCustomAttributesIcon() {
@@ -2188,97 +2118,8 @@
 		});
 	}
 
-	function setUpEditables() {
-		$.fn.editable.defaults.mode = 'popup';
-		$.fn.editable.defaults.toggle = 'manual';
-		$.fn.editable.defaults.emptyclass = '';
-		$.fn.editable.default
-		$.fn.editable.defaults.params = function(params) {
-			params.CSRF_TOKEN = $('#csrf_token').val();
-			return params;
-		};
-
-		var updateUrl = '{$smarty.server.SCRIPT_NAME}?action=';
-		var xUserAutocompleteUrl = "../ajax/autocomplete.php?type={AutoCompleteType::XUser}";
-
-		$('.resourceNameField').editable({
-				url: updateUrl + '{ManageResourcesActions::ActionRename}', validate: function (value) {
-				if ($.trim(value) == '') {
-					return '{translate key=RequiredValue}';
-				}
-			}
-		});
-
-	$('.scheduleName').editable({
-		url: updateUrl + '{ManageResourcesActions::ActionChangeSchedule}', source: [
-		{foreach from=$Schedules item=scheduleName key=scheduleId}
-			{
-				value:{$scheduleId}, text: "{$scheduleName|escape:'javascript'}"
-			},
-		{/foreach}
-	]
-	});
-
-	$('.resourceTypeName').editable({
-		url: updateUrl + '{ManageResourcesActions::ActionChangeResourceType}',
-		emptytext: "{translate key=NoResourceTypeLabel|escape:'javascript'}",
-		source: [{
-				value: '0', text: '' //'-- {translate key=None} --'
-			},
-			{foreach from=$ResourceTypes item=resourceType key=id}
-				{
-					value:{$id}, text: "{$resourceType->Name()|escape:'javascript'}"
-				},
-			{/foreach}
-		]
-	});
-
-	$('.sortOrderValue').editable({
-		url: updateUrl + '{ManageResourcesActions::ActionChangeSort}', emptytext: '0', min: 0, max: 999
-	});
-
-	$('.locationValue').editable({
-		url: updateUrl + '{ManageResourcesActions::ActionChangeLocation}', emptytext: "{translate key='NoLocationLabel'|escape:'javascript'}"
-	});
-
-	$('.contactValue').editable({
-		url: updateUrl + '{ManageResourcesActions::ActionChangeContact}',
-		{if $ResourceContactIsUser}
-			emptytext: "{translate key='NoContactLabel'|escape:'javascript'}",
-			source: xUserAutocompleteUrl,
-		{else}
-			emptytext: "{translate key='NoContactLabel'|escape:'javascript'}"
-		{/if}
-	});
-
-	$('.descriptionValue').editable({
-		url: updateUrl + '{ManageResourcesActions::ActionChangeDescription}',
-		emptytext: "{translate key='NoDescriptionLabel'|escape:'javascript'}"
-	});
-
-	$('.notesValue').editable({
-		url: updateUrl + '{ManageResourcesActions::ActionChangeNotes}', emptytext: "{translate key='NoDescriptionLabel'|escape:'javascript'}"
-	});
-
-	$('.resourceAdminValue').editable({
-		url: updateUrl + '{ManageResourcesActions::ActionChangeAdmin}', emptytext: "{translate key=None|escape:'javascript'}", source: [{
-		value: '0',
-		text: ''
-	},
-	{foreach from=$AdminGroups item=group key=scheduleId}
-		{
-			value:{$group->Id()}, text: "{$group->Name()|escape:'javascript'}"
-		},
-	{/foreach}
-	]
-	});
-
-	}
-
 	$(document).ready(function() {
-		addTrumbowygType();
 		setUpPopovers();
-		setUpEditables();
 		setupCustomAttributesIcon();
 
 		dropzone($("#addResourceImage"));
