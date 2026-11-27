@@ -2081,6 +2081,7 @@
 {jsfile src="autocomplete.js"}
 {vendor_js src="jqtree/1.8.11/js/tree.jquery.js"}
 {jsfile src="admin/resource.js"}
+{jsfile src="popover-edit.js"}
 {vendor_js src="dropzone/1.0.0/js/dropzone.js"}
 {jsfile src="search-clear.js"}
 
@@ -2270,10 +2271,6 @@
 		},
 	{/foreach}
 	]
-	});
-
-	$('.inlineAttribute').editable({
-		url: updateUrl + '{ManageResourcesActions::ActionChangeAttribute}', emptytext: '-'
 	});
 
 	}

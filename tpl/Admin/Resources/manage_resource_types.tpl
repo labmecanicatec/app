@@ -153,6 +153,7 @@
 	{include file="javascript-includes.tpl" InlineEdit=true DataTable=true}
 	{jsfile src="ajax-helpers.js"}
 	{jsfile src="admin/resource-types.js"}
+	{jsfile src="popover-edit.js"}
 	{datatable tableId=$tableId}
 	<script type="text/javascript">
 		function hidePopoversWhenClickAway() {
@@ -177,38 +178,12 @@
 				}
 			}).click(function(e) {
 				e.preventDefault();
-			}).on('show.bs.popover', function() {
-
-			}).on('shown.bs.popover', function() {
-				var trigger = $(this);
-				var popover = trigger.data('bs.popover').tip();
-				popover.find('.editable-cancel').click(function() {
-					trigger.popover('hide');
-				});
-			});
-		}
-
-		function setUpEditables() {
-			$.fn.editable.defaults.mode = 'popup';
-			$.fn.editable.defaults.toggle = 'manual';
-			$.fn.editable.defaults.emptyclass = '';
-			$.fn.editable.defaults.params = function(params) {
-				params.CSRF_TOKEN = $('#csrf_token').val();
-				return params;
-			};
-
-			var updateUrl = '{$smarty.server.SCRIPT_NAME}?action=';
-
-			$('.inlineAttribute').editable({
-				url: updateUrl + '{ManageResourceTypesActions::ChangeAttribute}',
-				emptytext: '-'
 			});
 		}
 
 		$(document).ready(function() {
 			setUpPopovers();
 			hidePopoversWhenClickAway();
-			setUpEditables();
 
 			var opts = {
 				submitUrl: '{$smarty.server.SCRIPT_NAME}',

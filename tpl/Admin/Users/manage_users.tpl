@@ -716,6 +716,7 @@
     {jsfile src="ajax-helpers.js"}
     {jsfile src="autocomplete.js"}
     {jsfile src="admin/user.js"}
+    {jsfile src="popover-edit.js"}
 
     <script type="text/javascript">
         function setUpEditables() {
@@ -728,10 +729,6 @@
             };
 
             var updateUrl = '{$smarty.server.SCRIPT_NAME}?action=';
-            $('.inlineAttribute').editable({
-                url: updateUrl + '{ManageUsersActions::ChangeAttribute}', emptytext: '-'
-            });
-
             $('.changeCredits').editable({
                 url: updateUrl + '{ManageUsersActions::ChangeCredits}', emptytext: '-'
             });

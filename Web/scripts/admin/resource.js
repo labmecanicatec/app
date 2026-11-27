@@ -480,11 +480,6 @@ function ResourceManagement(opts) {
       e.stopPropagation();
       $(this).closest('.resourceDetails').find('.resourceAdminValue').editable('toggle');
     });
-
-    elements.resourcesList.on('click', '.changeAttribute', function (e) {
-      e.stopPropagation();
-      $(e.target).closest('.updateCustomAttribute').find('.inlineAttribute').editable('toggle');
-    });
   };
 
   ResourceManagement.prototype.configureAsyncForms = function () {

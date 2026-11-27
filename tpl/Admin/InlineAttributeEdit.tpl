@@ -1,20 +1,29 @@
 {if $attribute->AppliesToEntity($id)}
 	{assign var=type value=$attribute->Type()}
 	{assign var=attributeId value="inline{$attribute->Id()}{$id}"}
-	{assign var=datatype value='text'}
-	{assign var=inlineClass value='inlineAttribute'}
 	{assign var=pickerValue value=$value}
+	{assign var=attributeFieldType value='text'}
+	{assign var=attributeOptions value=[]}
+	{assign var=attributeDisplay value=$value}
 
 	{if $type == CustomAttributeTypes::CHECKBOX}
-		{assign var=datatype value='checklist'}
+		{assign var=attributeFieldType value='checkbox'}
+		{capture name=yesText assign=yesText}{translate key=Yes}{/capture}
+		{assign var=attributeOptions value=['1' => $yesText]}
+		{if $value == '1'}{assign var=attributeDisplay value=$yesText}{/if}
 	{elseif $type == CustomAttributeTypes::MULTI_LINE_TEXTBOX}
-		{assign var=datatype value='textarea'}
+		{assign var=attributeFieldType value='textarea'}
 	{elseif $type == CustomAttributeTypes::SELECT_LIST}
-		{assign var=datatype value='select'}
+		{assign var=attributeFieldType value='select'}
+		{if !$attribute->Required()}
+			{$attributeOptions[''] = ''}
+		{/if}
+		{foreach from=$attribute->PossibleValueList() item=possibleValue}
+			{$attributeOptions[$possibleValue] = $possibleValue}
+		{/foreach}
 	{elseif $type == CustomAttributeTypes::DATETIME}
 		{assign var=AltFormat value='short_datetime'}
 		{assign var=pickerControlId value="inlinePickerInput{$attributeId}"}
-		{assign var=inlineClass value='inlineAttributeDateTime'}
 		{if $value != ''}
 			{assign var=pickerValue value={formatdate date=$value format='Y-m-d H:i'}}
 		{/if}
@@ -23,23 +32,31 @@
 	<div class="updateCustomAttribute mb-0 d-inline-block">
 		<label class="inline fw-bold">{$attribute->Label()}</label>
 
-		<a class="update {if $type == CustomAttributeTypes::DATETIME}changeAttributeDateTime{else}changeAttribute{/if} link-primary"
-			title="{translate key='Edit'}" href="#">
-			<span class="bi bi-pencil-square"></span>
-			<span class="visually-hidden">{translate key=Edit}</span>
-		</a>
-
-		<span class="{$inlineClass} update" id="{$attributeId}" data-type="{$datatype}" data-pk="{$id}"
-			data-value="{$pickerValue|escape:'html':'UTF-8':false}" data-name="{FormKeys::ATTRIBUTE_PREFIX}{$attribute->Id()}"
-			{if $type == CustomAttributeTypes::SELECT_LIST}
-				{assign var=possibleValuesCount value=$attribute->PossibleValueList()|@count}
-				data-source='[{if !$attribute->Required()}{ldelim}"value":"","text":""{rdelim}{if $possibleValuesCount > 0},{/if}{/if}{foreach from=$attribute->PossibleValueList() item=v name=vals}{ldelim}"value":"{$v|escape:'javascript'}","text":"{$v|escape:'javascript'}"{rdelim}{if not $smarty.foreach.vals.last},{/if}{/foreach}]'
-			{/if} {if $type == CustomAttributeTypes::CHECKBOX}
-		data-source='[{ldelim}value:"1",text:"{translate key=Yes}"{rdelim}]' {/if}>
 		{if $type == CustomAttributeTypes::DATETIME}
-			{if $value != ''}{formatdate date=$value key=$AltFormat}{else}-{/if}
+			<a class="update changeAttributeDateTime link-primary"
+				title="{translate key='Edit'}" href="#">
+				<span class="bi bi-pencil-square"></span>
+				<span class="visually-hidden">{translate key=Edit}</span>
+			</a>
+
+			<span class="update" id="{$attributeId}" data-pk="{$id}"
+				data-value="{$pickerValue|escape:'html':'UTF-8':false}" data-name="{FormKeys::ATTRIBUTE_PREFIX}{$attribute->Id()}">
+				{if $value != ''}{formatdate date=$value key=$AltFormat}{else}-{/if}
+			</span>
+		{else}
+			{control type="PopoverEditControl"
+				FieldId=$attributeId
+				FieldType=$attributeFieldType
+				FieldValue=$value
+				DisplayValue=$attributeDisplay|default:'-'
+				Options=$attributeOptions
+				EmptyText='-'
+				PrimaryKey=$id
+				ParameterName="{FormKeys::ATTRIBUTE_PREFIX}{$attribute->Id()}"
+				SubmitUrl=$url
+				CssClass='align-middle'
+			}
 		{/if}
-	</span>
 
 	{if $type == CustomAttributeTypes::DATETIME}
 		<div class="d-none position-absolute border rounded bg-body shadow p-2 z-3 update" id="inlinePicker{$attributeId}">
